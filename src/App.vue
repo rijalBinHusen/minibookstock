@@ -5,11 +5,12 @@
 
 <template>
     <Navbar :navs="navbar" @navbar="toNav($event)" />
-    <!-- <component :is="comp"></component> -->
+    <component :is="activeNav"></component>
 </template>
 
 <script>
 import Navbar from "./components/parts/Navbar.vue";
+import Setting from "./components/Setting.vue";
 
 export default {
   name: "App",
@@ -24,14 +25,16 @@ export default {
         // { name: "Exporter", title: "Exporter", icon: "file-download" },
         { name: "Setting", title: "Setting", icon: "cog" },
       ],
+      activeNav: "Setting",
     };
   },
   methods: {
     toNav(ev){
-      console.log(ev);
+      this.activeNav = ev
     },
   },
   components: {
+    Setting,
     Navbar,
   }
 }
