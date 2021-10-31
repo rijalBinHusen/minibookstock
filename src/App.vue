@@ -36,6 +36,9 @@ export default {
   components: {
     Setting,
     Navbar,
-  }
+  },
+  mounted() {
+    this.$store.dispatch("getStart")
+  },
 }
 </script>

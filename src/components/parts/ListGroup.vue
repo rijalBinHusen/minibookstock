@@ -1,7 +1,6 @@
 <template>
   <div
-    class="rounded md:max-w-md mt-2 p-2 bg-base-200"
-    style="min-height: 400px"
+    class="rounded md:max-w-lg md:max-h-screen mt-2 p-2 bg-base-200"
   >
     <h1 class="text-2xl mb-2">Daftar Group item</h1>
     <form @submit.prevent="send(false)" class="mb-2">
@@ -49,56 +48,48 @@ export default {
   name: "ListGroup",
   data() {
     return {
-      gudang: "",
       group: "",
       button: "Tambah",
       update: {},
     };
   },
-  // methods: {
-  //   send(id) {
-  //     if ((this.group && this.gudang) || id) {
-  //       // if update
-  //       if (this.update.id || id) {
-  //         let target = this.update.id || id;
-  //         let filt = this.lists.filter((val) => val.id === target)[0];
-  //         // if toggle disable enable
-  //         if (id) filt.status = !filt.status;
-  //         else filt.name_group = this.group;
-  //         this.$store.dispatch("update", { store: "Group", obj: filt });
-  //         this.button = "Tambah";
-  //       } else
-  //         this.$store.dispatch("Group/append", {
-  //           location: this.gudang,
-  //           name_group: this.group,
-  //           status: true,
-  //         });
-  //       this.group = "";
-  //     }
-  //   },
-  //   edit(ev) {
-  //     let filt = this.lists.filter((val) => val.id === ev)[0];
-  //     this.group = filt.name_group;
-  //     this.update = filt;
-  //     this.button = "Update";
-  //   },
-  // },
+  methods: {
+    send(id) {
+      if (this.group || id) {
+        // if update
+        if (this.update.id || id) {
+          let target = this.update.id || id;
+          let filt = this.lists.filter((val) => val.id === target)[0];
+          // if toggle disable enable
+          if (id) filt.status = !filt.status;
+          else filt.name_group = this.group;
+          this.$store.dispatch("update", { store: "Group", obj: filt });
+          this.button = "Tambah";
+        } else
+          this.$store.dispatch("Group/append", {
+            name_group: this.group,
+            status: true,
+          });
+        this.group = "";
+      }
+    },
+    edit(ev) {
+      let filt = this.lists.filter((val) => val.id === ev)[0];
+      this.group = filt.name_group;
+      this.update = filt;
+      this.button = "Update";
+    },
+  },
   components: {
     Input,
     Table,
     Select,
     Button,
   },
-  // computed: {
-  //   listsGudang() {
-  //     return [
-  //       { id: "", name_warehouse: "Pilih gudang" },
-  //       ...this.$store.getters["Gudang/gudangActive"],
-  //     ];
-  //   },
-  //   lists() {
-  //     return this.$store.getters["Group/groupByWarehouse"](this.gudang);
-  //   },
-  // },
+  computed: {
+    lists() {
+      return this.$store.state.Group.lists
+    },
+  },
 };
 </script>
