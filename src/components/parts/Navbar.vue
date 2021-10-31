@@ -7,22 +7,17 @@
   </div> 
   <div class="hidden px-2 mx-2 navbar-center lg:flex">
     <div class="flex items-stretch">
-      <a class="btn btn-ghost btn-sm rounded-btn">
-              Home
-            </a> 
-      <a class="btn btn-ghost btn-sm rounded-btn">
-              Portfolio
-            </a> 
-      <a class="btn btn-ghost btn-sm rounded-btn">
-              About
-            </a> 
-      <a class="btn btn-ghost btn-sm rounded-btn">
-              Contact
-            </a>
+      <a v-for="nav in navs" :key="nav.title" @click="$emit('navbar', nav.name)" class="btn btn-ghost btn-sm rounded-btn">
+              {{ nav.title }}
+        <font-awesome-icon class="m-2" :icon="nav.icon" />
+      </a> 
     </div>
   </div> 
   <div class="navbar-end">
-      <span>Setting</span>
+      <span class="btn btn-ghost btn-sm rounded-btn">
+        Credit
+        <font-awesome-icon class="ml-2" icon="info-circle" />
+      </span>
   </div>
 </div>
 
@@ -31,5 +26,12 @@
 <script>
 export default {
     name: "Navbar",
+    props: {
+        navs: {
+            type: Object,
+            required: true,
+        }
+    },
+    emits: ['navbar'],
 }
 </script>
