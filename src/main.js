@@ -10,6 +10,7 @@ import {
   faLayerGroup,
   faShoppingCart,
   faInfoCircle,
+  faCloudUploadAlt,
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(
@@ -18,7 +19,8 @@ library.add(
   faTruckMoving,
   faLayerGroup,
   faShoppingCart,
-  faInfoCircle
+  faInfoCircle,
+  faCloudUploadAlt
 );
 
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";

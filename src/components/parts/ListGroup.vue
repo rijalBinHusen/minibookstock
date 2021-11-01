@@ -1,6 +1,6 @@
 <template>
   <div
-    class="rounded md:max-w-lg md:max-h-screen mt-2 p-2 bg-base-200"
+    class="rounded md:w-6/12 md:max-h-screen overflow-auto p-2 bg-base-200"
   >
     <h1 class="text-2xl mb-2">Daftar Group item</h1>
     <form @submit.prevent="send(false)" class="mb-2">

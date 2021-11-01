@@ -5,12 +5,13 @@
     </label>
     <div class="relative">
       <input
-        type="text"
+        :type="type"
         :placeholder="placeholder"
         :class="formTipe"
         @keyup="send($event.target.value)"
         :value="value"
         @keypress.enter="$emit('trig')"
+        :ref="ref"
       />
       <button
         v-if="button"
@@ -28,11 +29,16 @@ export default {
   name: "Input",
   props: {
     label: String,
+    type: {
+      type: String,
+      default: "text",
+    },
     tipe: String,
     placeholder: String,
     small: Boolean,
     button: String,
     value: String,
+    ref: String,
   },
   emits: ["send", "trig"],
   methods: {
