@@ -14,7 +14,12 @@ const Item = {
   actions: {},
   getters: {
     byGroup: (state, getters, rootState, rootGetters) => (group) => {
-      let result = state.lists.filter((val) => val.item_group === group);
+      let result = state.lists.filter((val) => {
+        if (val.item_group === group) {
+          val.item_qty = rootGetters["Master/qty"](val.id);
+          return val;
+        }
+      });
       return result;
     },
   },

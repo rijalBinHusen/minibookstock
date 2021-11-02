@@ -12,7 +12,17 @@ const Master = {
     },
   },
   actions: {},
-  getters: {},
+  getters: {
+    qty: (state, getters, rootState, rootGetters) => (itemKode) => {
+      let total = 0;
+      state.lists.forEach((val) => {
+        if (val.master_item == itemKode) {
+          total += +val.master_qty;
+        }
+      });
+      return total;
+    },
+  },
 };
 
 export default Master;

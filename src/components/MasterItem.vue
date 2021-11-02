@@ -10,8 +10,8 @@
       :contents="lists(gr.id)"
       :options="['edit']"
       keyData="id"
-      :thead="['Kode', 'Name']"
-      :tbody="['item_kode', 'item_name']"
+      :thead="['Kode', 'Name', 'Quantity']"
+      :tbody="['item_kode', 'item_name', 'item_qty']"
     >
     </Table>
     </div>
@@ -26,7 +26,6 @@ export default {
     },
     methods: {
         lists(group) {
-          console.log(group)
           return this.$store.getters["Item/byGroup"](group)
         },
     },
