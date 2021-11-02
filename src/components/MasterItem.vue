@@ -12,22 +12,39 @@
       keyData="id"
       :thead="['Kode', 'Name', 'Quantity']"
       :tbody="['item_kode', 'item_name', 'item_qty']"
+      v-slot:default="slotProps"
     >
+    <Dropdown 
+      text="Move to" 
+      :options ="[
+        {method: master, text: 'GJST', icon: 'times-circle', value: slotProps.prop.id},
+        {method: master, text: 'GJST', icon: 'times-circle', value: slotProps.prop.id},
+        {method: master, text: 'GJST', icon: 'times-circle', value: slotProps.prop.id},
+        {method: master, text: 'GJST', icon: 'times-circle', value: slotProps.prop.id},
+        {method: master, text: 'GJST', icon: 'times-circle', value: slotProps.prop.id},
+        ]" 
+      primary 
+      small />
     </Table>
     </div>
 </template>
 
 <script>
 import Table from "./elements/Table.vue";
+import Dropdown from "./elements/Dropdown.vue";
 export default {
     name: "MasterItem",
     components: {
       Table,
+      Dropdown,
     },
     methods: {
         lists(group) {
           return this.$store.getters["Item/byGroup"](group)
         },
+        master(item) {
+          console.log(item);
+        }
     },
     computed: {
         group() {
