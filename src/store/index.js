@@ -2,6 +2,8 @@
 import { createStore } from "vuex";
 import Localbase from "../Localbase";
 import Group from "./Module/Group";
+import Master from "./Module/Master";
+import Item from "./Module/Item";
 
 export default createStore({
   state: {},
@@ -13,11 +15,14 @@ export default createStore({
       // the first letter of value.store must be capital e.g 'Group'
 
       // create id to the record
-      value.obj.id = Localbase.generateId(value.id);
-      // insert record to indexeddb
-      Localbase.append(value.store.toLowerCase(), value.obj);
+      if (value.id) value.obj.id = Localbase.generateId(value.id);
       // commit to module e.g 'Group/append
       commit(`${value.store}/append`, value.obj, { root: true });
+      // insert record to indexeddb and return as promise
+      return new Promise((resolve) => {
+        Localbase.append(value.store.toLowerCase(), value.obj);
+        setTimeout(() => resolve(), 30);
+      });
     },
     // to update record in indexeddb
     update({ commit }, value) {
@@ -97,5 +102,7 @@ export default createStore({
   },
   modules: {
     Group,
+    Master,
+    Item,
   },
 });

@@ -6,13 +6,6 @@ export default {
   append: function (store, val) {
     //(nameStore, {key: 'value', key: 'value'})
     db.collection(store).add(val);
-    //Record to activity
-    db.collection("activity").add({
-      user: val.gudang,
-      time: new Date().getTime(),
-      operation: "create",
-      document: val.id,
-    });
   },
   update: function (store, id, val) {
     //(nameStore, {id: idData}, {keyToUpdate: 'new value update'})

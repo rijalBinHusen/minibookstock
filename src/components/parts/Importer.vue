@@ -35,11 +35,40 @@ export default {
 
       reader.readAsText(ev.target.files[0]);
     },
-    send(val) {
-      //send data to vuex
-    //   this.$store.dispatch("ExIm/importerData", val);
-      console.log(val);
-      console.log(btoa(val))
+    async send(val) {
+      window.location.href = "#my-modal";
+      // sperate by new line
+      let newLine = val.split("\n");
+      // iterate and sperate by comma
+      for (let i = 0; i < newLine.length; i ++) {
+        let comma = newLine[i].split(",")
+
+        let model = {
+            Group: {
+              id: comma[1],
+              warehouse: comma[2],
+              name_group: comma[3],
+              status: true
+            },
+            Item: {
+              id: comma[1], 
+              item_group: comma[2],
+              item_kode: comma[3],
+              item_name: comma[4],
+            },
+            Master: {
+              id: comma[1],
+              master_item: comma[2],
+              master_ed: comma[3],
+              master_qty: comma[4],
+            }
+          };
+          if(comma.length === 5)
+          await this.$store.dispatch("append", {
+            store: comma[0], obj: model[comma[0]]
+          })
+      }
+      window.location.href = "#";
     },
   },
   components: {
