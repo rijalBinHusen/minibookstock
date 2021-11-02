@@ -13,6 +13,7 @@
 import Navbar from "./components/parts/Navbar.vue";
 import Setting from "./components/Setting.vue";
 import Modal from "./components/parts/Modal.vue"
+import MasterItem from "./components/MasterItem.vue";
 
 export default {
   name: "App",
@@ -22,7 +23,7 @@ export default {
         { name: "Incoming", title: "Icoming", icon: "dice-d6" },
         { name: "Vehicles", title: "Vehicles", icon: "truck-moving" },
         { name: "Output", title: "Output", icon: "shopping-cart" },
-        { name: "MasterItems", title: "Master Items", icon: "layer-group" },
+        { name: "MasterItem", title: "Master Item", icon: "layer-group" },
         // { name: "Importer", title: "Importer", icon: "file-upload" },
         // { name: "Exporter", title: "Exporter", icon: "file-download" },
         { name: "Setting", title: "Setting", icon: "cog" },
@@ -39,6 +40,7 @@ export default {
     Setting,
     Navbar,
     Modal,
+    MasterItem,
   },
   mounted() {
     this.$store.dispatch("getStart")

@@ -41,7 +41,7 @@ export default createStore({
     // Getting all data in indexeddb
     getStart({ commit }) {
       // list of store
-      let store = ["Group"];
+      let store = ["Group", "Item", "Master"];
       // iterate the store
       store.forEach((val) => {
         // call the get data functions

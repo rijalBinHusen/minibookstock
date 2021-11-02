@@ -4,6 +4,9 @@ const Master = {
     lists: [],
   },
   mutations: {
+    master(state, value) {
+      state.lists = value;
+    },
     append(state, value) {
       state.lists.push(value);
     },
