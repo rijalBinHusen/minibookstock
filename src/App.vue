@@ -14,6 +14,7 @@ import Navbar from "./components/parts/Navbar.vue";
 import Setting from "./components/Setting.vue";
 import Modal from "./components/parts/Modal.vue"
 import MasterItem from "./components/MasterItem.vue";
+import Incoming from "./components/Incoming.vue";
 
 export default {
   name: "App",
@@ -41,6 +42,7 @@ export default {
     Navbar,
     Modal,
     MasterItem,
+    Incoming,
   },
   mounted() {
     this.$store.dispatch("getStart")

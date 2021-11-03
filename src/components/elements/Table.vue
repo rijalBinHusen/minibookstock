@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full overflow-auto mb-2 border" :style="style">
+  <div class="w-full mb-2 border" :style="style">
     <table class="table w-full h-full table-compact">
       <thead>
         <tr>

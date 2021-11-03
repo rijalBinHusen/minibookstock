@@ -4,6 +4,8 @@ import Localbase from "../Localbase";
 import Group from "./Module/Group";
 import Master from "./Module/Master";
 import Item from "./Module/Item";
+import Incoming from "./Module/Incoming";
+import Mutation from "./Module/Mutation";
 
 export default createStore({
   state: {},
@@ -41,7 +43,7 @@ export default createStore({
     // Getting all data in indexeddb
     getStart({ commit }) {
       // list of store
-      let store = ["Group", "Item", "Master"];
+      let store = ["Group", "Item", "Master", "Incoming", "Mutation"];
       // iterate the store
       store.forEach((val) => {
         // call the get data functions
@@ -104,5 +106,7 @@ export default createStore({
     Group,
     Master,
     Item,
+    Incoming,
+    Mutation,
   },
 });
