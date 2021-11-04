@@ -8,8 +8,8 @@
       <font-awesome-icon icon="times-circle" />
     </a>
     <div class="w-full mx-20 my-2 p-2">
-      <!-- <component :is="form"></component> -->
-      <Loader />
+      <component :is="form"></component>
+      <!-- <Loader /> -->
     </div>
   </div>
 </template>
@@ -19,6 +19,12 @@ import Loader from "./Loader.vue";
 
 export default {
   name: "Modal",
+  props: {
+    form: {
+      type: String,
+      required: true,
+    },
+  },
   components: {
     Loader
   },

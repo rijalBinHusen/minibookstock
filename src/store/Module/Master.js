@@ -22,6 +22,15 @@ const Master = {
       });
       return total;
     },
+    nameItem: (state, getters, rootState, rootGetters) => (masterId) => {
+      let findMaster = state.lists.filter((val) => val.id === masterId);
+      if (findMaster.length > 0) {
+        let result = rootState.Item.lists.filter(
+          (val) => val.id === findMaster[0].master_item
+        );
+        return result[0].item_name;
+      }
+    },
   },
 };
 

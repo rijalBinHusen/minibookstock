@@ -5,8 +5,8 @@
 
 <template>
     <Navbar :navs="navbar" @navbar="toNav($event)" />
-    <component :is="activeNav"></component>
-    <Modal />
+    <component @form="form = $event" :is="activeNav"></component>
+    <Modal :form="form" />
 </template>
 
 <script>
@@ -30,6 +30,7 @@ export default {
         { name: "Setting", title: "Setting", icon: "cog" },
       ],
       activeNav: "Setting",
+      form: "",
     };
   },
   methods: {
