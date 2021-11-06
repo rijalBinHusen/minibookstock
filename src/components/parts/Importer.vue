@@ -36,7 +36,7 @@ export default {
       reader.readAsText(ev.target.files[0]);
     },
     async send(val) {
-      this.$store.dispatch("Form", "Loader")
+      this.$store.commit("form", "Loader")
       window.location.href = "#my-modal";
       // sperate by new line
       let newLine = val.split("\n");

@@ -22,6 +22,9 @@ export default {
       type: Object,
       required: true,
     },
+      //options = [{key: "string", {key2: "string2"}}]
+      // value = "key"
+      // text = "key2"
     tipe: {
       type: String,
     },

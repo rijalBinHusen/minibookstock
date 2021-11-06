@@ -8,8 +8,14 @@ import Incoming from "./Module/Incoming";
 import Mutation from "./Module/Mutation";
 
 export default createStore({
-  state: {},
-  mutations: {},
+  state: {
+    form: "",
+  },
+  mutations: {
+    form(state, form) {
+      state.form = form;
+    },
+  },
   actions: {
     // to add to indexeddb
     append({ commit }, value) {

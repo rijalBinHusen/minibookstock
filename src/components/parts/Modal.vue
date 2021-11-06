@@ -16,6 +16,7 @@
 
 <script>
 import Loader from "./Loader.vue";
+import IncomingForm from "../IncomingForm.vue";
 
 export default {
   name: "Modal",
@@ -26,11 +27,13 @@ export default {
     },
   },
   components: {
-    Loader
+    Loader,
+    IncomingForm,
   },
   computed: {
     form() {
-      return this.$store.getters["form"];
+      console.log(this.$store.state.form)
+      return this.$store.state.form;
     },
   },
 };
