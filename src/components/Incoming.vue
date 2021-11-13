@@ -47,10 +47,12 @@ export default {
     },
     methods: {
         detail(id) {
-            console.log(id)
             window.location.href = "#my-modal"
-            this.$store.commit("form", "IncomingForm");
-            console.log(this.$store.state.form);
+            this.$store.commit("form", {
+                form: "IncomingForm",
+                document: id
+            }); 
+            // this.$store.state.form                  
         },
     },
     computed: {

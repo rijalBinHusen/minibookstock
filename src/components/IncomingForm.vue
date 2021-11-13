@@ -26,7 +26,7 @@
             <date-picker
               id="date-picker"
               class="input input-outline input-primary input-sm"
-              v-model="tanggal"
+              v-model="mutation.date"
             ></date-picker>
           </div>
           <!-- end of date picker -->
@@ -37,7 +37,7 @@
               <span class="label-text">Shift</span>
             </label>
             <Select
-              @selectedd="shift == $event"
+              @selectedd="mutation.shift == $event"
               id="shift"
                 :options="[
                     { shift: 1 },
@@ -55,7 +55,7 @@
           <Input
             label="Coming from"
             small
-            @send="come = $event"
+            @send="incoming.comeFrom = $event"
             placeholder="Coming from"
             tipe="primary"
           />
@@ -65,14 +65,14 @@
         <div id="incoming_paper" class="grid grid-cols-3 gap-4">
           <Input
             label="Paper id"
-            @send="paperId = $event"
+            @send="incoming.idPaper = $event"
             small
             placeholder="Paper id"
             tipe="primary"
           />
           <Input
             label="Hand by"
-            @send="handBy = $event"
+            @send="incoming.handed = $event"
             small
             placeholder="Hand by"
             tipe="primary"
@@ -80,7 +80,7 @@
           <Input
             label="Receive by"
             small
-            @send="received = $event"
+            @send="incoming.received = $event"
             placeholder="Receive by"
             tipe="primary"
           />
@@ -89,14 +89,14 @@
         <div id="incoming_items" class="grid grid-cols-3 gap-4 mb-2">
           <Input
             label="Item"
-            @send="item = $event"
+            @send="mutation.item = $event"
             small
             placeholder="Item"
             tipe="primary"
           />
           <Input
             label="Quantity"
-            @send="qty = $event"
+            @send="mutation.qty = $event"
             small
             placeholder="Quantity"
             tipe="primary"
@@ -114,11 +114,11 @@
           <Button type="button" primary @trig="add" value="Add items" small />
         </div>
 
-        <Table
+        <!-- <Table
           v-if="items.length > 0"
           :contents="items"
           style="max-height: 200px; overflow: auto"
-        />
+        /> -->
 
         <div id="incoming_add_submit" class="w-full">
           <Button type="button" @trig="save" primary value="Submit" />
@@ -139,16 +139,23 @@ export default {
   name: "IncomingForm",
   data() {
     return {
-      tanggal: new Date(),
-      shift: 1,
-      come: "",
-      paperId: "",
-      handBy: "",
-      received: "",
-      items: [],
-      item: "",
-      qty: "",
-      tgl: "",
+        incoming: {
+            idPaper: "",
+            comeFrom: "",
+            handed: "",
+            received: "",
+            detail: "",
+            responsible: "",
+        },
+        mutation: {
+            date: new Date(),
+            shift: "",
+            parent: "",
+            type: "",
+            location: "",
+            item: "",
+            qty: "",
+        },
     };
   },
   methods: {
@@ -178,6 +185,9 @@ export default {
     Button,
     Table,
     datePicker,
+  },
+  mounted() {
+    console.log(this.$store.state.form);
   },
 };
 </script>
