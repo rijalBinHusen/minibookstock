@@ -38,7 +38,9 @@ export default {
     async send(val) {
       this.$store.commit("form", "Loader")
       window.location.href = "#my-modal";
-      // sperate by new line
+      val = val.replace("\"", "");
+	  // console.log(sa)
+	  // sperate by new line
       let newLine = val.split("\n");
       // iterate and sperate by comma
       for (let i = 0; i < newLine.length; i ++) {

@@ -187,7 +187,11 @@ export default {
     datePicker,
   },
   mounted() {
-    console.log(this.$store.state.form);
+    this.$store.state.form.document 
+		? console.log(this.$store.getters["Mutation/incomingId"](
+			this.$store.state.form.document 
+		))
+		: ""
   },
 };
 </script>

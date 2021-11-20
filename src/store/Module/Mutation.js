@@ -23,6 +23,9 @@ const Mutation = {
       });
       return result;
     },
+	incomingId: (state, getters, rootState, rootGetters) => (id) => {
+		return state.lists.filter((val) => val.id === id)
+	}
   },
 };
 

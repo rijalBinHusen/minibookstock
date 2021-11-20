@@ -21,7 +21,7 @@
         type="button"
         small
         class="ml-2"
-        :datanya="slotProps.prop.parent"
+        :datanya="slotProps.prop.id"
         @trig="detail($event)"
       />
         </datatable>

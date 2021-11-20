@@ -6,7 +6,7 @@
 <template>
     <Navbar :navs="navbar" @navbar="toNav($event)" />
     <component @form="form = $event" :is="activeNav"></component>
-    <Modal :form="form" />
+    <Modal />
 </template>
 
 <script>

@@ -12,7 +12,11 @@ const Incoming = {
     },
   },
   actions: {},
-  getters: {},
+  getters: {
+	  incomingId: (state) => (id) => {
+			return state.lists.filter((val) => val.id === id)
+	  }
+  },
 };
 
 export default Incoming;

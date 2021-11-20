@@ -20,12 +20,6 @@ import IncomingForm from "../IncomingForm.vue";
 
 export default {
   name: "Modal",
-  props: {
-    form: {
-      type: String,
-      required: true,
-    },
-  },
   components: {
     Loader,
     IncomingForm,
@@ -33,7 +27,7 @@ export default {
   methods: {
     close(){
       this.$store.commit("form", { form: "", document: "" });
-      this.window.location.href = "#";
+      window.location.href = "#";
     }
   },
   computed: {
