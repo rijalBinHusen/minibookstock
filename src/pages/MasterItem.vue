@@ -5,6 +5,7 @@
         <span class="text-3xl font-bold mt-9 mb-2">
           {{ gr.name_group }}
         </span>
+        Hellow owksjdhf
     <Table
       v-if="lists && lists.length > 0"
       :contents="lists(gr.id)"
@@ -30,8 +31,8 @@
 </template>
 
 <script>
-import Table from "./elements/Table.vue";
-import Dropdown from "./elements/Dropdown.vue";
+import Table from "../components/elements/Table.vue";
+import Dropdown from "../components/elements/Dropdown.vue";
 export default {
     name: "MasterItem",
     components: {

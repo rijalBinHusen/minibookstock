@@ -4,31 +4,23 @@
 </script>
 
 <template>
-    <Navbar :navs="navbar" @navbar="toNav($event)" />
-    <component @form="form = $event" :is="activeNav"></component>
+    <Navbar @navigate_to_navbar="toNav($event)" />
+      <component :is="activeNav"></component>
     <Modal />
 </template>
 
 <script>
-import Navbar from "./components/parts/Navbar.vue";
-import Setting from "./components/Setting.vue";
+import Navbar from "./components/Navbar.vue";
+import Setting from "./pages/Setting.vue";
 import Modal from "./components/parts/Modal.vue"
-import MasterItem from "./components/MasterItem.vue";
-import Incoming from "./components/Incoming.vue";
+import MasterItem from "./pages/MasterItem.vue";
+import Incoming from "./pages/Incoming.vue";
+import VehiclesVue from "./pages/Vehicles.vue";
 
 export default {
   name: "App",
   data() {
     return {
-      navbar: [
-        { name: "Incoming", title: "Icoming", icon: "dice-d6" },
-        { name: "Vehicles", title: "Vehicles", icon: "truck-moving" },
-        { name: "Output", title: "Output", icon: "shopping-cart" },
-        { name: "MasterItem", title: "Master Item", icon: "layer-group" },
-        // { name: "Importer", title: "Importer", icon: "file-upload" },
-        // { name: "Exporter", title: "Exporter", icon: "file-download" },
-        { name: "Setting", title: "Setting", icon: "cog" },
-      ],
       activeNav: "Setting",
       form: "",
     };
@@ -44,9 +36,10 @@ export default {
     Modal,
     MasterItem,
     Incoming,
+    Vehicles: VehiclesVue,
   },
   mounted() {
-    this.$store.dispatch("getStart")
+    // this.$store.dispatch("getStart")
   },
 }
 </script>

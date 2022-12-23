@@ -7,8 +7,8 @@
 </template>
 
 <script>
-import ListGroup from "./parts/ListGroup.vue";
-import Importer from "./parts/Importer.vue";
+import ListGroup from "../components/parts/ListGroup.vue";
+import Importer from "../components/parts/Importer.vue";
 
 export default {
   name: "Setting",

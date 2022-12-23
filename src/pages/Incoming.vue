@@ -30,8 +30,8 @@
 
 <script>
 import datePicker from "vue3-datepicker";
-import Datatable from "./parts/Datatable.vue";
-import Button from "./elements/Button.vue";
+import Datatable from "../components/parts/Datatable.vue";
+import Button from "../components/elements/Button.vue";
 
 export default {
     name: "Incoming",
