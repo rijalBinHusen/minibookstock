@@ -26,8 +26,13 @@ library.add(
 );
 
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import VueDatePicker from "@vuepic/vue-datepicker";
+import '@vuepic/vue-datepicker/dist/main.css'
 
-createApp(App)
-  .component("font-awesome-icon", FontAwesomeIcon)
-  .use(store)
-  .mount("#app");
+const app = createApp(App);
+app.component("font-awesome-icon", FontAwesomeIcon)
+app.component('VueDatePicker', VueDatePicker)
+app.use(store)
+app.mount("#app");
+
+

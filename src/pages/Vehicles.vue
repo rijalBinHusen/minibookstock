@@ -20,6 +20,7 @@
                 type="button"
                 small
                 class="ml-2"
+                @trig="handleAdd"
             />
         </span>
         <datatable
@@ -49,11 +50,16 @@ import datePicker from "vue3-datepicker";
 import Datatable from "../components/parts/Datatable.vue";
 import Button from "../components/elements/Button.vue";
 import { ref } from "vue";
+import { launchForm } from '../composables/launchForm'
 
 const tanggal = ref(new Date())
 
+const handleAdd = () => {
+    launchForm('Vehicles', false)
+}
+
 const vehicles = [
-    {id: 1, no_do: '102938', no_so: '102938', register: '123', start: '', finished: '', platNo: 'adffdadf', customer: 'asdfasdfadf' }
+    {id: '1', no_do: '102938', no_so: '102938', register: '123', start: '', finished: '', platNo: 'adffdadf', customer: 'asdfasdfadf' }
 ];
 
 </script>

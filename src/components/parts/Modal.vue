@@ -17,12 +17,14 @@
 <script>
 import Loader from "./Loader.vue";
 import IncomingForm from "../IncomingForm.vue";
+import VehiclesVue from "../../form/Vehicles.vue";
 
 export default {
   name: "Modal",
   components: {
     Loader,
     IncomingForm,
+    Vehicles: VehiclesVue,
   },
   methods: {
     close(){
