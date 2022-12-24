@@ -24,8 +24,9 @@
             />
         </span>
         <datatable
-            :heads="['platNo', 'customer', 'register', 'start', 'finished']"
-            :datanya="vehicles"
+            :heads="['plat nomor', 'customer', 'register', 'start', 'finished']"
+            :keys="['plat_nomor', 'customer', 'register', 'start', 'finished']"
+            :datanya="Vehicles"
             keydata="id"
             no
             id="table-incoming"
@@ -51,6 +52,7 @@ import Datatable from "../components/parts/Datatable.vue";
 import Button from "../components/elements/Button.vue";
 import { ref } from "vue";
 import { launchForm } from '../composables/launchForm'
+import { Vehicles } from "@/composables/Vehicles";
 
 const tanggal = ref(new Date())
 
@@ -58,8 +60,5 @@ const handleAdd = () => {
     launchForm('Vehicles', false)
 }
 
-const vehicles = [
-    {id: '1', no_do: '102938', no_so: '102938', register: '123', start: '', finished: '', platNo: 'adffdadf', customer: 'asdfasdfadf' }
-];
 
 </script>

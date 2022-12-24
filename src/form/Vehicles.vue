@@ -8,6 +8,7 @@
       <!-- REGISTER -->
       <!-- PLAT NOMOR -->
       <!-- CUSTOMER -->
+      <form id="vehicle_form" @submit.prevent="handleSubmit">
         <div id="incoming_add_form" class="grid justify-items-center">
             <div id="incoming_paper" class="flex justify-self-start gap-4">
               <!-- NO DO -->
@@ -51,12 +52,13 @@
           </div>
   
           <div id="incoming_add_submit" class="w-full mt-4">
-            <Button type="button" @trig="handleButton" small primary value="Submit" />
+            <Button type="button" @trig="handleSubmit" small primary value="Submit" />
             <span class="text-red-400 ml-6">
               {{ warn }}
             </span>
           </div>
         </div>
+      </form>
       </div>
   </template>
   
@@ -64,7 +66,8 @@
   import Input from "@/components//elements/Forms/Input.vue";
   import Button from "@/components//elements/Button.vue";
   import { ref } from 'vue'
-  import { createVehicle } from "../models/Vehicles";
+  import { createVehicle } from "../composables/Vehicles";
+  import { closeModalOrDialog } from "../composables/launchForm";
 
   const warn = ref(null)
   // <!-- NO DO -->
@@ -78,9 +81,15 @@
   // <!-- CUSTOMER -->
   const customer = ref(null)
 
-  const handleButton = () => {
+  const handleSubmit = async () => {
+    
     if(noDO.value && noSO.value && register.value && platNomor.value && customer.value) {
-      createVehicle(noDO.value, noSO.value, platNomor.value, customer.value, register.value, null, null)
+      await createVehicle(noDO.value, noSO.value, platNomor.value, customer.value, register.value, "cabsdf", "aldsiue")
+      // reset form
+      const form = document.getElementById("vehicle_form")
+      form.reset()
+      // close modal
+      closeModalOrDialog()
     } else {
       warn.value = "Data tidak boleh ada yang kosong"
       setTimeout(() => {

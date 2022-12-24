@@ -41,7 +41,7 @@
               v-if="deData.sortAsc && deData.nowSort == head"
               >&uarr;</span
             >
-            {{ tulisanBaku(head) }}
+            {{ head }}
           </th>
           <th v-if="option" scope="col">Option</th>
         </tr>
@@ -51,7 +51,7 @@
       <tbody>
         <tr>
           <td v-if="no"></td>
-          <td :key="key" v-for="key in heads">
+          <td :key="key" v-for="key in keys">
             <input
               type="text"
               class="input input-primary input-bordered btn-xs w-24"
@@ -70,7 +70,7 @@
 
         <tr class="hover" :key="r" v-for="(r, index) in showRow">
           <th v-if="no">{{ index + deData.startRow + 1 }}</th>
-          <td :key="r[key]" v-for="key in heads">{{ r[key] }}</td>
+          <td :key="r[key]" v-for="key in keys">{{ r[key] }}</td>
 
           <td v-if="option">
             <slot :prop="r"></slot>
@@ -145,6 +145,10 @@
 <script>
 export default {
   props: {
+    keys: {
+      type: Array,
+      required: true
+    },
     heads: {
       type: Array,
       required: true,
@@ -302,16 +306,6 @@ export default {
         this.searchWord("", sortKey);
       }
       this.saveData();
-    },
-    tulisanBaku(str) {
-      //to make inClock become In Clock
-      let hasil;
-
-      let res = str.replace(/([A-Z])/g, " $1"); //insert space before middle capital letter
-      hasil = res[0].toUpperCase();
-      hasil += res.slice(1);
-
-      return hasil;
     },
     searchWord(val, key) {
       if (val) {

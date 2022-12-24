@@ -1,6 +1,6 @@
 import { ref } from "vue";
-import { connection } from "./jsStore";
-import { generateId } from "./GeneratorId";
+import { connection } from "../models/jsStore";
+import { generateId } from "../models/GeneratorId";
 
 const columns =
   "id, nomor_do, nomor_so, plat_nomor, customer, register, start, finished";
@@ -19,24 +19,25 @@ export const createVehicle = async (
 ) => {
   const lastId = await getLastId();
   const nextId = lastId ? generateId(lastId) : generateId("VEH22030000");
-
+  const record = {
+    id: nextId,
+    nomor_do,
+    nomor_so,
+    register,
+    start,
+    finished,
+    plat_nomor,
+    customer,
+  };
   await connection.insert({
     into: table,
-    values: [
-      {
-        id: nextId,
-        nomor_do,
-        nomor_so,
-        register,
-        start,
-        finished,
-        plat_nomor,
-        customer,
-      },
-    ],
+    values: [record],
+    validation: false,
   });
 
-  return nextId;
+  Vehicles.value.push(record);
+
+  return;
 };
 
 export const getLastId = async () => {
