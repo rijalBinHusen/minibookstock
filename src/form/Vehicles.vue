@@ -13,14 +13,14 @@
               <!-- NO DO -->
             <Input
               label="Nomor DO"
-              @send="incoming.idPaper = $event"
+              @send="noDO = $event"
               placeholder="Masukkan nomor DO"
               tipe="primary"
             />
               <!-- NO SO -->
             <Input
               label="Nomor SO"
-              @send="incoming.handed = $event"
+              @send="noSO = $event"
               placeholder="Masukkan Nomor SO"
               tipe="primary"
             />
@@ -30,21 +30,21 @@
               <!-- PLAT NOMOR -->
             <Input
               label="Plat nomor"
-              @send="mutation.item = $event"
+              @send="platNomor = $event"
               placeholder="Masukkan plat nomor"
               tipe="primary"
               />
                 <!-- CUSTOMER -->  
             <Input
               label="Customer"
-              @send="mutation.qty = $event"
+              @send="customer = $event"
               placeholder="Nama Customer"
               tipe="primary"
             />
               <!-- REGISTER -->
             <Input
               label="Register"
-              @send="tgl = $event"
+              @send="register"
               placeholder="Register"
               tipe="primary"
             />
@@ -57,72 +57,23 @@
       </div>
   </template>
   
-  <script>
+  <script setup>
   import datePicker from "vue3-datepicker";
-  import Select from "../components/elements/Forms/Select.vue";
-  import Input from "../components//elements/Forms/Input.vue";
-  import Button from "../components//elements/Button.vue";
-  import Table from "../components//elements/Table.vue";
-  
-  export default {
-    name: "IncomingForm",
-    data() {
-      return {
-          datetime: new Date(),
-          incoming: {
-              idPaper: "",
-              comeFrom: "",
-              handed: "",
-              received: "",
-              detail: "",
-              responsible: "",
-          },
-          mutation: {
-              date: new Date(),
-              shift: "",
-              parent: "",
-              type: "",
-              location: "",
-              item: "",
-              qty: "",
-          },
-      };
-    },
-    methods: {
-      save() {
-        this.$store.dispatch("Incoming/append", {
-          tanggal: this.tanggal,
-          shift: this.shift,
-          come: this.come,
-          paperId: this.paperId,
-          handBy: this.handBy,
-          received: this.received,
-          items: this.items,
-        });
-      },
-      add() {
-        if (this.item && this.qty && this.tgl)
-          this.items.unshift({
-            item: this.item,
-            qty: this.qty,
-            tgl: this.tgl,
-          });
-      },
-    },
-    components: {
-      Select,
-      Input,
-      Button,
-      Table,
-      datePicker,
-    },
-    mounted() {
-      this.$store.state.form.document 
-          ? console.log(this.$store.getters["Mutation/incomingId"](
-              this.$store.state.form.document 
-          ))
-          : ""
-    },
-  };
+  import Select from "@/components/elements/Forms/Select.vue";
+  import Input from "@/components//elements/Forms/Input.vue";
+  import Button from "@/components//elements/Button.vue";
+  import Table from "@/components//elements/Table.vue";
+  import { ref } from 'vue'
+
+  // <!-- NO DO -->
+  const noDO = ref(null);
+  // <!-- NO SO -->
+  const noSO = ref(null)
+  // <!-- REGISTER -->
+  const register = ref(null)
+  // <!-- PLAT NOMOR -->
+  const platNomor = ref(null)
+  // <!-- CUSTOMER -->
+  const customer = ref(null)
   </script>
   
