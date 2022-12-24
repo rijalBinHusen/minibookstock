@@ -7,6 +7,7 @@
     <Navbar @navigate_to_navbar="toNav($event)" />
       <component :is="activeNav"></component>
     <Modal />
+    <Confirm />
 </template>
 
 <script>
@@ -16,6 +17,7 @@ import Modal from "./components/parts/Modal.vue"
 import MasterItem from "./pages/MasterItem.vue";
 import Incoming from "./pages/Incoming.vue";
 import VehiclesVue from "./pages/Vehicles.vue";
+import ConfirmDialogVue from "./components/ConfirmDialog.vue";
 
 export default {
   name: "App",
@@ -37,6 +39,7 @@ export default {
     MasterItem,
     Incoming,
     Vehicles: VehiclesVue,
+    Confirm: ConfirmDialogVue,
   },
   mounted() {
     // this.$store.dispatch("getStart")

@@ -57,6 +57,7 @@ import Input from "../components/elements/Forms/Input.vue";
 import Select from "../components/elements/Forms/Select.vue";
 import Button from "../components/elements/Button.vue";
 import { computed, ref } from "vue";
+import { subscribeConfirmDialog } from "../composables/launchForm";
 
 const listImportData = [
           { id: null, title: 'Pilih data untuk diimport'},
@@ -87,13 +88,16 @@ const locationsId = ref(['GJDP', 'GJDP - D'])
 const newLocationId = ref(null)
 
 // action to add locations list
-const handleLocationID = (value, operation) => {
+const handleLocationID = async (value, operation) => {
   // lets check the value first
   // if includes
   if(locationsId.value.includes(value)) {
     if(!operation) {
+      const res = await subscribeConfirmDialog('confirm', `Apakah anda yakin akan menghapus location ID (${value})?`)
       // remove location from lists
-      locationsId.value = locationsId.value.filter((val) => val !== value);
+      if(res) {
+        locationsId.value = locationsId.value.filter((val) => val !== value);
+      }
     }
   } else {
     // push new location id to list

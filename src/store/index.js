@@ -10,11 +10,20 @@ import Mutation from "./Module/Mutation";
 export default createStore({
   state: {
     form: "",
+    dialogMessage: "",
+    dialogType: "",
   },
   mutations: {
     form(state, form) {
       state.form = form;
     },
+    confirmPayload(state, payload) {
+      state.dialogMessage = payload?.message
+      state.dialogType = payload?.type
+    },
+    tunnelMessage(val) {
+      return val
+    }
   },
   actions: {
     // to add to indexeddb
