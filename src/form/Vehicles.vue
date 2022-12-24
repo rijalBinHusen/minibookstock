@@ -84,7 +84,7 @@
   const handleSubmit = async () => {
     
     if(noDO.value && noSO.value && register.value && platNomor.value && customer.value) {
-      await createVehicle(noDO.value, noSO.value, platNomor.value, customer.value, register.value, "cabsdf", "aldsiue")
+      await createVehicle(noDO.value, noSO.value, platNomor.value, customer.value, register.value, null, null)
       // reset form
       const form = document.getElementById("vehicle_form")
       form.reset()

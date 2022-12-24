@@ -40,6 +40,26 @@ export const createVehicle = async (
   return;
 };
 
+export const gettingStartedRecord = async () => {
+  Vehicles.value = await connection.select({
+    from: table,
+    order: {
+      by: "id",
+      type: "desc",
+    },
+    limit: 50,
+  });
+};
+
+export const removeVehicle = async (id) => {
+  await connection.remove({
+    from: table,
+    where: { id },
+  });
+  Vehicles.value = Vehicles.value.filter((veh) => veh.id !== id);
+  return;
+};
+
 export const getLastId = async () => {
   const lastRec = await connection.select({
     from: table,

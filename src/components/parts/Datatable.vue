@@ -61,7 +61,7 @@
                   ? deData.searchInput[deData.searchKey.indexOf(key)]
                   : '',
               ]"
-              @change="searchWord($event.target.value, key)"
+              @keyup="searchWord($event.target.value, key)"
             />
           </td>
           <td v-if="option"></td>
@@ -143,52 +143,40 @@
 </template>
 
 <script>
+
+// <Datatable
+//       :datanya="lists"
+//       :heads="['Nama', 'Gudang']"
+//       :keys="['name', 'warehouse']"
+//       option
+//       :id="'nameOftable'"
+//     />
 export default {
+  name: "Datatable",
   props: {
-    keys: {
-      type: Array,
-      required: true
+    datanya: {
+      type: Object,
+      required: true,
     },
     heads: {
       type: Array,
       required: true,
     },
-    datanya: {
+    keys: {
       type: Array,
       required: true,
     },
-    keydata: {
-      type: String,
-      required: true,
-    },
-    no: {
-      type: Boolean,
-      required: true,
-    },
-    option: {
-      type: Boolean,
-    },
+    option: Boolean,
+    icon: String,
     id: {
       type: String,
-      required: true,
-    },
+      required: true
+    }
   },
-  name: "Datatable",
+
   data() {
     return {
-      deData: localStorage.getItem(this.id)
-        ? JSON.parse(localStorage.getItem(this.id))
-        : {
-            startRow: 0,
-            lengthRow: 5,
-            nowSort: null,
-            currentPage: 0,
-            searchInput: [],
-            searchKey: [],
-            rowLenght: 0,
-            allPages: 0,
-            sortAsc: true,
-          },
+      deData: "",
     };
   },
   computed: {
@@ -307,6 +295,16 @@ export default {
       }
       this.saveData();
     },
+    tulisanBaku(str) {
+      //to make inClock become In Clock
+      let hasil;
+
+      let res = str.replace(/([A-Z])/g, " $1"); //insert space before middle capital letter
+      hasil = res[0].toUpperCase();
+      hasil += res.slice(1);
+
+      return hasil;
+    },
     searchWord(val, key) {
       if (val) {
         if (this.deData.searchKey.includes(key)) {
@@ -332,9 +330,43 @@ export default {
       this.deData.currentPage = 0;
       this.saveData();
     },
+    // save data to local storage with expired 60 second
     saveData() {
-      localStorage.setItem(this.id, JSON.stringify(this.deData));
+      // set ttl 60 second
+      let ttl = new Date().getTime() + 60000
+      let item = Object.assign(this.deData, { ttl: ttl })
+      sessionStorage.setItem(this.id, JSON.stringify(item));
     },
+    //get data from localStorage
+    getData() {
+      let result = {
+            startRow: 0,
+            lengthRow: 5,
+            nowSort: null,
+            currentPage: 0,
+            searchInput: [],
+            searchKey: [],
+            rowLenght: 0,
+            allPages: 0,
+            sortAsc: true,
+          };
+      const itemStr  = sessionStorage.getItem(this.id)
+      const item = JSON.parse(itemStr)
+      const now = new Date().getTime()
+
+      if(!itemStr || now > item.ttl) {
+        sessionStorage.removeItem(this.id)
+        return result
+      }
+
+      return item
+    }
+  },
+  created() {
+    this.deData = this.getData()
+  },
+  beforeUnmount() {
+    this.saveData()
   },
 };
 </script>

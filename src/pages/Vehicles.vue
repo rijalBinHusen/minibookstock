@@ -29,11 +29,13 @@
             :datanya="Vehicles"
             keydata="id"
             no
-            id="table-incoming"
+            id="table-vehicle"
             option
             v-slot:default="slotProps"
         >
-
+            <!-- if vehicle finished, prevent to edit, give details button instead of edit -->
+            <!-- else, show delete and edit button -->
+            <!-- details button -->
             <Button
                 primary
                 value="Detail"
@@ -41,7 +43,29 @@
                 small
                 class="ml-2"
                 :datanya="slotProps.prop.id"
+                @trig="handleButton('detail', $event)"
             />
+            <!-- delete button -->
+            <Button
+                secondary
+                value="Delete"
+                type="button"
+                small
+                class="ml-2"
+                :datanya="slotProps.prop.id"
+                @trig="handleButton('delete', $event)"
+            />
+            <!-- Edit button -->
+            <Button
+                accent
+                value="Edit"
+                type="button"
+                small
+                class="ml-2"
+                :datanya="slotProps.prop.id"
+                @trig="handleButton('edit', $event)"
+            />
+
         </datatable>
     </div>
 </template>
@@ -50,15 +74,34 @@
 import datePicker from "vue3-datepicker";
 import Datatable from "../components/parts/Datatable.vue";
 import Button from "../components/elements/Button.vue";
-import { ref } from "vue";
-import { launchForm } from '../composables/launchForm'
-import { Vehicles } from "@/composables/Vehicles";
+import { ref, onMounted } from "vue";
+import { launchForm, subscribeConfirmDialog } from '../composables/launchForm'
+import { Vehicles, gettingStartedRecord, removeVehicle} from "@/composables/Vehicles";
 
 const tanggal = ref(new Date())
 
 const handleAdd = () => {
     launchForm('Vehicles', false)
 }
+
+const handleButton = async (operation, id) => {
+    // operation = edit || delete || detail
+    if(operation == 'delete') {
+        const res = await subscribeConfirmDialog('confirm', "Apakah anda yakin akan menghapus kendaraan?")
+        if(res) {
+            await removeVehicle(id)
+        }
+    } else if(operation == 'edit') {
+
+    } else {
+
+    }
+
+}
+
+onMounted(() => {
+    gettingStartedRecord()
+})
 
 
 </script>
