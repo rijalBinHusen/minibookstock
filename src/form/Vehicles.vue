@@ -51,7 +51,7 @@
           </div>
   
           <div id="incoming_add_submit" class="w-full">
-            <Button type="button" @trig="save" primary value="Submit" />
+            <Button type="button" primary value="Submit" />
           </div>
         </div>
       </div>
