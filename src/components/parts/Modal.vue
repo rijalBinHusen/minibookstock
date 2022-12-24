@@ -18,7 +18,7 @@ import Loader from "./Loader.vue";
 import IncomingForm from "../IncomingForm.vue";
 import Vehicles from "../../form/Vehicles.vue";
 import { useStore } from 'vuex'
-import { computed, onMounted } from "vue";
+import { computed, onMounted, onBeforeUnmount } from "vue";
 import { keyPress } from '@/composables/keyEvent.js'
 
 const store = useStore()
@@ -38,7 +38,11 @@ const forms = {
 
 onMounted(() => {
   // listen the key that pressed
-  window.addEventListener('keydown', keyPress, { once: true } )
+    window.addEventListener('keydown', keyPress)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', keyPress)
 })
 
 </script>

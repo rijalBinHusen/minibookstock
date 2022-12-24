@@ -13,7 +13,7 @@
 
 <script setup>
 
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, onBeforeUnmount } from 'vue';
 import { useStore } from 'vuex';
 import Button from './elements/Button.vue';
 import { keyPress } from '@/composables/keyEvent.js'
@@ -31,6 +31,10 @@ const handleButton = (boolean) => {
 
 
 onMounted(() => {
-  window.addEventListener('keydown', keyPress, { once: true } )
+  window.addEventListener('keydown', keyPress )
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', keyPress )
 })
 </script>

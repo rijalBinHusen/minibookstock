@@ -1,7 +1,7 @@
 import workerInjector from "jsstore/dist/worker_injector";
 import { Connection } from "jsstore";
 
-const connection = new Connection();
+export const connection = new Connection();
 
 connection.addPlugin(workerInjector);
 
@@ -29,8 +29,4 @@ const database = {
 
 export const isDbCreated = await connection.initDb(database);
 
-// if (isDbCreated) {
-//   alert("Db created & connection openned");
-// } else {
-//   alert("COnnection is openned");
-// }
+connection.logStatus = true;

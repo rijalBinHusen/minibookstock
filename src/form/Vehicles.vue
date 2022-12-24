@@ -44,27 +44,29 @@
               <!-- REGISTER -->
             <Input
               label="Register"
-              @send="register"
+              @send="register = $event"
               placeholder="Register"
               tipe="primary"
             />
           </div>
   
-          <div id="incoming_add_submit" class="w-full">
-            <Button type="button" primary value="Submit" />
+          <div id="incoming_add_submit" class="w-full mt-4">
+            <Button type="button" @trig="handleButton" small primary value="Submit" />
+            <span class="text-red-400 ml-6">
+              {{ warn }}
+            </span>
           </div>
         </div>
       </div>
   </template>
   
   <script setup>
-  import datePicker from "vue3-datepicker";
-  import Select from "@/components/elements/Forms/Select.vue";
   import Input from "@/components//elements/Forms/Input.vue";
   import Button from "@/components//elements/Button.vue";
-  import Table from "@/components//elements/Table.vue";
   import { ref } from 'vue'
+  import { createVehicle } from "../models/Vehicles";
 
+  const warn = ref(null)
   // <!-- NO DO -->
   const noDO = ref(null);
   // <!-- NO SO -->
@@ -75,5 +77,16 @@
   const platNomor = ref(null)
   // <!-- CUSTOMER -->
   const customer = ref(null)
+
+  const handleButton = () => {
+    if(noDO.value && noSO.value && register.value && platNomor.value && customer.value) {
+      createVehicle(noDO.value, noSO.value, platNomor.value, customer.value, register.value, null, null)
+    } else {
+      warn.value = "Data tidak boleh ada yang kosong"
+      setTimeout(() => {
+        warn.value = null
+      }, 3000)
+    }
+  }
   </script>
   
