@@ -63,13 +63,13 @@ export default {
           // if toggle disable enable
           if (id) filt.status = !filt.status;
           else filt.name_group = this.group;
-          this.$store.dispatch("update", { store: "Group", obj: filt });
+          // this.$store.dispatch("update", { store: "Group", obj: filt });
           this.button = "Tambah";
         } else
-          this.$store.dispatch("Group/append", {
-            name_group: this.group,
-            status: true,
-          });
+          // this.$store.dispatch("Group/append", {
+          //   name_group: this.group,
+          //   status: true,
+          // });
         this.group = "";
       }
     },
@@ -88,7 +88,7 @@ export default {
   },
   computed: {
     lists() {
-      return this.$store.state.Group.lists
+      // return this.$store.state.Group.lists
     },
   },
 };

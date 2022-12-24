@@ -18,6 +18,7 @@ import MasterItem from "./pages/MasterItem.vue";
 import Incoming from "./pages/Incoming.vue";
 import VehiclesVue from "./pages/Vehicles.vue";
 import ConfirmDialogVue from "./components/ConfirmDialog.vue";
+import { isDbCreated } from "./composables/jsStore";
 
 export default {
   name: "App",
@@ -57,6 +58,7 @@ export default {
                   this.dialogActive = false
                 }
             })
+    console.log(isDbCreated);
   },
 }
 </script>
