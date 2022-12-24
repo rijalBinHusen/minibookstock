@@ -19,16 +19,17 @@ import IncomingForm from "../IncomingForm.vue";
 import Vehicles from "../../form/Vehicles.vue";
 import { useStore } from 'vuex'
 import { computed, onMounted } from "vue";
+import { keyPress } from '@/composables/keyEvent.js'
 
 const store = useStore()
 
 const closeModal = () => {
-  store.commit("form", { form: "", document: "" });
+  store.commit("form", false);
   window.location.href = "#";
 }
 
 const currentForm = computed(() => {
-  return store.state.form.form
+  return store.state.form?.form
 })
 
 const forms = {
@@ -36,11 +37,8 @@ const forms = {
 }
 
 onMounted(() => {
-  window.addEventListener('keydown', function (e) {
-      if(e.keyCode == 27) {
-        closeModal()
-      }
-    })
+  // listen the key that pressed
+  window.addEventListener('keydown', keyPress, { once: true } )
 })
 
 </script>

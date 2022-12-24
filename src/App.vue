@@ -6,8 +6,8 @@
 <template>
     <Navbar @navigate_to_navbar="toNav($event)" />
       <component :is="activeNav"></component>
-    <Modal />
-    <Confirm />
+    <Modal v-if="formActive"  />
+    <Confirm v-if="dialogActive" />
 </template>
 
 <script>
@@ -25,6 +25,9 @@ export default {
     return {
       activeNav: "Setting",
       form: "",
+      subscribe: null,
+      formActive: false,
+      dialogActive: false
     };
   },
   methods: {
@@ -42,7 +45,18 @@ export default {
     Confirm: ConfirmDialogVue,
   },
   mounted() {
-    // this.$store.dispatch("getStart")
+    // subscribe mutation to know when modal or dialog trigger to activate it
+    this.subscribe =  this.$store.subscribe(mutation => {
+                // if the confirmation button clicked whatever yes or no
+                if('form' == mutation?.type && mutation?.payload) {
+                  this.formActive = true
+                } else if('confirmPayload' == mutation?.type && mutation?.payload) {
+                  this.dialogActive = true
+                } else {
+                  this.formActive = false
+                  this.dialogActive = false
+                }
+            })
   },
 }
 </script>

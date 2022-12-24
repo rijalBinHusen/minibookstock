@@ -9,9 +9,9 @@ import Mutation from "./Module/Mutation";
 
 export default createStore({
   state: {
-    form: "",
-    dialogMessage: "",
-    dialogType: "",
+    form: null,
+    dialogMessage: null,
+    dialogType: null,
   },
   mutations: {
     form(state, form) {

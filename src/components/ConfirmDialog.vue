@@ -13,9 +13,10 @@
 
 <script setup>
 
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useStore } from 'vuex';
 import Button from './elements/Button.vue';
+import { keyPress } from '@/composables/keyEvent.js'
 
 const store = useStore()
 // If the type of dialog is confirm
@@ -27,4 +28,9 @@ const dialogMessage = computed(() => store.state.dialogMessage)
 const handleButton = (boolean) => {
     store.commit('tunnelMessage', boolean)
 }
+
+
+onMounted(() => {
+  window.addEventListener('keydown', keyPress, { once: true } )
+})
 </script>

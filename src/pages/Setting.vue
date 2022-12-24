@@ -14,25 +14,29 @@
       @selectedd="selectedImportType = $event"
     />
     <!-- Crud the list location id that would be import to database -->
-    <div id="incoming_add_submit" class="w-full flex mt-4">
-      <Input
-        @send="newLocationId = $event"
-        label=""
-        placeholder="Location id"
-        tipe="primary"
-        small
-        :value="newLocationId"
-      />
-      <Button type="button" @trig="handleLocationID(newLocationId, 'add')" class="ml-2" primary small value="Tambah" />
-    </div>
-
-    <div class="w-full flex mt-4">
-      <span class="mx-1" v-for="location in locationsId" key="location">
-        {{ location }} 
-        <span @click="handleLocationID(location)" class="btn  btn-xs btn-error">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-4 h-4 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-        </span>
-      </span>
+    <div class="mt-4">
+      <div id="incoming_add_submit" class="w-full flex">
+        <Input
+          @send="newLocationId = $event"
+          label=""
+          placeholder="Tambahkan location id"
+          tipe="primary"
+          small
+          :value="newLocationId"
+        />
+        <Button type="button" @trig="handleLocationID(newLocationId, 'add')" class="ml-2" primary small value="Tambah" />
+      </div>
+      <div class="mt-4">
+        <label>Daftar location ID: </label>
+        <div class="w-full">
+          <span class="mx-1" v-for="location in locationsId" key="location">
+            {{ location }} 
+            <span @click="handleLocationID(location)" class="btn  btn-xs btn-error">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-4 h-4 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </span>
+          </span>
+        </div>
+      </div>
     </div>
 
     <!-- End of Crud the list location id that would be import to database -->

@@ -1,16 +1,17 @@
 import store from '../store/index';
 
 export const launchForm = (nameForm, idRecord) => {
-    window.location.href = "#my-modal"
     store.commit("form", { form: nameForm, document: idRecord }); 
+    // we need to wait until the element rendered, then we call the id
+    setTimeout(() => {
+        window.location.href = "#my-modal"
+    }, 100)
 }
 
 export const subscribeConfirmDialog = async (type, messageToShow) => {
     // type = alert || confirm
     // message = the message to show in dialog
 
-    // this to open dialog
-    window.location.href = "#modal-confirm"
     let unsubscribe;
     // create a promise to waiting the update process, and listen to the tunnel message
     const prom = new Promise(resolve => {
@@ -27,6 +28,11 @@ export const subscribeConfirmDialog = async (type, messageToShow) => {
                     resolve(mutation?.payload)
                 }
             })
+            // this to open dialog
+            // we need to wait until the element rendered, then we call the id
+            setTimeout(() => {
+                window.location.href = "#modal-confirm"
+            }, 100)
         })
         // jika oke kirim pesan
     return prom.then((res) => {
@@ -37,4 +43,12 @@ export const subscribeConfirmDialog = async (type, messageToShow) => {
         // return message, either true or false
         return res
     })
+}
+
+export const closeModalOrDialog = () => {
+    // set state modal empty
+    store.commit("confirmPayload", false);
+    store.commit('form', false);
+    // close modal
+    window.location.href = "#"
 }
