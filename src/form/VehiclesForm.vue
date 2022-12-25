@@ -71,7 +71,7 @@
   import Input from "@/components//elements/Forms/Input.vue";
   import Button from "@/components//elements/Button.vue";
   import { ref, onMounted, computed, watch } from 'vue'
-  import { createVehicle, getVehicleById, updateVehicleById } from "../composables/Vehicles";
+  // import { createVehicle, getVehicleById, updateVehicleById } from "../composables/Vehicles";
   import { closeModalOrDialog } from "../composables/launchForm";
   import { useStore } from "vuex";
   
@@ -94,11 +94,11 @@
     if(noDO.value && noSO.value && register.value && platNomor.value && customer.value) {
       // update vehicle
       if(isEditMode.value) {
-        await updateVehicleById(isEditMode.value, changedValue.value)
+        // await updateVehicleById(isEditMode.value, changedValue.value)
       }
       // insert vehicle
       else {
-        await createVehicle(noDO.value, noSO.value, platNomor.value, customer.value, register.value, false, false)
+        // await createVehicle(noDO.value, noSO.value, platNomor.value, customer.value, register.value, false, false)
       }
       // reset form
       // const form = document.getElementById("vehicle_form")
@@ -122,15 +122,15 @@
   onMounted( async () => {
     // detecting is edit mode
     // if edit mode, find vehicle by id, then fill the form
-    if(isEditMode.value) {
-      originalRecord.value = await getVehicleById(isEditMode.value)
-      noDO.value = originalRecord.value?.nomor_do;
-      noSO.value = originalRecord.value?.nomor_so;
-      platNomor.value = originalRecord.value?. plat_nomor;
-      customer.value = originalRecord.value?.customer;
-      register.value = originalRecord.value?.register;
-      setTimeout(() => {enableWatcher.value = true}, 500 )
-    }
+    // if(isEditMode.value) {
+    //   originalRecord.value = await getVehicleById(isEditMode.value)
+    //   noDO.value = originalRecord.value?.nomor_do;
+    //   noSO.value = originalRecord.value?.nomor_so;
+    //   platNomor.value = originalRecord.value?. plat_nomor;
+    //   customer.value = originalRecord.value?.customer;
+    //   register.value = originalRecord.value?.register;
+    //   setTimeout(() => {enableWatcher.value = true}, 500 )
+    // }
   })
 
   // disable enable watcher

@@ -23,7 +23,7 @@
                 @trig="handleAdd"
             />
         </span>
-        <datatable
+        <!-- <datatable
             :heads="['plat nomor', 'customer', 'register', 'start', 'finished']"
             :keys="['plat_nomor', 'customer', 'register', 'start', 'finished']"
             :datanya="Vehicles"
@@ -33,9 +33,9 @@
             option
             v-slot:default="slotProps"
         >
-            <!-- if vehicle finished, prevent to edit, give details button instead of edit -->
-            <!-- else, show delete and edit button -->
-            <!-- details button -->
+             if vehicle finished, prevent to edit, give details button instead of edit 
+             else, show delete and edit button 
+             details button 
             <span v-if="slotProps.prop?.finished">
                 <Button
                     primary
@@ -48,7 +48,7 @@
                 />
             </span>
             <span v-else>
-                <!-- delete button -->
+                 delete button 
                 <Button
                     secondary
                     value="Delete"
@@ -58,7 +58,7 @@
                     :datanya="slotProps.prop.id"
                     @trig="handleButton('delete', $event)"
                 />
-                <!-- Edit button -->
+                 Edit button 
                 <Button
                     accent
                     value="Edit"
@@ -70,7 +70,7 @@
                 />
             </span>
 
-        </datatable>
+        </datatable> -->
     </div>
 </template>
 
@@ -80,7 +80,7 @@ import Datatable from "../components/parts/Datatable.vue";
 import Button from "../components/elements/Button.vue";
 import { ref, onMounted } from "vue";
 import { launchForm, subscribeConfirmDialog } from '../composables/launchForm'
-import { Vehicles, gettingStartedRecord, removeVehicle} from "@/composables/Vehicles";
+// import { Vehicles, gettingStartedRecord, removeVehicle} from "@/composables/Vehicles";
 
 const tanggal = ref(new Date())
 
@@ -93,7 +93,7 @@ const handleButton = async (operation, id) => {
     if(operation == 'delete') {
         const res = await subscribeConfirmDialog('confirm', "Apakah anda yakin akan menghapus kendaraan?")
         if(res) {
-            await removeVehicle(id)
+            // await removeVehicle(id)
         }
     } else if(operation == 'edit') {
         launchForm('Vehicles', id)
