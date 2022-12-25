@@ -41,7 +41,9 @@ export const createItem = async (kd_item, nm_item, division, last_used) => {
 
 export const gettingStartedRecord = async () => {
   // dapatkan last used < 1 minggu
-  Master_items.value = await dbitems.getAllDataOrderByIdDesc();
+  if (!Master_items.value.length) {
+    Master_items.value = await dbitems.getAllDataOrderByIdDesc();
+  }
 };
 
 // // // export const removeVehicle = async (id) => {
