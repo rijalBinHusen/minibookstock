@@ -92,7 +92,7 @@ const handleButton = async (operation, id) => {
             await removeVehicle(id)
         }
     } else if(operation == 'edit') {
-
+        launchForm('Vehicles', id)
     } else {
 
     }

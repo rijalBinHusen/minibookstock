@@ -171,6 +171,9 @@ export default {
     id: {
       type: String,
       required: true
+    },
+    no: {
+      type: Boolean,
     }
   },
 
