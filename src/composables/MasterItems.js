@@ -40,17 +40,18 @@ export const createItem = async (kd_item, nm_item, division, last_used) => {
   return;
 };
 
-// export const gettingStartedRecord = async () => {
-//   // dapatkan last used < 1 minggu
-//   Master_items.value = await connection.select({
-//     from: table,
-//     where: {
-//       last_used: {
-//         ">=": dayPlusOrMinus(null, 7),
-//       },
-//     },
-//   });
-// };
+export const gettingStartedRecord = async () => {
+  // dapatkan last used < 1 minggu
+  // Master_items.value = await connection.select({
+  //   from: table,
+  //   where: {
+  //     last_used: {
+  //       ">=": dayPlusOrMinus(null, 7),
+  //     },
+  //   },
+  // });
+  console.warn(dbitems.getItems(100));
+};
 
 // // export const removeVehicle = async (id) => {
 // //   const res = await removeRecord(table, "id", id);
