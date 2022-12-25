@@ -7,7 +7,7 @@
   </div> 
   <div class="px-2 mx-2 navbar-center flex">
     <div class="flex items-stretch">
-      <a v-for="nav in navs" :key="nav.title" @click="navigate(nav.name)" class="btn btn-ghost btn-sm rounded-btn uppercase">
+      <a v-for="nav in navs" :key="nav.title" @click="navigate(nav.name)" :class="['btn btn-ghost btn-sm rounded-btn uppercase', nav.name == active ? 'bg-base-100' : '']">
               <span class="hidden md:block">
 				{{ nav.title }}
 			  </span>
@@ -26,8 +26,12 @@
 </template>
 
 <script setup>
+import { ref } from 'vue';
+
       
       const emit = defineEmits(['navigate_to_navbar'])
+
+      const active = ref(null)
 
       const navs = [
         { name: "Vehicles", title: "Kendaraan", icon: "truck-moving" },
@@ -40,6 +44,7 @@
       ];
 
       const navigate = (nav) => {
+        active.value = nav
         emit('navigate_to_navbar', nav)
       }
 </script>

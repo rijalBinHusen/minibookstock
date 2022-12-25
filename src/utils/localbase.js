@@ -13,5 +13,12 @@ export const idb = async (nameOfStore) => {
     return db.collection(nameOfStore).doc(id).set(valueObject);
   };
 
-  return { getdataByKey, setData };
+  const getAllDataOrderByIdDesc = () => {
+    return db.collection(nameOfStore).orderBy("id", "desc").get();
+  };
+
+  const updateDataById = (id, keyValueToUpdate) => {
+    return db.collection(nameOfStore).doc(id).update(keyValueToUpdate);
+  };
+  return { getdataByKey, setData, getAllDataOrderByIdDesc, updateDataById };
 };

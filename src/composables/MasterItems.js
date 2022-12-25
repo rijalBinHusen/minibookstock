@@ -39,18 +39,10 @@ export const createItem = async (kd_item, nm_item, division, last_used) => {
   return nextId;
 };
 
-// export const gettingStartedRecord = async () => {
-//   // dapatkan last used < 1 minggu
-//   // Master_items.value = await connection.select({
-//   //   from: table,
-//   //   where: {
-//   //     last_used: {
-//   //       ">=": dayPlusOrMinus(null, 7),
-//   //     },
-//   //   },
-//   // });
-//   console.warn(dbitems.getItems(100));
-// };
+export const gettingStartedRecord = async () => {
+  // dapatkan last used < 1 minggu
+  Master_items.value = await dbitems.getAllDataOrderByIdDesc();
+};
 
 // // // export const removeVehicle = async (id) => {
 // // //   const res = await removeRecord(table, "id", id);
@@ -66,21 +58,21 @@ export const createItem = async (kd_item, nm_item, division, last_used) => {
 // //   return lastRec[0];
 // // };
 
-// // export const getItemById = async (id) => {
-// //   const res = await getRecordByCriteria(table, "id", id);
-// //   // console.log(res[0]);
-// //   return res[0]
-// //     ? res[0]
-// //     : {
-// //         kd_item: "Not found",
-// //         nm_item: "Not found",
-// //       };
-// // };
+export const getItemById = async (id) => {
+  const res = await dbitems.getdataByKey(id);
+  // console.log(res[0]);
+  return res
+    ? res
+    : {
+        kd_item: "Not found",
+        nm_item: "Not found",
+      };
+};
 
-// // export const updateItemById = async (id, keyValueToUpdate) => {
-// //   await updateRecordById(table, id, keyValueToUpdate);
-// //   Master_items.value = Master_items.value.map((item) => {
-// //     return item?.id == id ? { ...item, ...keyValueToUpdate } : item;
-// //   });
-// //   return;
-// // };
+export const updateItemById = async (id, keyValueToUpdate) => {
+  await dbitems.updateDataById(id, keyValueToUpdate);
+  Master_items.value = Master_items.value.map((item) => {
+    return item?.id == id ? { ...item, ...keyValueToUpdate } : item;
+  });
+  return;
+};
