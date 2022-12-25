@@ -1,19 +1,20 @@
 import localforage from "localforage";
 
-export const setItem = (key, value) => {
-  const db = "my_report_stock";
-  const nameStore = localforage.createInstance({
-    name: db,
-    storeName: "items",
+export const useIdb = async (storeName) => {
+  // create instance
+  const store = localforage.createInstance({
+    name: "my_report_stock",
+    storeName,
   });
-  nameStore
-    .setItem(key, value)
-    .then(function (value) {
-      // Do other things once the value has been saved.
-      console.log(value);
-    })
-    .catch(function (err) {
-      // This code runs if there were any errors
-      console.log(err);
-    });
+
+  const setItem = async (key, value) => {
+    await store.setItem(key, value);
+    return;
+  };
+
+  const getItem = (key) => {
+    return store.getItem(key);
+  };
+
+  return { setItem, getItem };
 };

@@ -33,7 +33,8 @@ import Table from "../components/elements/Table.vue";
 import Dropdown from "../components/elements/Dropdown.vue";
 import Button from "../components/elements/Button.vue";
 import Input from "../components/elements/Forms/Input.vue";
-// import { createItem } from "../composables/MasterItems"
+import { createItem } from "../composables/MasterItems"
+// import { } from "../composables/MasterItems"
 import { ref } from "vue";
 
 const nm_item = ref(null)
@@ -48,7 +49,8 @@ const handleSubmit = async () => {
       // }
       // insert item
       // else {
-        // await createItem(kd_item.value, nm_item.value, null, new Date().getTime())
+        // setItem('items', nm_item.value)
+        await createItem(kd_item.value, nm_item.value, null, new Date().getTime())
         // await createVehicle(noDO.value, noSO.value, platNomor.value, customer.value, register.value, false, false)
       // }
     }
