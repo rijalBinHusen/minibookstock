@@ -158,7 +158,6 @@
       if(newVal[4] !== originalRecord.value?.customer) {
         changedValue.value['customer'] = newVal[4]
       }
-      console.log(changedValue.value)
     }
   })
   </script>

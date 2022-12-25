@@ -83,7 +83,9 @@ export const launchFormAndsubscribeMutation = async (
   });
 };
 
-export const closeModalOrDialog = () => {
+export const closeModalOrDialog = (bool = false) => {
+  // send message to tunnelMessage
+  store.commit("tunnelMessage", bool);
   // set state modal empty
   store.commit("confirmPayload", false);
   store.commit("form", false);

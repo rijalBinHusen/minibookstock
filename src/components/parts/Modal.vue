@@ -19,7 +19,7 @@ import IncomingForm from "../IncomingForm.vue";
 import Vehicles from "../../form/Vehicles.vue";
 import { useStore } from 'vuex'
 import { computed, onMounted, onBeforeUnmount } from "vue";
-import { keyPress } from '@/composables/keyEvent.js'
+import { keyPressWoutEnter } from '@/composables/keyEvent.js'
 
 const store = useStore()
 
@@ -38,11 +38,11 @@ const forms = {
 
 onMounted(() => {
   // listen the key that pressed
-    window.addEventListener('keydown', keyPress)
+    window.addEventListener('keydown', keyPressWoutEnter)
 })
 
 onBeforeUnmount(() => {
-  window.removeEventListener('keydown', keyPress)
+  window.removeEventListener('keydown', keyPressWoutEnter)
 })
 
 </script>

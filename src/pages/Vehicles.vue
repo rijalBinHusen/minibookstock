@@ -36,35 +36,39 @@
             <!-- if vehicle finished, prevent to edit, give details button instead of edit -->
             <!-- else, show delete and edit button -->
             <!-- details button -->
-            <Button
-                primary
-                value="Detail"
-                type="button"
-                small
-                class="ml-2"
-                :datanya="slotProps.prop.id"
-                @trig="handleButton('detail', $event)"
-            />
-            <!-- delete button -->
-            <Button
-                secondary
-                value="Delete"
-                type="button"
-                small
-                class="ml-2"
-                :datanya="slotProps.prop.id"
-                @trig="handleButton('delete', $event)"
-            />
-            <!-- Edit button -->
-            <Button
-                accent
-                value="Edit"
-                type="button"
-                small
-                class="ml-2"
-                :datanya="slotProps.prop.id"
-                @trig="handleButton('edit', $event)"
-            />
+            <span v-if="slotProps.prop?.finished">
+                <Button
+                    primary
+                    value="Detail"
+                    type="button"
+                    small
+                    class="ml-2"
+                    :datanya="slotProps.prop.id"
+                    @trig="handleButton('detail', $event)"
+                />
+            </span>
+            <span v-else>
+                <!-- delete button -->
+                <Button
+                    secondary
+                    value="Delete"
+                    type="button"
+                    small
+                    class="ml-2"
+                    :datanya="slotProps.prop.id"
+                    @trig="handleButton('delete', $event)"
+                />
+                <!-- Edit button -->
+                <Button
+                    accent
+                    value="Edit"
+                    type="button"
+                    small
+                    class="ml-2"
+                    :datanya="slotProps.prop.id"
+                    @trig="handleButton('edit', $event)"
+                />
+            </span>
 
         </datatable>
     </div>
