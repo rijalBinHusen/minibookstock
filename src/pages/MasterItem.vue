@@ -33,7 +33,7 @@ import Table from "../components/elements/Table.vue";
 import Dropdown from "../components/elements/Dropdown.vue";
 import Button from "../components/elements/Button.vue";
 import Input from "../components/elements/Forms/Input.vue";
-import { createItem, gettingStartedRecord, Master_items } from "../composables/MasterItems"
+import { createItem } from "../composables/MasterItems"
 import { ref, onMounted } from "vue";
 
 const nm_item = ref(null)
@@ -61,8 +61,8 @@ const handleSubmit = async () => {
 
 // to set item sorting
 
-onMounted(() => {
-  gettingStartedRecord()
-})
+// onMounted(() => {
+//   gettingStartedRecord()
+// })
 
 </script>

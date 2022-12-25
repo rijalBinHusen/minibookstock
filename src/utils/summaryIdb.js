@@ -1,19 +1,20 @@
-import { useIdb } from "./localforage";
+import { idb } from "./localbase";
 
-const db = await useIdb("summary");
+let summaryDB = await idb("summary");
+let timeOut;
+let storeToUpdate = []; //store that would to update
 
-export const summaryIdb = async (table) => {
-  // summary table would contain key = { lastId: value, totalRecord: value }
-  // get last summary first
-  const lastUpdated = await db.getItem(table);
-  // to update summary of table
+// store would contain { lastId: value, total: value }
+export async function summary(storeName) {
+  // would return { }
+  const lastUpdated = await summaryDB.getdataByKey(storeName);
+  //   to update summary
   const updateSummary = async (lastId) => {
-    // update summary
-    db.setItem(table, {
+    await summaryDB.setData(storeName, {
       lastId,
-      totalRecord: lastUpdated ? lastUpdated.totalRecord++ : 1,
+      total: lastUpdated?.total ? lastUpdated?.total + 1 : 1,
     });
   };
 
-  return { updateSummary, lastUpdated };
-};
+  return { lastUpdated, updateSummary };
+}
