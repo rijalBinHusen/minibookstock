@@ -5,8 +5,8 @@ import {
   removeRecord,
   getRecordByCriteria,
   updateRecordById,
-} from "../models/jsStore";
-import { generateId } from "../models/GeneratorId";
+} from "../utils/jsStore";
+import { generateId } from "../utils/GeneratorId";
 
 const columns =
   "id, nomor_do, nomor_so, plat_nomor, customer, register, start, finished";

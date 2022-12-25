@@ -15,12 +15,24 @@ const tbl_vechicles = {
     no_do: { dataType: "string", notNull: true },
     no_so: { dataType: "string", notNull: true },
     register: { dataType: "number", notNull: true },
-    start: { dataType: "number", notNull: true },
-    finished: { dataType: "number", notNull: true },
+    start: { dataType: "number" },
+    finished: { dataType: "number" },
     plat_no: { dataType: "string", notNull: true },
     customer: { dataType: "string", notNull: true },
   },
 };
+
+// const tbl_master_item = {
+//   name: "master_items",
+//   columns: {
+//     id: { primaryKey: true, dataType: "string", notNull: true },
+//     kd_item: { dataType: "string", notNull: true },
+//     nm_item: { dataType: "string", notNull: true },
+//     division: { dataType: "string" },
+//     last_used: { type: "number" },
+//     sort: { type: "number" },
+//   },
+// };
 
 const database = {
   name: "my_report_stock",
