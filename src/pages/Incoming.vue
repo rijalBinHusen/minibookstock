@@ -10,7 +10,7 @@
             </date-picker>
             <Button
                 primary
-                value="Submit"
+                value="Tampilkan"
                 type="button"
                 small
                 class="ml-2"
@@ -21,6 +21,7 @@
                 type="button"
                 small
                 class="ml-2"
+                @trig="handleAdd"
                 />
                 <!-- @trig="handleAdd" -->
         </span>
@@ -53,8 +54,14 @@ import datePicker from "vue3-datepicker";
 import Datatable from "../components/parts/Datatable.vue";
 import Button from "../components/elements/Button.vue";
 import { ref } from "vue";
+import { launchForm } from "../composables/launchForm";
 
+// what date to show record
 const tanggal = ref(new Date())
+// function to launch form to add income product
+const handleAdd = () => {
+    launchForm('IncomingForm', false)
+}
 
 
 </script>
