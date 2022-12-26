@@ -21,31 +21,21 @@
         tipe="primary"
         placeholder="Masukkan nama jurnal"
         @send="newJurnal = $event"
-        button="Tambah"
+        :button="isEditMode ? 'Update' : 'Tambah'"
         :value="newJurnal"
       />
     </form>
-    <!-- <Table
-      v-if="lists && lists.length > 0"
+    <!-- Datatable -->
+    <Table
+      v-if="renderTable"
       :contents="lists"
       :options="['edit']"
       keyData="id"
-      @edit="edit($event)"
-      :thead="['id', 'Nama group']"
-      :tbody="['id', 'name_group']"
-      v-slot:default="slotProps"
+      @edit="handleButton($event)"
+      :thead="['Nama jurnal']"
+      :tbody="['nama_jurnal']"
     >
-      <Button
-        :secondary="slotProps.prop.status == false"
-        :primary="slotProps.prop.status == true"
-        :value="slotProps.prop.status === true ? 'Enabled' : 'Disabled'"
-        type="button"
-        small
-        class="ml-2"
-        :datanya="slotProps.prop.id"
-        @trig="send($event)"
-      />
-    </Table> -->
+    </Table>
   </div>
 </template>
 
@@ -54,8 +44,15 @@ import Input from "@/components/elements/Forms/Input.vue";
 import Table from "@/components/elements/Table.vue";
 import Select from "@/components/elements/Forms/Select.vue";
 import Button from "@/components/elements/Button.vue";
-import { createJurnalProdukMasuk } from "../composables/Setting_JurnalId";
-import { ref, watch } from "vue";
+// Import function of jurnal produk masuk
+import { 
+  createJurnalProdukMasuk, 
+  Jurnal_produk_masuk, 
+  gettingStartedRecord as getJurnalMasuk,
+  getJurnalProdukMasukById,
+  updateJurnalProdukMasukById
+} from "../composables/Setting_JurnalId";
+import { ref, watch, computed } from "vue";
 
 const listJurnalType = [
   { id: null, title: 'Pilih jurnal untuk diinput'},
@@ -65,30 +62,62 @@ const listJurnalType = [
 
 // variable for model
 const newJurnal = ref(null)
-
 // value when triggered
 const activeJurnalToInput = ref(null)
 const titleJurnal = ref(null)
+// variable for table condition, render or not
+const renderTable = ref(false)
+// variable that contain lists of jurnal
+const lists = computed(() => {
+  // return the state
+  if(activeJurnalToInput.value == 'incoming') {
+    return Jurnal_produk_masuk.value
+  }
+})
+// varable that contain id that we're gonna update the information
+const isEditMode = ref(null)
 
 // handle submit
 const handleSubmit = async () => {
   // if incoming jurnal selected
   if(activeJurnalToInput.value == 'incoming') {
-    // send to database
-    await createJurnalProdukMasuk(newJurnal.value)
+    // if edit mode
+    if(isEditMode.value){
+      await updateJurnalProdukMasukById(isEditMode.value, {nama_jurnal: newJurnal.value})
+    } 
+    // if create new jurnal
+    else {
+      // send to database
+      await createJurnalProdukMasuk(newJurnal.value)
+    }
     // reset form
     newJurnal.value = null
+    isEditMode.value = null
   }
 }
 
-watch([activeJurnalToInput], (newVal) => {
+// handle when button in datatable triggered
+const handleButton = async (id) => {
+  if(activeJurnalToInput.value === 'incoming') {
+    const rec = await getJurnalProdukMasukById(id)
+    newJurnal.value = rec?.nama_jurnal
+    isEditMode.value = id
+  }
+}
+
+// function to renew
+
+watch([activeJurnalToInput], async (newVal) => {
+  await getJurnalMasuk()
+  // set the title
   listJurnalType.forEach((val) => {
     if(val?.id === newVal[0]) {
       titleJurnal.value = val?.title
       return
     }
   })
-
+  // enable datatable
+  renderTable.value = true
 })
 
 </script>
