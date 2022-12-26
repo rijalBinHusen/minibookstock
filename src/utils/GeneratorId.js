@@ -1,6 +1,6 @@
 export function generateId(lastId) {
   // ambil last id dari summary  // kalau tidak ada bikin baru
-  let id = lastId.slice(0, 3);
+  let id = lastId.slice(0, -8);
   // masukkan increment
   // ambil 4 string e.g 0000 akan menjadi 0001
   let increment = Number(lastId.slice(-4)) + 1 + "";
@@ -9,9 +9,9 @@ export function generateId(lastId) {
   // 5
   let weekNow = getWeekNumber();
   // 22
-  let year = lastId.slice(3, 5); //21
+  let year = lastId.slice(id.length, id.length+2); //21
   // 05
-  let week = lastId.slice(5, 7); //08
+  let week = lastId.slice(id.length + 2, id.length+4); //08
   //if the week same
   if (weekNow === Number(week)) {
     id += year + week;

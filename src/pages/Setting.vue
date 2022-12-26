@@ -1,7 +1,7 @@
 <template>
   <div class="border-r-2 p-6 min-h-full flex gap-2">
     <!-- <component :is="activeComponent"></component> -->
-    <ListGroup />
+    <JurnalId />
     <div class="bg-base-200 w-6/12 p-2">
     <p class="text-3xl text-center">Import Data</p>
     <Select 
@@ -55,7 +55,7 @@
 </template>
 
 <script setup>
-import ListGroup from "../components/parts/ListGroup.vue";
+import JurnalId from "../components/JurnalId.vue";
 // import Importer from "../components/parts/Importer.vue";
 import Input from "../components/elements/Forms/Input.vue";
 import Select from "../components/elements/Forms/Select.vue";

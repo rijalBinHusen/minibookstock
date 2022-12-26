@@ -38,7 +38,7 @@ import { ref } from 'vue';
         // { name: "Vehicles", title: "Kendaraan", icon: "truck-moving" },
         { name: "Incoming", title: "Produk masuk", icon: "dice-d6" },
         { name: "Output", title: "Produk keluar", icon: "shopping-cart" },
-        // { name: "Setting", title: "Setting", icon: "cog" },
+        { name: "Setting", title: "Setting", icon: "cog" },
         // { name: "Importer", title: "Importer", icon: "file-upload" },
         // { name: "Exporter", title: "Exporter", icon: "file-download" },
       ];
