@@ -80,7 +80,7 @@ const isEditMode = ref(null)
 // handle submit
 const handleSubmit = async () => {
   // if incoming jurnal selected
-  if(activeJurnalToInput.value == 'incoming') {
+  if(activeJurnalToInput.value == 'incoming' && newJurnal.value) {
     // if edit mode
     if(isEditMode.value){
       await updateJurnalProdukMasukById(isEditMode.value, {nama_jurnal: newJurnal.value})

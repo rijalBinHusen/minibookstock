@@ -94,49 +94,28 @@
           />
         </div>
 
-        <div id="incoming_items" class="flex gap-4 mb-2">
-          <Input
-            label="Item"
-            @send="item = $event"
-            small
-            placeholder="Item"
-            tipe="primary"
-          />
-          <Input
-            label="Quantity"
-            @send="qty = $event"
-            small
-            placeholder="Quantity"
-            tipe="primary"
-          />
-          <Input
-            label="Date"
-            @send="tgl = $event"
-            small
-            placeholder="Date"
-            tipe="primary"
-          />
-          <Input
-            label="Date"
-            @send="tgl = $event"
-            small
-            placeholder="Date"
-            tipe="primary"
-          />
-          <Input
-            label="Date"
-            @send="tgl = $event"
-            small
-            placeholder="Date"
-            tipe="primary"
-          />
-        </div>
-
+        <!-- 
+          Item picker
+         -->
+         <PickItemVue 
+          v-for="(stock, index) in stockMaster" 
+          :key="stock.item" 
+          :item="stock.item"
+          :kd_produksi="stock.kd_produksi"
+          :quantity="stock.quantity"
+          :product_created="stock.product_created" 
+          :index="index"
+          @valueChanged="handleValueChanged"         
+        />
+         <!-- End of Item picker -->
         <div id="incoming_item_add" class="w-full text-right mb-2">
-          <Button type="button" primary 
-          value="Add items" small />
+          <Button 
+            type="button" 
+            primary 
+            @trig="addItem" 
+            value="Add items" 
+            small />
         </div>
-        <!-- @trig="add"  -->
 
         <!-- <Table
           v-if="items.length > 0"
@@ -161,6 +140,7 @@ import Input from "../components/elements/Forms/Input.vue";
 import Button from "../components/elements/Button.vue";
 import Table from "../components/elements/Table.vue";
 import { ref, onMounted } from "vue";
+import PickItemVue from "../components/PickItem.vue";
 import { gettingStartedRecord, Jurnal_produk_masuk } from "../composables/Setting_JurnalId"
 
 // date record
@@ -175,6 +155,47 @@ const paper_id = ref(null)
 const diserahkan = ref(null)
 // receiver product
 const diterima = ref(null)
+// master stock
+const stockMaster = ref([
+  { item: '', quantity: "0", kd_produksi: '', product_created: new Date().getTime() }
+])
+
+// to add new item form
+const addItem = () => {
+  stockMaster.value.unshift(stockMaster.value.slice(-1))
+}
+
+// now index
+const nowIndexProgressChanged = ref(null)
+// timeout
+const timeout = ref(null)
+
+// value changed from child
+const handleValueChanged = (e) => {
+  // e = { index: props.index, value: { ...props, [key]: value} }
+  const index = e["index"]
+  const value = e["value"]
+
+  // if the same index
+  console.log(e)
+  if(nowIndexProgressChanged.value === index) {
+    clearTimeout(timeout)
+    timeout.value = setTimeout(() => {
+      // stockmaster[index] = { setKey: setValue }
+      stockMaster.value[index] = value
+    }, 300)
+  }
+  // else 
+  else {
+    // mark index
+    nowIndexProgressChanged.value = index
+    timeout.value = setTimeout(() => {
+      // stockmaster[index] = { setKey: setValue }
+      stockMaster.value[index] = value
+      console.log(stockMaster.value)
+    }, 300)
+  }
+}
 
 
 onMounted( async () => {
