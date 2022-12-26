@@ -12,7 +12,13 @@ import { generateId } from "../utils/GeneratorId";
 // the state
 export const Master_items = ref([]);
 
-export const createItem = async (kd_item, nm_item, division, last_used, age_item) => {
+export const createItem = async (
+  kd_item,
+  nm_item,
+  division,
+  last_used,
+  age_item
+) => {
   // get last id
   const lastRecord = await summary(store);
   // generate next id
@@ -78,4 +84,8 @@ export const updateItemById = async (id, keyValueToUpdate) => {
     return item?.id == id ? { ...item, ...keyValueToUpdate } : item;
   });
   return;
+};
+
+export const getItemIdByKdItem = (kd_item) => {
+  return dbitems.getDataByKeyValue({ kd_item: kd_item });
 };

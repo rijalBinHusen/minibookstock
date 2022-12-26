@@ -20,5 +20,16 @@ export const idb = async (nameOfStore) => {
   const updateDataById = (id, keyValueToUpdate) => {
     return db.collection(nameOfStore).doc(id).update(keyValueToUpdate);
   };
-  return { getdataByKey, setData, getAllDataOrderByIdDesc, updateDataById };
+
+  const getDataByKeyValue = (keyValue) => {
+    console.log(keyValue);
+    return db.collection(nameOfStore).doc(keyValue).get();
+  };
+  return {
+    getdataByKey,
+    setData,
+    getAllDataOrderByIdDesc,
+    updateDataById,
+    getDataByKeyValue,
+  };
 };

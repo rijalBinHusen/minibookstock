@@ -108,25 +108,19 @@
           @valueChanged="handleValueChanged"         
         />
          <!-- End of Item picker -->
-        <div id="incoming_item_add" class="w-full text-right mb-2">
-          <Button 
-            type="button" 
-            primary 
-            @trig="addItem" 
-            value="Add items" 
-            small />
-        </div>
-
+        
         <!-- <Table
           v-if="items.length > 0"
           :contents="items"
           style="max-height: 200px; overflow: auto"
         /> -->
 
-        <div id="incoming_add_submit" class="w-full">
+        <div id="incoming_add_submit" class="w-full mt-4">
           <!-- @trig="save"  -->
           <Button type="button" 
-          primary value="Submit" />
+          primary value="Submit" 
+          small
+          />
         </div>
       </div>
     </div>
