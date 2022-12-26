@@ -12,7 +12,7 @@ import { generateId } from "../utils/GeneratorId";
 // the state
 export const Master_items = ref([]);
 
-export const createItem = async (kd_item, nm_item, division, last_used) => {
+export const createItem = async (kd_item, nm_item, division, last_used, age_item) => {
   // get last id
   const lastRecord = await summary(store);
   // generate next id
@@ -26,6 +26,7 @@ export const createItem = async (kd_item, nm_item, division, last_used) => {
     nm_item,
     division,
     last_used,
+    age_item,
     // sort: LastRecord?.sort ? LastRecord?.sort + 1 : 1,
   };
   // // insert into indexeddb

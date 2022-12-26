@@ -1,6 +1,7 @@
 <template>
   <div class="grid mx-2 gap-2">
       <form @submit.prevent="handleSubmit" id="form_item" class="flex items-center justify-center">
+        <!-- kode item -->
         <Input
             @send="kd_item = $event"
             placeholder="Kode item"
@@ -8,6 +9,9 @@
             tipe="primary"
             small
           />
+        <!-- End of kode item -->
+
+        <!-- Nama item -->
           <Input
             @send="nm_item = $event"
             placeholder="Nama item"
@@ -16,6 +20,19 @@
             small
             class="ml-2"
           />
+        <!--End of  Nama item -->
+
+        <!-- umur item -->
+          <Input
+            @send="age_item = $event"
+            placeholder="Umur produk"
+            :value="age_item"
+            tipe="primary"
+            small
+            class="ml-2"
+          />
+        <!-- End of umur item -->
+
           <Button
               primary
               :value="isEditMode ? 'Update' : 'Tambah'"
@@ -37,8 +54,8 @@
 
       <!-- databale -->
       <datatable
-            :heads="['Kode item', 'Nama item']"
-            :keys="['kd_item', 'nm_item']"
+            :heads="['Kode item', 'Nama item', 'umur']"
+            :keys="['kd_item', 'nm_item', 'age_item']"
             :datanya="Master_items"
             keydata="id"
             no
@@ -72,6 +89,7 @@ import { ref, onMounted, watch } from "vue";
 
 const nm_item = ref(null)
 const kd_item = ref(null)
+const age_item = ref(null);
 const isEditMode = ref(false)
 // the origin value
 const origin = ref({})
@@ -89,7 +107,7 @@ const handleSubmit = async () => {
       // insert item
       else {
         // setItem('items', nm_item.value)
-        await createItem(kd_item.value, nm_item.value, null, new Date().getTime())
+        await createItem(kd_item.value, nm_item.value, null, new Date().getTime(), age_item.value)
       }
       // reset the form
         resetForm()
@@ -98,35 +116,36 @@ const handleSubmit = async () => {
 
 // to edit item
 const handleButton = async (id) => {
-  if(id) {
+  if(id && id !== isEditMode.value) {
     // get item by id from db
     origin.value = await getItemById(id)
     // fill the form
     nm_item.value = origin.value?.nm_item;
     kd_item.value = origin.value?.kd_item;
+    age_item.value = origin.value?.age_item;
     // set changed value to null
     changed.value = {};
-
-    console.log(origin.value?.nm_item)
     
     // set edit mode as true
-    setTimeout(() =>  isEditMode.value = id, 600 )
-    return;
+    setTimeout(() =>  isEditMode.value = id, 300 )
   } 
-  resetForm()
+  else {
+    resetForm()
+  }
 }
 
 const resetForm = () => {
     // reset the form
-    const form = document.getElementById("form_item");
-    form.reset()
+    nm_item.value = null;
+    kd_item.value = null;
+    age_item.value = null;
     // set edit mode to false
     isEditMode.value = false
     // set canged to null
     changed.value = {}
 }
 
-watch([nm_item, kd_item], (newVal) => {
+watch([nm_item, kd_item, age_item], (newVal) => {
   // if edit modde not null
   if(isEditMode.value) {
     // set nm_item
@@ -136,6 +155,10 @@ watch([nm_item, kd_item], (newVal) => {
     // set kd_item
     if(newVal[1] !== origin.value?.kd_item) {
       changed.value = { ...changed.value, kd_item: newVal[1]}
+    }
+    // set age_item
+    if(newVal[2] !== origin.value?.age_item) {
+      changed.value = { ...changed.value, age_item: newVal[2]}
     }
   }
 })
