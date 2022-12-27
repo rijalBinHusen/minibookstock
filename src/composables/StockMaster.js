@@ -1,26 +1,30 @@
 import { summary } from "../utils/summaryIdb";
 import { ref } from "vue";
 // store name
-const store = "items";
+const store = "stock_master";
 // generator id
 import { generateId } from "../utils/GeneratorId";
 // // import { dayPlusOrMinus } from "../utils/dateFormat";
 
 // the state
-export const Master_items = ref([]);
+export const Stock_masters = ref([]);
 
 const saveData = () => {
-  const data = JSON.stringify(Master_items.value)
+  const data = JSON.stringify(Stock_masters.value)
   localStorage.setItem(store, data)
 }
 
-export const createItem = async (
-  kd_item,
-  nm_item,
-  division,
-  last_used,
-  age_item
-) => {
+/**
+ * 
+  id string
+  item string
+  kd_produksi datetime
+  product_created number
+  quantity number
+  available number
+ */
+
+export const createStock = async (item_id, kd_produksi, product_created, quantity) => {
   // get last id
   const summaryRecord = await summary(store);
   // generate next id
@@ -30,28 +34,27 @@ export const createItem = async (
   // initiate new record
   const record = {
     id: nextId,
-    kd_item,
-    nm_item,
-    division,
-    last_used,
-    age_item,
-    // sort: summaryRecord?.sort ? summaryRecord?.sort + 1 : 1,
+    item_id,
+    kd_produksi,
+    product_created,
+    quantity,
+    available: quantity,
   };
   // // push to state
-  Master_items.value.unshift(record);
+  Stock_masters.value.unshift(record);
   // // update summary
   await summaryRecord.updateSummary(nextId);
   // // save tolocalstorage
   saveData()
 
-  return nextId;
+  return record;
 };
 
 export const gettingStartedRecord = () => {
   // dapatkan last used
-  if (!Master_items.value.length) {
+  if (!Stock_masters.value.length) {
     const item = localStorage.getItem(store)
-    Master_items.value = item ? JSON.parse(item) : [];
+    Stock_masters.value = item ? JSON.parse(item) : [];
   }
   return
 };
@@ -59,7 +62,7 @@ export const gettingStartedRecord = () => {
 // // // export const removeVehicle = async (id) => {
 // // //   const res = await removeRecord(table, "id", id);
 // // //   if (res) {
-// // //     Master_items.value = Master_items.value.filter((veh) => veh.id !== id);
+// // //     Stock_masters.value = Stock_masters.value.filter((veh) => veh.id !== id);
 // // //   }
 // // //   return;
 // // // };
@@ -70,33 +73,24 @@ export const gettingStartedRecord = () => {
 // //   return lastRec[0];
 // // };
 
-export const getItemById = async (id) => {
+export const getStockById = async (id) => {
   gettingStartedRecord()
   // console.log(res[0]);
-  const findItem = Master_items.value.find((rec) => rec?.id == id)
+  const findItem = Stock_masters.value.find((rec) => rec?.id == id)
   return findItem
     ? findItem.id
     : {
-        kd_item: "Not found",
-        nm_item: "Not found",
+        item_id: "Not found",
+        kd_produksi: "Not found",
+        product_created: "Not found",
+        quantity: "Not found",
       };
 };
 
-export const updateItemById = (id, keyValueToUpdate) => {
-  Master_items.value = Master_items.value.map((item) => {
+export const updateStockById = (id, keyValueToUpdate) => {
+  Stock_masters.value = Stock_masters.value.map((item) => {
     return item?.id == id ? { ...item, ...keyValueToUpdate } : item;
   });
   saveData()
   return;
-};
-
-export const getItemIdByKdItem = (kd_item) => {
-  const findItem = Master_items.value.find((rec) => rec?.kd_item == kd_item)
-  return findItem
-    ? findItem
-    : {
-        id: "Not found",
-        kd_item: "Not found",
-        nm_item: "Not found",
-      };
 };

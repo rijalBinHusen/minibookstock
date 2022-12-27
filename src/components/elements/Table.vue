@@ -45,6 +45,17 @@
 
 <script>
 import Button from "./Button.vue";
+/**
+ how to use it?
+<Table 
+  keyData="Key that would you accept when button clicked"
+  style="put your css style here"
+  contents="array of object that would show in table"
+  options="button that would show in table, ['edit', 'delete']"
+  thead="array of string for table header"
+  tbody="array of string desribe your key content"
+/>
+ *  */ 
 export default {
   name: "Table",
   props: {
