@@ -93,7 +93,7 @@
             :contents="listOfStock"
             :options="['edit', 'delete']"
             :thead="['Item', 'quantity', 'tanggal produksi']"
-            :tbody="['item_id', 'quantity', 'product_created']"
+            :tbody="['item', 'quantity', 'product_created']"
             @edit="handleBtnTable('edit', $event)"
             @deleteRec="handleBtnTable('hapus', $event)"
         />
@@ -199,7 +199,7 @@ const handleSubmit = async () => {
 const handleBtnTable = (operation, id) => {
     if(operation == 'edit') {
         // console.log(e)
-        const stock = listOfStock.value.find((rec) => rec?.id == id)
+        const stock = getStockById(id)
         // set item id
         item.value = stock?.item_id
         // set detail item { id, name, age}

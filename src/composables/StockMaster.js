@@ -1,5 +1,7 @@
 import { summary } from "../utils/summaryIdb";
 import { ref } from "vue";
+import { getItemById } from "./MasterItems";
+import { ddmmyyyy } from "../utils/dateFormat";
 // store name
 const store = "stock_master";
 // generator id
@@ -80,9 +82,9 @@ export const removeStockById = async (id) => {
 export const getStockById = (id) => {
   gettingStartedRecord();
   // console.log(res[0]);
-  const findItem = Stock_masters.value.find((rec) => rec?.id == id);
-  return findItem
-    ? findItem
+  const findStock = Stock_masters.value.find((rec) => rec?.id == id);
+  return findStock
+    ? findStock
     : {
         item_id: "Not found",
         kd_produksi: "Not found",
@@ -104,5 +106,16 @@ export const getStockWithoutParent = () => {
   const stock = Stock_masters.value.filter(
     (stock) => !stock?.icoming_parent_id
   );
-  return stock;
+  return documentsMapper(stock);
+};
+
+const documentsMapper = (docs) => {
+  const res = docs.map((doc) => ({
+    id: doc?.id,
+    quantity: doc?.quantity,
+    item: getItemById(doc?.item_id)?.nm_item,
+    product_created: ddmmyyyy(doc?.product_created, "-"),
+  }));
+
+  return res;
 };
