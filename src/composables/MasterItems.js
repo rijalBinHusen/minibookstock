@@ -1,4 +1,3 @@
-import { idb } from "../utils/localbase";
 import { summary } from "../utils/summaryIdb";
 import { ref } from "vue";
 // store name
@@ -12,6 +11,11 @@ import { generateId } from "../utils/GeneratorId";
 // the state
 export const Master_items = ref([]);
 
+const saveData = () => {
+  const data = JSON.stringify(Master_items.value)
+  localStorage.setItem(store, data)
+}
+
 export const createItem = async (
   kd_item,
   nm_item,
@@ -20,10 +24,10 @@ export const createItem = async (
   age_item
 ) => {
   // get last id
-  const lastRecord = await summary(store);
+  const summaryRecord = await summary(store);
   // generate next id
-  const nextId = lastRecord?.lastUpdated
-    ? generateId(lastRecord?.lastUpdated?.lastId)
+  const nextId = summaryRecord?.lastUpdated
+    ? generateId(summaryRecord?.lastUpdated?.lastId)
     : generateId("ITM22030000");
   // initiate new record
   const record = {
@@ -33,24 +37,25 @@ export const createItem = async (
     division,
     last_used,
     age_item,
-    // sort: LastRecord?.sort ? LastRecord?.sort + 1 : 1,
+    // sort: summaryRecord?.sort ? summaryRecord?.sort + 1 : 1,
   };
-  // // insert into indexeddb
-  await dbitems.setData(nextId, record);
-  // // update summary
-  // await summary.updateSummary(nextId);
-  lastRecord.updateSummary(nextId);
   // // push to state
   Master_items.value.unshift(record);
+  // // update summary
+  await summaryRecord.updateSummary(nextId);
+  // // save tolocalstorage
+  saveData()
 
   return nextId;
 };
 
-export const gettingStartedRecord = async () => {
-  // dapatkan last used < 1 minggu
+export const gettingStartedRecord = () => {
+  // dapatkan last used
   if (!Master_items.value.length) {
-    Master_items.value = await dbitems.getAllDataOrderByIdDesc();
+    const item = localStorage.getItem(store)
+    Master_items.value = item ? JSON.parse(item) : [];
   }
+  return
 };
 
 // // // export const removeVehicle = async (id) => {
@@ -68,24 +73,31 @@ export const gettingStartedRecord = async () => {
 // // };
 
 export const getItemById = async (id) => {
-  const res = await dbitems.getdataByKey(id);
+  gettingStartedRecord()
   // console.log(res[0]);
-  return res
-    ? res
+  const findItem = Master_items.value.find((rec) => rec?.id == id)
+  return findItem
+    ? findItem
     : {
         kd_item: "Not found",
         nm_item: "Not found",
       };
 };
 
-export const updateItemById = async (id, keyValueToUpdate) => {
-  await dbitems.updateDataById(id, keyValueToUpdate);
+export const updateItemById = (id, keyValueToUpdate) => {
   Master_items.value = Master_items.value.map((item) => {
     return item?.id == id ? { ...item, ...keyValueToUpdate } : item;
   });
+  saveData()
   return;
 };
 
 export const getItemIdByKdItem = (kd_item) => {
-  return dbitems.getDataByKeyValue({ kd_item: kd_item });
+  const findItem = Master_items.value.find((rec) => rec?.kd_item == kd_item)
+  return findItem
+    ? findItem
+    : {
+        kd_item: "Not found",
+        nm_item: "Not found",
+      };
 };

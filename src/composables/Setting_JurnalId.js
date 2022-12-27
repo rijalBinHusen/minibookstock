@@ -1,36 +1,38 @@
-import { idb } from "../utils/localbase";
 import { summary } from "../utils/summaryIdb";
 import { ref } from "vue";
 // store name
 const store = "jurnal_prduk_masuk";
 // // create an instance
-const dbjurnals = async () => await idb(store);
 // generator id
 import { generateId } from "../utils/GeneratorId";
 // // import { dayPlusOrMinus } from "../utils/dateFormat";
+
+const saveData = () => {
+  localStorage.setItem(store, JSON.stringify(Jurnal_produk_masuk.value))
+}
 
 // the state
 export const Jurnal_produk_masuk = ref([]);
 
 export const createJurnalProdukMasuk = async (nama_jurnal) => {
   // get last id
-  const lastRecord = await summary(store);
+  const summaryRecord = await summary(store);
   // generate next id
-  const nextId = lastRecord?.lastUpdated
-    ? generateId(lastRecord?.lastUpdated?.lastId)
+  const nextId = summaryRecord?.lastUpdated
+    ? generateId(summaryRecord?.lastUpdated?.lastId)
     : generateId("j_income_22030000");
   // initiate new record
   const record = {
     id: nextId,
     nama_jurnal
   };
-  // // insert into indexeddb
-  await dbjurnals.setData(nextId, record);
-  // // update summary
-  // await summary.updateSummary(nextId);
-  lastRecord.updateSummary(nextId);
   // // push to state
   Jurnal_produk_masuk.value.unshift(record);
+  // // update summary
+  // await summary.updateSummary(nextId);
+  await summaryRecord.updateSummary(nextId);
+  // // insert into localstorage
+  saveData()
 
   return nextId;
 };
@@ -38,7 +40,9 @@ export const createJurnalProdukMasuk = async (nama_jurnal) => {
 export const gettingStartedRecord = async () => {
   // dapatkan last used < 1 minggu
   if (!Jurnal_produk_masuk.value.length) {
-    Jurnal_produk_masuk.value = await dbjurnals.getAllDataOrderByIdDesc();
+    // get item
+    const item = localStorage.getItem(store)
+    Jurnal_produk_masuk.value = item ? JSON.parse(item) : [] ;
   }
 };
 
@@ -57,10 +61,10 @@ export const gettingStartedRecord = async () => {
 // // };
 
 export const getJurnalProdukMasukById = async (id) => {
-  const res = await dbjurnals.getdataByKey(id);
+  const findRecord = Jurnal_produk_masuk.value.find((id) => id == id)
   // console.log(res[0]);
-  return res
-    ? res
+  return findRecord
+    ? findRecord
     : {
         id: "Not found",
         nama_jurnal: "Not found",
@@ -68,9 +72,9 @@ export const getJurnalProdukMasukById = async (id) => {
 };
 
 export const updateJurnalProdukMasukById = async (id, keyValueToUpdate) => {
-  await dbjurnals.updateDataById(id, keyValueToUpdate);
   Jurnal_produk_masuk.value = Jurnal_produk_masuk.value.map((jurnal) => {
     return jurnal?.id == id ? { ...jurnal, ...keyValueToUpdate } : jurnal;
   });
+  saveData()
   return;
 };
