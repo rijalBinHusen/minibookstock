@@ -79,12 +79,10 @@
 </template>
 
 <script setup>
-import Table from "../components/elements/Table.vue";
-import Dropdown from "../components/elements/Dropdown.vue";
 import Button from "../components/elements/Button.vue";
 import Input from "../components/elements/Forms/Input.vue";
-import { createItem, Master_items, gettingStartedRecord, getItemById, updateItemById } from "../composables/MasterItems"
 import Datatable from "../components/parts/Datatable.vue";
+import { createItem, Master_items, gettingStartedRecord, getItemById, updateItemById } from "../composables/MasterItems"
 import { ref, onMounted, watch } from "vue";
 
 const nm_item = ref(null)
@@ -102,12 +100,12 @@ const handleSubmit = async () => {
       // update item
       // to update item
       if(isEditMode.value) {
-        await updateItemById(isEditMode.value, changed.value);
+        updateItemById(isEditMode.value, changed.value);
       }
       // insert item
       else {
         // setItem('items', nm_item.value)
-        await createItem(kd_item.value, nm_item.value, null, new Date().getTime(), age_item.value)
+        createItem(kd_item.value, nm_item.value, null, new Date().getTime(), age_item.value)
       }
       // reset the form
         resetForm()
@@ -115,17 +113,16 @@ const handleSubmit = async () => {
   }
 
 // to edit item
-const handleButton = async (id) => {
+const handleButton = (id) => {
   if(id && id !== isEditMode.value) {
     // get item by id from db
-    origin.value = await getItemById(id)
+    origin.value = getItemById(id)
     // fill the form
     nm_item.value = origin.value?.nm_item;
     kd_item.value = origin.value?.kd_item;
     age_item.value = origin.value?.age_item;
     // set changed value to null
     changed.value = {};
-    
     // set edit mode as true
     setTimeout(() =>  isEditMode.value = id, 300 )
   } 

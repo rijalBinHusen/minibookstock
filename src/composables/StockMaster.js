@@ -10,14 +10,14 @@ import { generateId } from "../utils/GeneratorId";
 export const Stock_masters = ref([]);
 
 const saveData = () => {
-  const data = JSON.stringify(Stock_masters.value)
-  localStorage.setItem(store, data)
-}
+  const data = JSON.stringify(Stock_masters.value);
+  localStorage.setItem(store, data);
+};
 
 /**
  * 
   id string
-  item string
+  item_id string
   kd_produksi datetime
   product_created number
   quantity number
@@ -25,7 +25,12 @@ const saveData = () => {
   icoming_parent_id
  */
 
-export const createStock = async (item_id, kd_produksi, product_created, quantity) => {
+export const createStock = async (
+  item_id,
+  kd_produksi,
+  product_created,
+  quantity
+) => {
   // get last id
   const summaryRecord = await summary(store);
   // generate next id
@@ -46,7 +51,7 @@ export const createStock = async (item_id, kd_produksi, product_created, quantit
   // // update summary
   await summaryRecord.updateSummary(nextId);
   // // save tolocalstorage
-  saveData()
+  saveData();
 
   return record;
 };
@@ -54,10 +59,10 @@ export const createStock = async (item_id, kd_produksi, product_created, quantit
 export const gettingStartedRecord = () => {
   // dapatkan last used
   if (!Stock_masters.value.length) {
-    const item = localStorage.getItem(store)
+    const item = localStorage.getItem(store);
     Stock_masters.value = item ? JSON.parse(item) : [];
   }
-  return
+  return;
 };
 
 // // // export const removeVehicle = async (id) => {
@@ -74,12 +79,12 @@ export const gettingStartedRecord = () => {
 // //   return lastRec[0];
 // // };
 
-export const getStockById = async (id) => {
-  gettingStartedRecord()
+export const getStockById = (id) => {
+  gettingStartedRecord();
   // console.log(res[0]);
-  const findItem = Stock_masters.value.find((rec) => rec?.id == id)
+  const findItem = Stock_masters.value.find((rec) => rec?.id == id);
   return findItem
-    ? findItem.id
+    ? findItem
     : {
         item_id: "Not found",
         kd_produksi: "Not found",
@@ -92,12 +97,14 @@ export const updateStockById = (id, keyValueToUpdate) => {
   Stock_masters.value = Stock_masters.value.map((item) => {
     return item?.id == id ? { ...item, ...keyValueToUpdate } : item;
   });
-  saveData()
+  saveData();
   return;
 };
 
 export const getStockWithoutParent = () => {
-    gettingStartedRecord()
-    const stock = Stock_masters.value.filter((stock) => !stock?.icoming_parent_id)
-    return stock
-}
+  gettingStartedRecord();
+  const stock = Stock_masters.value.filter(
+    (stock) => !stock?.icoming_parent_id
+  );
+  return stock;
+};

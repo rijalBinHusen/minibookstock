@@ -145,6 +145,7 @@ const stockChild = ref([])
 // to add new item form
 const handleStock = (e) => {
   stockChild.value = e;
+  console.log(e)
 }
 
 

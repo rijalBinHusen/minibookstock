@@ -10,9 +10,9 @@ import { generateId } from "../utils/GeneratorId";
 export const Master_items = ref([]);
 
 const saveData = () => {
-  const data = JSON.stringify(Master_items.value)
-  localStorage.setItem(store, data)
-}
+  const data = JSON.stringify(Master_items.value);
+  localStorage.setItem(store, data);
+};
 
 export const createItem = async (
   kd_item,
@@ -42,7 +42,7 @@ export const createItem = async (
   // // update summary
   await summaryRecord.updateSummary(nextId);
   // // save tolocalstorage
-  saveData()
+  saveData();
 
   return nextId;
 };
@@ -50,10 +50,10 @@ export const createItem = async (
 export const gettingStartedRecord = () => {
   // dapatkan last used
   if (!Master_items.value.length) {
-    const item = localStorage.getItem(store)
+    const item = localStorage.getItem(store);
     Master_items.value = item ? JSON.parse(item) : [];
   }
-  return
+  return;
 };
 
 // // // export const removeVehicle = async (id) => {
@@ -70,12 +70,12 @@ export const gettingStartedRecord = () => {
 // //   return lastRec[0];
 // // };
 
-export const getItemById = async (id) => {
-  gettingStartedRecord()
+export const getItemById = (id) => {
+  gettingStartedRecord();
   // console.log(res[0]);
-  const findItem = Master_items.value.find((rec) => rec?.id == id)
+  const findItem = Master_items.value.find((rec) => rec?.id == id);
   return findItem
-    ? findItem.id
+    ? findItem
     : {
         kd_item: "Not found",
         nm_item: "Not found",
@@ -86,16 +86,15 @@ export const updateItemById = (id, keyValueToUpdate) => {
   Master_items.value = Master_items.value.map((item) => {
     return item?.id == id ? { ...item, ...keyValueToUpdate } : item;
   });
-  saveData()
+  saveData();
   return;
 };
 
 export const getItemIdByKdItem = (kd_item) => {
-  const findItem = Master_items.value.find((rec) => rec?.kd_item == kd_item)
+  const findItem = Master_items.value.find((rec) => rec?.kd_item == kd_item);
   return findItem
     ? findItem
     : {
-        id: "Not found",
         kd_item: "Not found",
         nm_item: "Not found",
       };

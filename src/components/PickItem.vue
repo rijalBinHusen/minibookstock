@@ -59,7 +59,7 @@
                 <date-picker
                 id="date-picker"
                 class="input input-outline input-primary input-sm w-28"
-                v-model="product_date"
+                v-model="product_created"
                 input-format="yyyy-MM-dd"
                 @update:model-value="handleUpdateDate('created', $event)"
                 ></date-picker>
@@ -81,7 +81,7 @@
             <Button 
                 type="button" 
                 primary 
-                value="Add item" 
+                :value="isEditMode ? 'Update' : 'Add item'" 
                 @trig="handleSubmit" 
                 small />
             </div>
@@ -89,11 +89,12 @@
         
         <TableVue
             style="overflow: auto; max-height: 300px"
-            keyData="id that would you accept when button clicked"
+            keyData="id"
             :contents="listOfStock"
             :options="['edit', 'delete']"
             :thead="['Item', 'quantity', 'tanggal produksi']"
             :tbody="['item_id', 'quantity', 'product_created']"
+            @edit="handleBtnTable"
         />
     </div>
 </template>
@@ -104,14 +105,14 @@ import Input from "./elements/Forms/Input.vue";
 import datePicker from "vue3-datepicker";
 import Button from "@/components/elements/Button.vue";
 import TableVue from "./elements/Table.vue";
-import { ref, onMounted, defineEmits } from 'vue';
-import { gettingStartedRecord as getItem, Master_items, getItemIdByKdItem } from "../composables/MasterItems";
-import { createStock, getStockWithoutParent } from "../composables/StockMaster"
+import { ref, onMounted, defineEmits, computed } from 'vue';
+import { gettingStartedRecord as getItem, Master_items, getItemIdByKdItem, getItemById } from "../composables/MasterItems";
+import { createStock, getStockWithoutParent, updateStockById, getStockById } from "../composables/StockMaster"
 import { ymdTime } from "../utils/dateFormat"
 
 
 // origin date
-const product_date = ref(new Date());
+const product_created = ref(new Date());
 const product_expired = ref(new Date())
 const item = ref(null);
 const quantity = ref(null)
@@ -134,11 +135,14 @@ const handleItem = (e) => {
     }
 }
 
+// will contain id of record that on edit
+const isEditMode = ref(null)
+
 const handleUpdateDate = (whatDate, e) => {
     //     // const 1 month
     const aMonth = 1000*60*60*24*30;
     // set product date that to input to daatabase
-    product_date.value = e
+    product_created.value = e
     // get age of product
     const age_product = item_detail.value?.age_item
     // get expired of product
@@ -156,18 +160,54 @@ const handleUpdateDate = (whatDate, e) => {
         // set expired date
         const created_date = new Date( new_date - (aMonth*age_product))
         // product expired
-        product_date.value = created_date
+        product_created.value = created_date
     }
 }
 
 const handleSubmit = async () => {
-    if(item.value, kd_produksi.value, product_date.value, quantity.value) {
-        const stock = await createStock(item.value, kd_produksi.value, ymdTime(product_date.value), quantity.value)
-        listOfStock.value.unshift(stock)
-        emitStock()
+    if(item.value && kd_produksi.value && product_created.value && quantity.value) {
+        if(isEditMode.value) {
+            // update on state and db
+            updateStockById(isEditMode.value, {
+                item_id: item.value, 
+                kd_produksi: kd_produksi.value, 
+                product_created: ymdTime(product_created.value), 
+                quantity: quantity.value,
+            })
+            // first get stock by id
+            const newStock = getStockById(isEditMode.value)
+            // update local state here
+            // and update
+            listOfStock.value = listOfStock.value.map((rec) => {
+                return rec?.id === isEditMode.value
+                        ? newStock
+                        : rec
+            })
+        } else {
+            const stock = await createStock(item.value, kd_produksi.value, ymdTime(product_created.value), quantity.value)
+            listOfStock.value.unshift(stock)
+            emitStock()
+        }
     } else {
         alert("Tidak boleh ada form yang kosong!")
     }
+    isEditMode.value = null
+}
+
+// btn table handle
+const handleBtnTable = (id) => {
+    // console.log(e)
+    const stock = listOfStock.value.find((rec) => rec?.id == id)
+    // set item id
+    item.value = stock?.item_id
+    // set detail item { id, name, age}
+    item_detail.value = getItemById(item.value);
+    // show in input form
+    item_full.value = item_detail.value?.kd_item + "* " + item_detail.value.nm_item
+    kd_produksi.value = stock?.kd_produksi
+    product_created.value = new Date( stock?.product_created )
+    quantity.value = stock?.quantity
+    isEditMode.value = stock?.id
 }
 
 const emit = defineEmits(['stockAdded'])
