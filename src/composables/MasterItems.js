@@ -4,7 +4,7 @@ import { ref } from "vue";
 // store name
 const store = "items";
 // // create an instance
-const dbitems = await idb(store);
+const dbitems = async () => await idb(store);
 // generator id
 import { generateId } from "../utils/GeneratorId";
 // // import { dayPlusOrMinus } from "../utils/dateFormat";

@@ -1,6 +1,6 @@
 import { idb } from "./localbase";
 
-let summaryDB = await idb("summary");
+let summaryDB = async () => await idb("summary");
 let timeOut;
 let storeToUpdate = []; //store that would to update
 

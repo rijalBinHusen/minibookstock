@@ -4,7 +4,7 @@ import { ref } from "vue";
 // store name
 const store = "jurnal_prduk_masuk";
 // // create an instance
-const dbjurnals = await idb(store);
+const dbjurnals = async () => await idb(store);
 // generator id
 import { generateId } from "../utils/GeneratorId";
 // // import { dayPlusOrMinus } from "../utils/dateFormat";
