@@ -105,8 +105,8 @@ import datePicker from "vue3-datepicker";
 import Button from "@/components/elements/Button.vue";
 import TableVue from "./elements/Table.vue";
 import { ref, onMounted, defineEmits } from 'vue';
-import { gettingStartedRecord, Master_items, getItemIdByKdItem } from "../composables/MasterItems";
-import { createStock } from "../composables/StockMaster"
+import { gettingStartedRecord as getItem, Master_items, getItemIdByKdItem } from "../composables/MasterItems";
+import { createStock, getStockWithoutParent } from "../composables/StockMaster"
 import { ymdTime } from "../utils/dateFormat"
 
 
@@ -161,19 +161,27 @@ const handleUpdateDate = (whatDate, e) => {
 }
 
 const handleSubmit = async () => {
-    const stock = await createStock(item.value, kd_produksi.value, ymdTime(product_date.value), quantity.value)
-    listOfStock.value.unshift(stock)
+    if(item.value, kd_produksi.value, product_date.value, quantity.value) {
+        const stock = await createStock(item.value, kd_produksi.value, ymdTime(product_date.value), quantity.value)
+        listOfStock.value.unshift(stock)
+        emitStock()
+    } else {
+        alert("Tidak boleh ada form yang kosong!")
+    }
 }
 
-const emit = defineEmits(['valueChanged'])
+const emit = defineEmits(['stockAdded'])
+const emitStock = () => {
+    emit('stockAdded', listOfStock.value)
+}
 
-// record value changed
-const valueChanged = ref({})
-
-
-onMounted(async () => {
-    gettingStartedRecord()
-    // product_date.value = new Date(props.product_created)
+onMounted(() => {
+    // getting all item
+    getItem()
+    // getting stock without parent incoming id
+    listOfStock.value = getStockWithoutParent()
+    // emit stock
+    emitStock()
 })
 
 </script>

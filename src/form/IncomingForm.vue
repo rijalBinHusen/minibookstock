@@ -97,16 +97,7 @@
         <!-- 
           Item picker
          -->
-         <PickItemVue 
-          v-for="(stock, index) in stockMaster" 
-          :key="stock.item" 
-          :item="stock.item"
-          :kd_produksi="stock.kd_produksi"
-          :quantity="stock.quantity"
-          :product_created="stock.product_created" 
-          :index="index"
-          @valueChanged="handleValueChanged"         
-        />
+         <PickItemVue @stock-added="handleStock"/>
          <!-- End of Item picker -->
         
         <!-- <Table
@@ -132,7 +123,6 @@ import datePicker from "vue3-datepicker";
 import Select from "../components/elements/Forms/Select.vue";
 import Input from "../components/elements/Forms/Input.vue";
 import Button from "../components/elements/Button.vue";
-import Table from "../components/elements/Table.vue";
 import { ref, onMounted } from "vue";
 import PickItemVue from "../components/PickItem.vue";
 import { gettingStartedRecord, Jurnal_produk_masuk } from "../composables/Setting_JurnalId"
@@ -150,45 +140,11 @@ const diserahkan = ref(null)
 // receiver product
 const diterima = ref(null)
 // master stock
-const stockMaster = ref([
-  { item: '', quantity: "0", kd_produksi: '', product_created: new Date().getTime() }
-])
+const stockChild = ref([])
 
 // to add new item form
-const addItem = () => {
-  stockMaster.value.unshift(stockMaster.value.slice(-1))
-}
-
-// now index
-const nowIndexProgressChanged = ref(null)
-// timeout
-const timeout = ref(null)
-
-// value changed from child
-const handleValueChanged = (e) => {
-  // e = { index: props.index, value: { ...props, [key]: value} }
-  const index = e["index"]
-  const value = e["value"]
-
-  // if the same index
-  console.log(e)
-  if(nowIndexProgressChanged.value === index) {
-    clearTimeout(timeout)
-    timeout.value = setTimeout(() => {
-      // stockmaster[index] = { setKey: setValue }
-      stockMaster.value[index] = value
-    }, 300)
-  }
-  // else 
-  else {
-    // mark index
-    nowIndexProgressChanged.value = index
-    timeout.value = setTimeout(() => {
-      // stockmaster[index] = { setKey: setValue }
-      stockMaster.value[index] = value
-      console.log(stockMaster.value)
-    }, 300)
-  }
+const handleStock = (e) => {
+  stockChild.value = e;
 }
 
 

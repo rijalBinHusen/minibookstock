@@ -22,6 +22,7 @@ const saveData = () => {
   product_created number
   quantity number
   available number
+  icoming_parent_id
  */
 
 export const createStock = async (item_id, kd_produksi, product_created, quantity) => {
@@ -30,7 +31,7 @@ export const createStock = async (item_id, kd_produksi, product_created, quantit
   // generate next id
   const nextId = summaryRecord?.lastUpdated
     ? generateId(summaryRecord?.lastUpdated?.lastId)
-    : generateId("ITM22030000");
+    : generateId("STOCK_MASTER22030000");
   // initiate new record
   const record = {
     id: nextId,
@@ -94,3 +95,9 @@ export const updateStockById = (id, keyValueToUpdate) => {
   saveData()
   return;
 };
+
+export const getStockWithoutParent = () => {
+    gettingStartedRecord()
+    const stock = Stock_masters.value.filter((stock) => !stock?.icoming_parent_id)
+    return stock
+}
