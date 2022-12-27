@@ -35,6 +35,8 @@
               value="hapus"
               type="button"
               small
+              :datanya="content[keyData]"
+              @trig="$emit('deleteRec', $event)"
             />
           </td>
         </tr>
@@ -51,7 +53,7 @@ import Button from "./Button.vue";
   keyData="Key that would you accept when button clicked"
   style="put your css style here"
   contents="array of object that would show in table"
-  options="button that would show in table, ['edit', 'delete']"
+  options="button that would show in table, ['edit', 'deleteRec']"
   thead="array of string for table header"
   tbody="array of string desribe your key content"
 />
@@ -75,7 +77,7 @@ export default {
       required: true,
     },
   },
-  emits: ["edit", "hapus"],
+  emits: ["edit", "deleteRec"],
   components: {
     Button,
   },

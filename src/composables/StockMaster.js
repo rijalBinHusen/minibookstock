@@ -65,13 +65,11 @@ export const gettingStartedRecord = () => {
   return;
 };
 
-// // // export const removeVehicle = async (id) => {
-// // //   const res = await removeRecord(table, "id", id);
-// // //   if (res) {
-// // //     Stock_masters.value = Stock_masters.value.filter((veh) => veh.id !== id);
-// // //   }
-// // //   return;
-// // // };
+export const removeStockById = async (id) => {
+  Stock_masters.value = Stock_masters.value.filter((rec) => rec.id !== id);
+  saveData();
+  return;
+};
 
 // // // export const
 // // export const getLastRecord = async () => {

@@ -94,7 +94,8 @@
             :options="['edit', 'delete']"
             :thead="['Item', 'quantity', 'tanggal produksi']"
             :tbody="['item_id', 'quantity', 'product_created']"
-            @edit="handleBtnTable"
+            @edit="handleBtnTable('edit', $event)"
+            @deleteRec="handleBtnTable('hapus', $event)"
         />
     </div>
 </template>
@@ -107,7 +108,7 @@ import Button from "@/components/elements/Button.vue";
 import TableVue from "./elements/Table.vue";
 import { ref, onMounted, defineEmits, computed } from 'vue';
 import { gettingStartedRecord as getItem, Master_items, getItemIdByKdItem, getItemById } from "../composables/MasterItems";
-import { createStock, getStockWithoutParent, updateStockById, getStockById } from "../composables/StockMaster"
+import { createStock, getStockWithoutParent, updateStockById, getStockById, removeStockById } from "../composables/StockMaster"
 import { ymdTime } from "../utils/dateFormat"
 
 
@@ -195,19 +196,29 @@ const handleSubmit = async () => {
 }
 
 // btn table handle
-const handleBtnTable = (id) => {
-    // console.log(e)
-    const stock = listOfStock.value.find((rec) => rec?.id == id)
-    // set item id
-    item.value = stock?.item_id
-    // set detail item { id, name, age}
-    item_detail.value = getItemById(item.value);
-    // show in input form
-    item_full.value = item_detail.value?.kd_item + "* " + item_detail.value.nm_item
-    kd_produksi.value = stock?.kd_produksi
-    product_created.value = new Date( stock?.product_created )
-    quantity.value = stock?.quantity
-    isEditMode.value = stock?.id
+const handleBtnTable = (operation, id) => {
+    if(operation == 'edit') {
+        // console.log(e)
+        const stock = listOfStock.value.find((rec) => rec?.id == id)
+        // set item id
+        item.value = stock?.item_id
+        // set detail item { id, name, age}
+        item_detail.value = getItemById(item.value);
+        // show in input form
+        item_full.value = item_detail.value?.kd_item + "* " + item_detail.value.nm_item
+        kd_produksi.value = stock?.kd_produksi
+        product_created.value = new Date( stock?.product_created )
+        quantity.value = stock?.quantity
+        isEditMode.value = stock?.id
+    } else {
+        // confirm first
+        let conf = confirm("Apakah anda yakin akan menghapusnya?")
+        if(conf) {
+            removeStockById(id)
+            listOfStock.value = listOfStock.value.filter((rec) => rec?.id !== id)
+        }
+        return
+    }
 }
 
 const emit = defineEmits(['stockAdded'])
