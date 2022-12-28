@@ -91,8 +91,10 @@
          <PickItemVue 
             :isParentEditMode="isEditMode" 
             :stockChild="stockChildDetails" 
-            @addStock="handleStock"
-            @stockRemoved="handleStock"
+            @addStock="handleStock('add', $event)"
+            @updateStock="handleStock('update', $event)"
+            :currentStockEdit="currentStockEdit"
+            @editStock="handleStock('edit', $event)"
           />
          <!-- End of Item picker -->
         
@@ -139,6 +141,8 @@ const diserahkan = ref(null)
 const diterima = ref(null)
 // master stock
 const stockChild = ref([])
+// current stock editing
+const currentStockEdit=ref(null)
 
 const stockChildDetails = computed(() => stockChild.value.map((stock) => ({
       id: stock?.id,
@@ -149,17 +153,24 @@ const stockChildDetails = computed(() => stockChild.value.map((stock) => ({
   )
 )
 // to add new item form
-const handleStock = (e) => {
-  // it means delete stock from record
-  // if(typeof e === 'string') {
-  //   stockChild.value = stockChild.value.filter((idStock) => idStock !== e)
-  // } else {
+const handleStock = (operation, e) => {
+  if(operation == 'add') {
     stockChild.value.push({
       id: stockChild.value.length +1 + "",
       ...e
     })
-    console.log('stock child', e?.tanggal)
-  // }
+  } else if(operation == 'edit') {
+    currentStockEdit.value = stockChild.value.find((rec) => rec?.id == e)
+  } else if(operation == 'update') {
+    stockChild.value = stockChild.value.map((rec) => {
+      if(rec?.id == e.id) {
+        return e.value
+      }
+      return rec
+    })
+    currentStockEdit.value = null
+
+  }
 }
 
 const handleSubmit = () => {

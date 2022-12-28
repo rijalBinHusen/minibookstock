@@ -114,6 +114,7 @@ import { ymdTime } from "../utils/dateFormat"
 const props = defineProps({
     isParentEditMode: String,
     stockChild: Array,
+    currentStockEdit: Object,
 })
 
 // origin date
@@ -126,10 +127,6 @@ const kd_produksi = ref(null)
 const item_full = ref(null)
 const item_detail = ref(null)
 
-// list of stock to show
-const listOfStock = ref([])
-// list of id stock
-let listOfIdStock = []
 const timeoutHandleItem = ref(null)
 const handleItem = (e) => {
     if(e.target.value) {
@@ -138,7 +135,7 @@ const handleItem = (e) => {
             const kd_item = e.target.value.split("*")[0]
             item_detail.value = getItemIdByKdItem(kd_item)
             item.value = item_detail.value?.id
-        }, 1000)
+        }, 100)
     }
 }
 
@@ -171,71 +168,57 @@ const handleUpdateDate = (whatDate, e) => {
     }
 }
 
-const emit = defineEmits(['addStock', 'stockRemoved'])
+const emit = defineEmits(['addStock', 'stockRemoved', 'editStock', 'updateStock'])
 
 const handleSubmit = async () => {
+    console.log(item.value, kd_produksi.value, product_created.value, quantity.value)
     if(item.value && kd_produksi.value && product_created.value && quantity.value) {
-        // if(isEditMode.value) {
-        //     // update on state and db
-        //     updateStockById(isEditMode.value, {
-        //         item_id: item.value, 
-        //         kd_produksi: kd_produksi.value, 
-        //         product_created: ymdTime(product_created.value), 
-        //         quantity: quantity.value,
-        //     })
-        //     // update local state here
-        //     // render new list of stock
-        //     renderStock()
-        // } else {
-            // if isParentEditmode
-            // create stock 
-            emit('addStock', {
+        const record = {
                 item: item.value, 
                 kd_produksi: kd_produksi.value, 
                 tanggal: ymdTime(product_created.value), 
                 quantity: quantity.value
-            })
-            // // add new stock to local state
-            // listOfIdStock.push(stock?.id)
-            // renderStock()
-            // emitStock()
-        // }
+            }
+        if(isEditMode.value) {
+            emit('updateStock', { id: isEditMode.value, value: record})
+        }  else {
+            emit('addStock', record)
+        }   
+            // reset the form after submit
+            resetForm()
     } else {
         alert("Tidak boleh ada form yang kosong!")
     }
     isEditMode.value = null
 }
 
+const resetForm = () => {
+    setTimeout(() => {
+        item_detail.value = ""
+        item.value = ""
+        kd_produksi.value = ""
+        quantity.value = ""
+        item_full.value = ""
+    }, 500)
+}
+
 // btn table handle
-// const handleBtnTable = (operation, id) => {
-//     if(operation == 'edit') {
-//         // console.log(e)
-//         const stock = getStockById(id)
-//         // set item id
-//         item.value = stock?.item_id
-//         // set detail item { id, name, age}
-//         item_detail.value = getItemById(item.value);
-//         // show in input form
-//         item_full.value = item_detail.value?.kd_item + "* " + item_detail.value.nm_item
-//         kd_produksi.value = stock?.kd_produksi
-//         product_created.value = new Date( stock?.product_created )
-//         quantity.value = stock?.quantity
-//         isEditMode.value = stock?.id
-//     } else {
-//         // delete the stock
-//         // confirm first
-//         let conf = confirm("Apakah anda yakin akan menghapusnya?")
-//         if(conf) {
-//             // remove stock from state
-//             listOfIdStock = listOfIdStock.filter(id2 => id2 !== id)
-//             // re render stock
-//             renderStock()
-//             // emit stock to parent
-//             emitStock()
-//         }
-//         return
-//     }
-// }
+const handleBtnTable = (operation, id) => {
+    if(operation == 'edit') {
+        emit('editStock', id)
+        setTimeout(() => {
+            const item = getItemById(props?.currentStockEdit['item'])
+            kd_produksi.value = props?.currentStockEdit['kd_produksi']
+            product_created.value = new Date(props?.currentStockEdit['tanggal'])
+            quantity.value = props?.currentStockEdit['quantity']
+            item_full.value = item.kd_item + "* " + item.nm_item
+            handleItem({target: { value: item_full.value }})
+            isEditMode.value = id
+        }, 500)
+    } else {
+        
+    }
+}
 
 // // function to emit to parent
 // const emitStock = () => {
