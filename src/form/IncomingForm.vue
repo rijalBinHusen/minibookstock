@@ -194,7 +194,7 @@ const handleSubmit = async () => {
   if(date.value && shift.value && type.value && paper_id.value && diserahkan.value && diterima.value && stockChild.value) {
     // update record
     if(isEditMode.value) {
-      // create stock
+      // create stock or update stock
       const insertedStock = await new Promise( async (resolve) => {
         const eachIdStock = []
         for (const stock of stockChild.value) {
@@ -204,35 +204,30 @@ const handleSubmit = async () => {
           // quantity: quantity.value
           // because we cant detect stock to create, we are using this way
           if(stock?.id.length < 4) {
-            console.log('stock would create', stock?.item_id, stock?.kd_produksi, stock?.tanggal, stock?.quantity)
-            // const insertStock = await createStock(stock?.item_id, stock?.kd_produksi, stock?.tanggal, stock?.quantity)
-            // eachIdStock.push(insertStock.id)
+            const insertStock = await createStock(stock?.item_id, stock?.kd_produksi, stock?.tanggal, stock?.quantity)
+            eachIdStock.push(insertStock.id)
           } 
           // stock to udpate
           else if (idStockToUpdate.value.includes(stock?.id)) {
             // update stock
-            // updateStockById(stock?.id, {
-            //   item_id: stock?.item_id, 
-            //   kd_produksi: stock?.kd_produksi, 
-            //   product_created: stock?.tanggal, 
-            //   quantity: stock?.quantity
-            // })
+            updateStockById(stock?.id, {
+              item_id: stock?.item_id, 
+              kd_produksi: stock?.kd_produksi, 
+              product_created: stock?.tanggal, 
+              quantity: stock?.quantity
+            })
             // the update stock push too
-            console.log('stock would update', stock?.item_id, stock?.kd_produksi, stock?.tanggal, stock?.quantity)
             eachIdStock.push(stock?.id)
-          } else if(idStockToRemove.value.includes(stock?.id)) {
-            // remove stock
-            // removeStockById(stock?.id)
-            console.log('stock would remove', stock?.item_id, stock?.kd_produksi, stock?.tanggal, stock?.quantity)
           } else {
-            // console.log('stock would stay', stock?.item_id, stock?.kd_produksi, stock?.product_created, stock?.quantity)
-            console.log('stock would stay', stock)
+            // stocok would stay
             eachIdStock.push(stock?.id)
           }
         }
         resolve(eachIdStock)
       })
-
+      // remove stock
+      idStockToRemove.value.forEach(id => removeStockById(id))
+      // update incoming transaction
       const record = {
         stock_master_ids: insertedStock,
         paper_id: paper_id.value,
@@ -242,8 +237,8 @@ const handleSubmit = async () => {
         type: type.value,
         diserahkan: diserahkan.value
       }
-      console.log('new incoming record', record)
-      // updateIncomingById(isEditMode.value, record)
+      // update in db
+      updateIncomingById(isEditMode.value, record)
     } else {
       // create incoming transaction
       // first insert all stock
