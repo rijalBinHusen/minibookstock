@@ -120,7 +120,7 @@ import Input from "../components/elements/Forms/Input.vue";
 import Button from "../components/elements/Button.vue";
 import PickItemVue from "../components/PickItem.vue";
 import { ref, onMounted, computed } from "vue";
-import { gettingStartedRecord as getJurnalMasuk, Jurnal_produk_masuk } from "../composables/Setting_JurnalId"
+import { useJurnalProdukMasuk } from "../composables/Setting_JurnalId"
 import { createIncoming, getIncomingById, updateIncomingById } from "../composables/Incoming"
 import { closeModalOrDialog } from "../composables/launchForm"
 import { useStore } from "vuex";
@@ -145,6 +145,9 @@ const diterima = ref(null)
 const stockChild = ref([])
 // current stock editing
 const currentStockEdit=ref(null)
+
+// use the composable jurnal produk masuk
+const { gettingJurnalProdukMasukRecord, Jurnal_produk_masuk } = useJurnalProdukMasuk()
 
 // what todo whe update form
 const idStockToUpdate = ref([])
@@ -275,7 +278,7 @@ const isEditMode = ref(null)
 
 
 onMounted( async () => {
-  await getJurnalMasuk()
+  await gettingJurnalProdukMasukRecord()
   isEditMode.value = store.state.form?.document
   if(isEditMode.value) {
     // get record incoming

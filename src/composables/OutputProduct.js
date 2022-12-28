@@ -3,12 +3,14 @@ import { ref } from "vue";
 // import { getItemById } from "./MasterItems";
 import { ymdTime, ddmmyyyy } from "../utils/dateFormat";
 // store name
-const store = "incoming_transaction";
+const store = "output_transaction";
 // generator id
 import { generateId } from "../utils/GeneratorId";
 // // import { dayPlusOrMinus } from "../utils/dateFormat";
 // import set parent function for stock master
 import { setStockParent } from "./StockMaster";
+// get functin to get type incoming jurnal
+import { getJurnalProdukMasukById } from "./Setting_JurnalId";
 
 // the state
 export const Incoming_transaction = ref([]);

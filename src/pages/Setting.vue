@@ -64,7 +64,6 @@ import { computed, ref } from "vue";
 import { subscribeConfirmDialog } from "../composables/launchForm";
 
 const listImportData = [
-          { id: null, title: 'Pilih data untuk diimport'},
           { id: 'database', title: 'Database'}, 
           { id: 'salesOrder', title: 'Outstanding SO'}
         ]
