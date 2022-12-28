@@ -4,18 +4,6 @@
       id="incoming_add_form"
       class="grid rounded justify-items-center m-auto px-2 py-20 bg-base-200"
     >
-      <div id="incoming_add_mode" class="grid justify-items-center">
-        <!-- <Select 
-            tipe="primary" 
-                :options="[
-                    { status: 0, option: 'No paper'},
-                    { status: 1, option: 'With paper' }
-                ]"
-            value="status"
-            text="option"
-        /> -->
-      </div>
-
       <div id="incoming_add_form" class="grid justify-items-center">
         <!-- incoming info paper dll -->
         <div id="incoming_info" class="grid grid-cols-3 gap-4">
@@ -28,7 +16,7 @@
               id="date-picker"
               class="input input-outline input-primary input-sm"
               v-model="date"
-              :upper-limit="date"
+              :upper-limit="new Date()"
             ></date-picker>
           </div>
           <!-- end of date picker -->
@@ -42,13 +30,14 @@
             @selectedd="shift = $event"
               id="shift"
                 :options="[
-                    { shift: 1 },
-                    { shift: 2 },
-                    { shift: 3 },
+                    { shift: '1' },
+                    { shift: '2' },
+                    { shift: '3' },
                 ]"
               value="shift"
               text="shift"
               size="primary small"
+              :inSelect="shift"
             />
           </div>
           <!-- end of Shift -->
@@ -65,6 +54,7 @@
               value="id"
               text="nama_jurnal"
               size="primary small"
+              :inSelect="type"
             />
           </div>
           <!-- End of coming from -->
@@ -77,6 +67,7 @@
             small
             placeholder="Nomor dokumen"
             tipe="primary"
+            :value="paper_id"
           />
           <Input
             label="Yang menyerahkan"
@@ -84,6 +75,7 @@
             small
             placeholder="Yang menyerahkan"
             tipe="primary"
+            :value="diserahkan"
           />
           <Input
             label="Penerima"
@@ -91,18 +83,20 @@
             @send="diterima = $event"
             placeholder="Penerima"
             tipe="primary"
+            :value="diterima"
           />
         </div>
 
         <!-- Item picker -->
-         <PickItemVue @stock-added="handleStock"/>
+         <PickItemVue :isParentEditMode="isEditMode" :stockChild="stockChild" @stock-added="handleStock"/>
          <!-- End of Item picker -->
         
 
         <div id="incoming_add_submit" class="w-full mt-4">
           <Button type="button" 
           @trig="handleSubmit" 
-          primary value="Submit" 
+          primary 
+          :value="isEditMode ? 'Update' : 'Submit'" 
           small
           />
         </div>
@@ -119,9 +113,11 @@ import Button from "../components/elements/Button.vue";
 import PickItemVue from "../components/PickItem.vue";
 import { ref, onMounted } from "vue";
 import { gettingStartedRecord, Jurnal_produk_masuk } from "../composables/Setting_JurnalId"
-import { createIncoming } from "../composables/Incoming"
+import { createIncoming, getIncomingById, updateIncomingById } from "../composables/Incoming"
 import { closeModalOrDialog } from "../composables/launchForm"
-
+import { useStore } from "vuex";
+// vuex
+const store = useStore()
 // date record
 const date = ref(new Date())
 // shift record
@@ -144,18 +140,57 @@ const handleStock = (e) => {
 
 const handleSubmit = () => {
   if(date.value && shift.value && type.value && paper_id.value && diserahkan.value && diterima.value && stockChild.value) {
-    // create incoming transaction
-    createIncoming(stockChild.value, paper_id.value, date.value, shift.value, diterima.value, type.value, diserahkan.value, null)
-    // close modal
-    closeModalOrDialog()
+    // update record
+    if(isEditMode.value) {
+      const record = {
+        stock_master_ids: stockChild.value,
+        paper_id: paper_id.value,
+        tanggal: date.value,
+        shift: shift.value,
+        diterima: diterima.value,
+        type: type.value,
+        diserahkan: diserahkan.value
+      }
+      updateIncomingById(isEditMode.value, record)
+    } else {
+      // create incoming transaction
+      createIncoming(stockChild.value, paper_id.value, date.value, shift.value, diterima.value, type.value, diserahkan.value, null)
+    }
+    // close modal and send tunnel message true, it mean we are add new record or update a record
+    closeModalOrDialog(true)
   } else {
     alert("Tidak boleh ada form yang kosong")
   }
+  // empty the value
+      isEditMode.value = null
 }
+
+// will contain id of record that we will update it
+const isEditMode = ref(null)
 
 
 onMounted( async () => {
   await gettingStartedRecord()
+  isEditMode.value = store.state.form?.document
+  if(isEditMode.value) {
+    // get record incoming
+    const record = getIncomingById(isEditMode.value)
+    // set record master stock 
+    stockChild.value = Object.values(record?.stock_master_ids)
+    // stock_master_ids,
+    // set paper id value
+    paper_id.value = record?.paper_id
+    // set date value
+    date.value = new Date(record?.tanggal)
+    // set shift value
+    shift.value = record?.shift
+    // set diterima value
+    diterima.value = record?.diterima
+    // set type value
+    type.value = record?.type
+    // set diserahkan value
+    diserahkan.value = record?.diserahkan
+  }
 })
 
 </script>

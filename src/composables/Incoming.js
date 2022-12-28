@@ -60,7 +60,6 @@ export const createIncoming = async (stock_master_ids, paper_id, tanggal, shift,
   saveData();
   // set parent for each stock master
   setStockParent(stock_master_ids, nextId);
-
   return record;
 };
 
@@ -125,9 +124,8 @@ export const documentsMapper = (docs) => {
       tanggal: ddmmyyyy(doc?.tanggal, "-"),
       shift: doc?.shift,
       diterima: doc?.diterima,
-      type: getJurnalProdukMasukById(doc?.type).nama_jurnal,
+      paper_id: doc?.paper_id,
       diserahkan: doc?.diserahkan
-    
   })
   );
 

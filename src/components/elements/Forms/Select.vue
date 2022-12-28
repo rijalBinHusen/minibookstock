@@ -5,7 +5,11 @@
     @change="$emit('selectedd', $event.target.value)"
   >
     <option value=""></option>
-    <option v-for="op in options" :key="op" :value="op[value]">
+    <option 
+        v-for="op in options" :key="op" 
+        :value="op[value]"
+        :selected="op[value] === inSelect"
+    >
       {{ op[text] }}
     </option>
   </select>
@@ -43,6 +47,7 @@ export default {
     size: {
       type: String,
     },
+    inSelect: String | Number,
   },
   emits: ["selectedd"],
   computed: {

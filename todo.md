@@ -20,4 +20,15 @@ value yang perlu ditampilkan:
     - [v] mapping data incoming
     - [v] tampilkan ditabel
     - [ ] buat fungsi untuk edit
+      - [v] Luncurkan form edit
+      - [v] Kirim juga id document yang akan diedit
+      - [v] Ketika form tampil, dapatkan id dokument yang akan di edit
+      - [v] isi form sesuai dengan record incoming form
+      - [v] lemparkan stock master child ke component pick item, dan isParentEditMode
+      - [v] dikomponen pick item, deteksi apakah parent mode edit atau tidak
+      - [v] jika parent edit mode ambil props stock child dari parent
+      - [v] dapatkan semua stock child parent dengan get stock by id
+      - [v] tampilkan semua stock master ditabel
+      - [ ] edit record on incoming form
+      - [ ] update record
     - [ ] buat fungsi untuk hapus

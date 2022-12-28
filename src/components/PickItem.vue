@@ -106,11 +106,15 @@ import Input from "./elements/Forms/Input.vue";
 import datePicker from "vue3-datepicker";
 import Button from "@/components/elements/Button.vue";
 import TableVue from "./elements/Table.vue";
-import { ref, onMounted, defineEmits, computed } from 'vue';
+import { ref, onMounted, defineEmits, defineProps, watch } from 'vue';
 import { gettingStartedRecord as getItem, Master_items, getItemIdByKdItem, getItemById } from "../composables/MasterItems";
 import { createStock, getStockWithoutParent, updateStockById, getStockById, removeStockById, documentsMapper as stockMapper } from "../composables/StockMaster"
 import { ymdTime } from "../utils/dateFormat"
 
+const props = defineProps({
+    isParentEditMode: String,
+    stockChild: Array,
+})
 
 // origin date
 const product_created = ref(new Date());
@@ -175,8 +179,6 @@ const handleSubmit = async () => {
                 product_created: ymdTime(product_created.value), 
                 quantity: quantity.value,
             })
-            // first get stock by id
-            const newStock = getStockById(isEditMode.value)
             // update local state here
             // render new list of stock
             renderStock()
@@ -211,8 +213,17 @@ const handleBtnTable = (operation, id) => {
         // confirm first
         let conf = confirm("Apakah anda yakin akan menghapusnya?")
         if(conf) {
-            removeStockById(id)
-            renderStock()
+            // if is parent is edit mode, delete stock on parent
+            if(props?.isParentEditMode) {
+                // edit from local state
+                listOfStock.value = listOfStock.value.map((rec) => rec?.id !== id)
+                emitStock()
+            } else {
+                // remove stock from state
+                removeStockById(id)
+                // re render stock
+                renderStock()
+            }
         }
         return
     }
@@ -226,11 +237,30 @@ const emitStock = () => {
 
 // function to rerender listOfstock that contain master stock
 const renderStock = () => {
-    // getting stock without parent incoming id
-    const stock = getStockWithoutParent();
-    listOfStock.value = stockMapper(stock);
-
+    let stock = null;
+    // if listOfstock null, it mean the parent is not on edit mode]
+    // list of stock parameter must be [ master_stock_id,master_stock_id, master_stock_id,  ]
+    if(props?.isParentEditMode) {
+        stock = props?.stockChild.map((idMaster) => getStockById(idMaster))
+    } else {
+        // getting stock without parent incoming id
+        stock = getStockWithoutParent();
+    }
+    // map the stock
+    if(stock) {
+        listOfStock.value = stockMapper(stock);
+    }
 }
+
+watch([props],(newVal) => {
+    // we are watching the props because the default props is null
+    // and after several time the props changed
+    // we can't do it in onMounted function
+    // because it just triggered once
+    if(newVal[0]?.isParentEditMode) {
+        renderStock()
+    }
+})
 
 onMounted(() => {
     // getting all item
@@ -239,6 +269,7 @@ onMounted(() => {
     renderStock()
     // emit stock
     emitStock()
+    // if parent is edit mode
 })
 
 </script>

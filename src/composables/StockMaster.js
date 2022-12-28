@@ -120,10 +120,10 @@ export const documentsMapper = (docs) => {
   return res;
 };
 
-export const setStockParent = (idsOfStock, parent) => {
+export const setStockParent = (idsOfStock, icoming_parent_id) => {
   Stock_masters.value = Stock_masters.value.map((stock) => {
     if(idsOfStock.includes(stock?.id)) {
-      return { ...stock, parent}
+      return { ...stock, icoming_parent_id}
     }
     return stock
   })
