@@ -126,7 +126,10 @@ const kd_produksi = ref(null)
 const item_full = ref(null)
 const item_detail = ref(null)
 
+// list of stock to show
 const listOfStock = ref([])
+// list of id stock
+const listOfIdStock = ref([])
 
 const timeoutHandleItem = ref(null)
 const handleItem = (e) => {
@@ -183,8 +186,11 @@ const handleSubmit = async () => {
             // render new list of stock
             renderStock()
         } else {
+            // if isParentEditmode
+            // create stock 
             const stock = await createStock(item.value, kd_produksi.value, ymdTime(product_created.value), quantity.value)
-            // render list of stock
+            // add new stock to local state
+            listOfIdStock.value.push(stock?.id)
             renderStock()
             emitStock()
         }
@@ -214,16 +220,10 @@ const handleBtnTable = (operation, id) => {
         // confirm first
         let conf = confirm("Apakah anda yakin akan menghapusnya?")
         if(conf) {
-            // if is parent is edit mode, delete stock on parent
-            if(props?.isParentEditMode) {
-                // remove stock in parent
-                emitStock(id)
-            } else {
-                // remove stock from state
-                removeStockById(id)
-                // re render stock
-                renderStock()
-            }
+            // remove stock from state
+            listOfIdStock.value = listOfIdStock.value.filter((id) => id !== id)
+            // re render stock
+            renderStock()
         }
         return
     }
@@ -233,26 +233,13 @@ const handleBtnTable = (operation, id) => {
 const emit = defineEmits(['stockAdded', 'stockRemoved'])
 const emitStock = (id) => {
     // id not null it means remove stock record by id
-    if(id) {
-        emit('stockRemoved', id)
-    } else {
-        emit('stockAdded', listOfStock.value)
-    }
+    emit('stockAdded', listOfIdStock.value)
 }
 
 // function to rerender listOfstock that contain master stock
 const renderStock = () => {
-    let stock = null;
-    // if listOfstock null, it mean the parent is not on edit mode]
-    // list of stock parameter must be [ master_stock_id,master_stock_id, master_stock_id,  ]
-    if(props?.isParentEditMode) {
-        stock = props?.stockChild.map((idMaster) => getStockById(idMaster))
-        console.log('render stock: ', stock)
-    } else {
-        // getting stock without parent incoming id
-        stock = getStockWithoutParent();
-    }
-    // map the stock
+    const stock = listOfIdStock.value.map((idMaster) => getStockById(idMaster))
+    
     if(stock) {
         listOfStock.value = stockMapper(stock);
     }
@@ -264,6 +251,7 @@ watch([props],(newVal) => {
     // we can't do it in onMounted function
     // because it just triggered once
     if(newVal[0]?.isParentEditMode) {
+        listOfIdStock.value = props?.stockChild
         renderStock()
     }
 })

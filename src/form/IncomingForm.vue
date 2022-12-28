@@ -140,15 +140,12 @@ const stockChild = ref([])
 
 // to add new item form
 const handleStock = (e) => {
-  console.log('before edit', stockChild.value)
   // it means delete stock from record
-  if(typeof e === 'string') {
-    stockChild.value = stockChild.value.filter((idStock) => idStock !== e)
-  } else {
-    stockChild.value = e.map((stock) => stock?.id)
-  }
-  
-  console.log('after edit', stockChild.value)
+  // if(typeof e === 'string') {
+  //   stockChild.value = stockChild.value.filter((idStock) => idStock !== e)
+  // } else {
+    stockChild.value = e
+  // }
 }
 
 const handleSubmit = () => {
