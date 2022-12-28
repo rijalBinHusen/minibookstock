@@ -121,6 +121,8 @@ import { gettingStartedRecord as getJurnalMasuk, Jurnal_produk_masuk } from "../
 import { createIncoming, getIncomingById, updateIncomingById } from "../composables/Incoming"
 import { closeModalOrDialog } from "../composables/launchForm"
 import { useStore } from "vuex";
+import { getItemById } from "../composables/MasterItems";
+import { ddmmyyyy } from "../utils/dateFormat";
 // vuex
 const store = useStore()
 // date record
@@ -137,11 +139,12 @@ const diserahkan = ref(null)
 const diterima = ref(null)
 // master stock
 const stockChild = ref([])
+
 const stockChildDetails = computed(() => stockChild.value.map((stock) => ({
       id: stock?.id,
-      item: stock?.item,
+      item: getItemById(stock?.item).nm_item,
       quantity: stock?.quantity,
-      product_created: stock?.tanggal
+      product_created: ddmmyyyy(stock?.tanggal, "-")
     })
   )
 )
@@ -155,7 +158,7 @@ const handleStock = (e) => {
       id: stockChild.value.length +1 + "",
       ...e
     })
-    console.log('stock child', e)
+    console.log('stock child', e?.tanggal)
   // }
 }
 
