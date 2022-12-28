@@ -108,7 +108,7 @@ import Button from "@/components/elements/Button.vue";
 import TableVue from "./elements/Table.vue";
 import { ref, onMounted, defineEmits, computed } from 'vue';
 import { gettingStartedRecord as getItem, Master_items, getItemIdByKdItem, getItemById } from "../composables/MasterItems";
-import { createStock, getStockWithoutParent, updateStockById, getStockById, removeStockById } from "../composables/StockMaster"
+import { createStock, getStockWithoutParent, updateStockById, getStockById, removeStockById, documentsMapper as stockMapper } from "../composables/StockMaster"
 import { ymdTime } from "../utils/dateFormat"
 
 
@@ -178,15 +178,12 @@ const handleSubmit = async () => {
             // first get stock by id
             const newStock = getStockById(isEditMode.value)
             // update local state here
-            // and update
-            listOfStock.value = listOfStock.value.map((rec) => {
-                return rec?.id === isEditMode.value
-                        ? newStock
-                        : rec
-            })
+            // render new list of stock
+            renderStock()
         } else {
             const stock = await createStock(item.value, kd_produksi.value, ymdTime(product_created.value), quantity.value)
-            listOfStock.value.unshift(stock)
+            // render list of stock
+            renderStock()
             emitStock()
         }
     } else {
@@ -215,22 +212,31 @@ const handleBtnTable = (operation, id) => {
         let conf = confirm("Apakah anda yakin akan menghapusnya?")
         if(conf) {
             removeStockById(id)
-            listOfStock.value = listOfStock.value.filter((rec) => rec?.id !== id)
+            renderStock()
         }
         return
     }
 }
 
+// function to emit to parent
 const emit = defineEmits(['stockAdded'])
 const emitStock = () => {
     emit('stockAdded', listOfStock.value)
 }
 
+// function to rerender listOfstock that contain master stock
+const renderStock = () => {
+    // getting stock without parent incoming id
+    const stock = getStockWithoutParent();
+    listOfStock.value = stockMapper(stock);
+
+}
+
 onMounted(() => {
     // getting all item
     getItem()
-    // getting stock without parent incoming id
-    listOfStock.value = getStockWithoutParent()
+    // render stock
+    renderStock()
     // emit stock
     emitStock()
 })

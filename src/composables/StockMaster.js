@@ -106,10 +106,10 @@ export const getStockWithoutParent = () => {
   const stock = Stock_masters.value.filter(
     (stock) => !stock?.icoming_parent_id
   );
-  return documentsMapper(stock);
+  return stock;
 };
 
-const documentsMapper = (docs) => {
+export const documentsMapper = (docs) => {
   const res = docs.map((doc) => ({
     id: doc?.id,
     quantity: doc?.quantity,
