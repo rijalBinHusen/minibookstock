@@ -90,8 +90,8 @@
         <!-- Item picker -->
          <PickItemVue 
             :isParentEditMode="isEditMode" 
-            :stockChild="stockChild" 
-            @stock-added="handleStock"
+            :stockChild="stockChildDetails" 
+            @addStock="handleStock"
             @stockRemoved="handleStock"
           />
          <!-- End of Item picker -->
@@ -116,7 +116,7 @@ import Select from "../components/elements/Forms/Select.vue";
 import Input from "../components/elements/Forms/Input.vue";
 import Button from "../components/elements/Button.vue";
 import PickItemVue from "../components/PickItem.vue";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { gettingStartedRecord as getJurnalMasuk, Jurnal_produk_masuk } from "../composables/Setting_JurnalId"
 import { createIncoming, getIncomingById, updateIncomingById } from "../composables/Incoming"
 import { closeModalOrDialog } from "../composables/launchForm"
@@ -137,14 +137,25 @@ const diserahkan = ref(null)
 const diterima = ref(null)
 // master stock
 const stockChild = ref([])
-
+const stockChildDetails = computed(() => stockChild.value.map((stock) => ({
+      id: stock?.id,
+      item: stock?.item,
+      quantity: stock?.quantity,
+      product_created: stock?.tanggal
+    })
+  )
+)
 // to add new item form
 const handleStock = (e) => {
   // it means delete stock from record
   // if(typeof e === 'string') {
   //   stockChild.value = stockChild.value.filter((idStock) => idStock !== e)
   // } else {
-    stockChild.value = e
+    stockChild.value.push({
+      id: stockChild.value.length +1 + "",
+      ...e
+    })
+    console.log('stock child', e)
   // }
 }
 

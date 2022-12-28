@@ -90,7 +90,7 @@
         <TableVue
             style="overflow: auto; max-height: 300px"
             keyData="id"
-            :contents="listOfStock"
+            :contents="stockChild"
             :options="['edit', 'delete']"
             :thead="['Item', 'quantity', 'tanggal produksi']"
             :tbody="['item', 'quantity', 'product_created']"
@@ -171,28 +171,35 @@ const handleUpdateDate = (whatDate, e) => {
     }
 }
 
+const emit = defineEmits(['addStock', 'stockRemoved'])
+
 const handleSubmit = async () => {
     if(item.value && kd_produksi.value && product_created.value && quantity.value) {
-        if(isEditMode.value) {
-            // update on state and db
-            updateStockById(isEditMode.value, {
-                item_id: item.value, 
-                kd_produksi: kd_produksi.value, 
-                product_created: ymdTime(product_created.value), 
-                quantity: quantity.value,
-            })
-            // update local state here
-            // render new list of stock
-            renderStock()
-        } else {
+        // if(isEditMode.value) {
+        //     // update on state and db
+        //     updateStockById(isEditMode.value, {
+        //         item_id: item.value, 
+        //         kd_produksi: kd_produksi.value, 
+        //         product_created: ymdTime(product_created.value), 
+        //         quantity: quantity.value,
+        //     })
+        //     // update local state here
+        //     // render new list of stock
+        //     renderStock()
+        // } else {
             // if isParentEditmode
             // create stock 
-            const stock = await createStock(item.value, kd_produksi.value, ymdTime(product_created.value), quantity.value)
-            // add new stock to local state
-            listOfIdStock.push(stock?.id)
-            renderStock()
-            emitStock()
-        }
+            emit('addStock', {
+                item: item.value, 
+                kd_produksi: kd_produksi.value, 
+                tanggal: ymdTime(product_created.value), 
+                quantity: quantity.value
+            })
+            // // add new stock to local state
+            // listOfIdStock.push(stock?.id)
+            // renderStock()
+            // emitStock()
+        // }
     } else {
         alert("Tidak boleh ada form yang kosong!")
     }
@@ -200,72 +207,71 @@ const handleSubmit = async () => {
 }
 
 // btn table handle
-const handleBtnTable = (operation, id) => {
-    if(operation == 'edit') {
-        // console.log(e)
-        const stock = getStockById(id)
-        // set item id
-        item.value = stock?.item_id
-        // set detail item { id, name, age}
-        item_detail.value = getItemById(item.value);
-        // show in input form
-        item_full.value = item_detail.value?.kd_item + "* " + item_detail.value.nm_item
-        kd_produksi.value = stock?.kd_produksi
-        product_created.value = new Date( stock?.product_created )
-        quantity.value = stock?.quantity
-        isEditMode.value = stock?.id
-    } else {
-        // delete the stock
-        // confirm first
-        let conf = confirm("Apakah anda yakin akan menghapusnya?")
-        if(conf) {
-            // remove stock from state
-            listOfIdStock = listOfIdStock.filter(id2 => id2 !== id)
-            // re render stock
-            renderStock()
-            // emit stock to parent
-            emitStock()
-        }
-        return
-    }
-}
+// const handleBtnTable = (operation, id) => {
+//     if(operation == 'edit') {
+//         // console.log(e)
+//         const stock = getStockById(id)
+//         // set item id
+//         item.value = stock?.item_id
+//         // set detail item { id, name, age}
+//         item_detail.value = getItemById(item.value);
+//         // show in input form
+//         item_full.value = item_detail.value?.kd_item + "* " + item_detail.value.nm_item
+//         kd_produksi.value = stock?.kd_produksi
+//         product_created.value = new Date( stock?.product_created )
+//         quantity.value = stock?.quantity
+//         isEditMode.value = stock?.id
+//     } else {
+//         // delete the stock
+//         // confirm first
+//         let conf = confirm("Apakah anda yakin akan menghapusnya?")
+//         if(conf) {
+//             // remove stock from state
+//             listOfIdStock = listOfIdStock.filter(id2 => id2 !== id)
+//             // re render stock
+//             renderStock()
+//             // emit stock to parent
+//             emitStock()
+//         }
+//         return
+//     }
+// }
 
-// function to emit to parent
-const emit = defineEmits(['stockAdded', 'stockRemoved'])
-const emitStock = () => {
-    // id not null it means remove stock record by id
-    emit('stockAdded', listOfIdStock)
-}
+// // function to emit to parent
+// const emitStock = () => {
+//     // id not null it means remove stock record by id
+//     emit('stockAdded', listOfIdStock)
+// }
 
-// function to rerender listOfstock that contain master stock
-const renderStock = () => {
-    if(listOfIdStock.length) {
-        const stock = listOfIdStock.map((idMaster) => getStockById(idMaster))
+// // function to rerender listOfstock that contain master stock
+// const renderStock = () => {
+//     if(listOfIdStock.length) {
+//         const stock = listOfIdStock.map((idMaster) => getStockById(idMaster))
         
-        if(stock) {
-            listOfStock.value = stockMapper(stock);
-        }
-    }
-}
+//         if(stock) {
+//             listOfStock.value = stockMapper(stock);
+//         }
+//     }
+// }
 
-watch([props],(newVal) => {
-    // we are watching the props because the default props is null
-    // and after several time the props changed
-    // we can't do it in onMounted function
-    // because it just triggered once
-    if(newVal[0]?.isParentEditMode) {
-        listOfIdStock = props?.stockChild
-        renderStock()
-    }
-})
+// watch([props],(newVal) => {
+//     // we are watching the props because the default props is null
+//     // and after several time the props changed
+//     // we can't do it in onMounted function
+//     // because it just triggered once
+//     if(newVal[0]?.isParentEditMode) {
+//         listOfIdStock = props?.stockChild
+//         renderStock()
+//     }
+// })
 
 onMounted(() => {
     // getting all item
     getItem()
     // render stock
-    renderStock()
-    // emit stock
-    emitStock()
+    // renderStock()
+    // // emit stock
+    // emitStock()
     // if parent is edit mode
 })
 
