@@ -60,9 +60,10 @@ export const gettingStartedRecord = async () => {
 // //   return lastRec[0];
 // // };
 
-export const getJurnalProdukMasukById = async (id) => {
-  const findRecord = Jurnal_produk_masuk.value.find((id) => id == id)
-  // console.log(res[0]);
+export const getJurnalProdukMasukById = (id) => {
+  gettingStartedRecord()
+  const findRecord = Jurnal_produk_masuk.value.find((rec) => rec?.id == id)
+  // console.log(findRecord)
   return findRecord
     ? findRecord
     : {

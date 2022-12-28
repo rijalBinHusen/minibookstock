@@ -1,7 +1,7 @@
 import { summary } from "../utils/summaryIdb";
 import { ref } from "vue";
 // import { getItemById } from "./MasterItems";
-import { ymdTime } from "../utils/dateFormat";
+import { ymdTime, ddmmyyyy } from "../utils/dateFormat";
 // store name
 const store = "incoming_transaction";
 // generator id
@@ -9,6 +9,8 @@ import { generateId } from "../utils/GeneratorId";
 // // import { dayPlusOrMinus } from "../utils/dateFormat";
 // import set parent function for stock master
 import { setStockParent } from "./StockMaster"
+// get functin to get type incoming jurnal
+import { getJurnalProdukMasukById } from "./Setting_JurnalId"
 
 // the state
 export const Incoming_transaction = ref([]);
@@ -116,13 +118,18 @@ export const updateIncomingById = (id, keyValueToUpdate) => {
 //   return stock;
 // };
 
-// export const documentsMapper = (docs) => {
-//   const res = docs.map((doc) => ({
-//     id: doc?.id,
-//     quantity: doc?.quantity,
-//     item: getItemById(doc?.item_id)?.nm_item,
-//     product_created: ddmmyyyy(doc?.product_created, "-"),
-//   }));
+export const documentsMapper = (docs) => {
+  const res = docs.map((doc) => ({
+    
+      id: doc?.id,
+      tanggal: ddmmyyyy(doc?.tanggal, "-"),
+      shift: doc?.shift,
+      diterima: doc?.diterima,
+      type: getJurnalProdukMasukById(doc?.type).nama_jurnal,
+      diserahkan: doc?.diserahkan
+    
+  })
+  );
 
-//   return res;
-// };
+  return res;
+};

@@ -25,8 +25,9 @@
                 />
                 <!-- @trig="handleAdd" -->
         </span>
-        <!-- <datatable
-            :heads="['tanggal', 'shift', 'nameItem', 'qty']"
+        <datatable
+            :heads="['tanggal', 'shift', 'type', 'diterima', 'diserahkan']"
+            :keys="['tanggal', 'shift', 'type', 'diterima', 'diserahkan']"
             :datanya="lists"
             keydata="id"
             no
@@ -34,18 +35,18 @@
             option
             v-slot:default="slotProps"
         >
+        
+          <Button
+              accent
+              value="Edit"
+              type="button"
+              small
+              class="ml-2"
+              :datanya="slotProps.prop.id"
+              />
+              <!-- @trig="handleButton($event)" -->
 
-            <Button
-                primary
-                
-                value="Detail"
-                type="button"
-                small
-                class="ml-2"
-                :datanya="slotProps.prop.id"
-                @trig="detail($event)"
-            />
-        </datatable> -->
+        </datatable>
     </div>
 </template>
 
@@ -53,8 +54,9 @@
 import datePicker from "vue3-datepicker";
 import Datatable from "../components/parts/Datatable.vue";
 import Button from "../components/elements/Button.vue";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { launchForm } from "../composables/launchForm";
+import { gettingStartedRecord as getIncomingRecord, documentsMapper as incomingMapper, Incoming_transaction } from "../composables/Incoming"
 
 // what date to show record
 const tanggal = ref(new Date())
@@ -62,6 +64,19 @@ const tanggal = ref(new Date())
 const handleAdd = () => {
     launchForm('IncomingForm', false)
 }
+
+const lists = ref([])
+
+const renderRecord = () => {
+    // get record
+    getIncomingRecord()
+    // map record
+    lists.value = incomingMapper(Incoming_transaction.value)
+}
+
+onMounted(() => {
+    renderRecord()
+})
 
 
 </script>
