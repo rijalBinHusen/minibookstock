@@ -11,7 +11,7 @@
                     type="text"
                     placeholder="Masukkan item"
                     class="w-64 input input-sm input-primary"
-                    @keyup="handleItem"
+                    @change="handleItem"
                     v-model="item_full"
                     list="item"
                 />
@@ -127,15 +127,16 @@ const kd_produksi = ref(null)
 const item_full = ref(null)
 const item_detail = ref(null)
 
-const timeoutHandleItem = ref(null)
+let timeoutHandleItem = null
 const handleItem = (e) => {
     if(e.target.value) {
-        clearTimeout(timeoutHandleItem.value)
-        timeoutHandleItem.value = setTimeout( async () => {
+        // clearTimeout
+        clearTimeout(timeoutHandleItem)
+        timeoutHandleItem = setTimeout( async () => {
             const kd_item = e.target.value.split("*")[0]
             item_detail.value = getItemIdByKdItem(kd_item)
             item.value = item_detail.value?.id
-        }, 100)
+        }, 1000)
     }
 }
 
@@ -171,7 +172,6 @@ const handleUpdateDate = (whatDate, e) => {
 const emit = defineEmits(['addStock', 'removeStock', 'editStock', 'updateStock'])
 
 const handleSubmit = async () => {
-    console.log(item.value, kd_produksi.value, product_created.value, quantity.value)
     if(item.value && kd_produksi.value && product_created.value && quantity.value) {
         const record = {
                 item: item.value, 

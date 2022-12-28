@@ -126,6 +126,7 @@ import { closeModalOrDialog } from "../composables/launchForm"
 import { useStore } from "vuex";
 import { getItemById } from "../composables/MasterItems";
 import { ddmmyyyy } from "../utils/dateFormat";
+import { createStock, setStockParent } from "../composables/StockMaster";
 // vuex
 const store = useStore()
 // date record
@@ -175,23 +176,41 @@ const handleStock = (operation, e) => {
   }
 }
 
-const handleSubmit = () => {
+const handleSubmit = async () => {
   if(date.value && shift.value && type.value && paper_id.value && diserahkan.value && diterima.value && stockChild.value) {
     // update record
     if(isEditMode.value) {
-      const record = {
-        stock_master_ids: stockChild.value,
-        paper_id: paper_id.value,
-        tanggal: date.value,
-        shift: shift.value,
-        diterima: diterima.value,
-        type: type.value,
-        diserahkan: diserahkan.value
-      }
-      updateIncomingById(isEditMode.value, record)
+      // const record = {
+      //   stock_master_ids: stockChild.value,
+      //   paper_id: paper_id.value,
+      //   tanggal: date.value,
+      //   shift: shift.value,
+      //   diterima: diterima.value,
+      //   type: type.value,
+      //   diserahkan: diserahkan.value
+      // }
+      // updateIncomingById(isEditMode.value, record)
     } else {
       // create incoming transaction
-      createIncoming(stockChild.value, paper_id.value, date.value, shift.value, diterima.value, type.value, diserahkan.value, null)
+      // first insert all stock
+      const insertedStock = await new Promise( async (resolve) => {
+        const eachIdStock = []
+        for (const stock of stockChild.value) {
+          // item: item.value, 
+          // kd_produksi: kd_produksi.value, 
+          // tanggal: ymdTime(product_created.value), 
+          // quantity: quantity.value
+          const insertStock = await createStock(stock?.id, stock?.kd_produksi, stock?.product_created, stock?.quantity)
+          eachIdStock.push(insertStock.id)
+        }
+        resolve(eachIdStock)
+      })
+      // then insert incoming transction with child from insert all stock
+      const incomingRecord = await createIncoming(insertedStock, paper_id.value, date.value, shift.value, diterima.value, type.value, diserahkan.value, null)
+      // update all stock with parent
+      insertedStock.forEach((idStock) => {
+        setStockParent(idStock, incomingRecord.id)
+      })
     }
     // close modal and send tunnel message true, it mean we are add new record or update a record
     closeModalOrDialog(true)
