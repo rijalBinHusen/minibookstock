@@ -39,7 +39,7 @@
               <span class="label-text">Shift</span>
             </label>
             <Select
-            @selectedd="shift == $event"
+            @selectedd="shift = $event"
               id="shift"
                 :options="[
                     { shift: 1 },
@@ -59,7 +59,7 @@
               <span class="label-text">Asal produk</span>
             </label>
             <Select
-            @selectedd="type == $event"
+            @selectedd="type = $event"
               id="type"
               :options="Jurnal_produk_masuk"
               value="id"
@@ -94,21 +94,14 @@
           />
         </div>
 
-        <!-- 
-          Item picker
-         -->
+        <!-- Item picker -->
          <PickItemVue @stock-added="handleStock"/>
          <!-- End of Item picker -->
         
-        <!-- <Table
-          v-if="items.length > 0"
-          :contents="items"
-          style="max-height: 200px; overflow: auto"
-        /> -->
 
         <div id="incoming_add_submit" class="w-full mt-4">
-          <!-- @trig="save"  -->
           <Button type="button" 
+          @trig="handleSubmit" 
           primary value="Submit" 
           small
           />
@@ -123,9 +116,11 @@ import datePicker from "vue3-datepicker";
 import Select from "../components/elements/Forms/Select.vue";
 import Input from "../components/elements/Forms/Input.vue";
 import Button from "../components/elements/Button.vue";
-import { ref, onMounted } from "vue";
 import PickItemVue from "../components/PickItem.vue";
+import { ref, onMounted } from "vue";
 import { gettingStartedRecord, Jurnal_produk_masuk } from "../composables/Setting_JurnalId"
+import { createIncoming } from "../composables/Incoming"
+import { closeModalOrDialog } from "../composables/launchForm"
 
 // date record
 const date = ref(new Date())
@@ -144,8 +139,18 @@ const stockChild = ref([])
 
 // to add new item form
 const handleStock = (e) => {
-  stockChild.value = e;
-  console.log(e)
+  stockChild.value = e.map((stock) => stock?.id)
+}
+
+const handleSubmit = () => {
+  if(date.value && shift.value && type.value && paper_id.value && diserahkan.value && diterima.value && stockChild.value) {
+    // create incoming transaction
+    createIncoming(stockChild.value, paper_id.value, date.value, shift.value, diterima.value, type.value, diserahkan.value, null)
+    // close modal
+    closeModalOrDialog()
+  } else {
+    alert("Tidak boleh ada form yang kosong")
+  }
 }
 
 

@@ -4,6 +4,7 @@
     :class="selectTipe"
     @change="$emit('selectedd', $event.target.value)"
   >
+    <option value=""></option>
     <option v-for="op in options" :key="op" :value="op[value]">
       {{ op[text] }}
     </option>

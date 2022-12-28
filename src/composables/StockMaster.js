@@ -119,3 +119,13 @@ export const documentsMapper = (docs) => {
 
   return res;
 };
+
+export const setStockParent = (idsOfStock, parent) => {
+  Stock_masters.value = Stock_masters.value.map((stock) => {
+    if(idsOfStock.includes(stock?.id)) {
+      return { ...stock, parent}
+    }
+    return stock
+  })
+  saveData()
+}
