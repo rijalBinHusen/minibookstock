@@ -210,14 +210,14 @@ const handleBtnTable = (operation, id) => {
         quantity.value = stock?.quantity
         isEditMode.value = stock?.id
     } else {
+        // delete the stock
         // confirm first
         let conf = confirm("Apakah anda yakin akan menghapusnya?")
         if(conf) {
             // if is parent is edit mode, delete stock on parent
             if(props?.isParentEditMode) {
-                // edit from local state
-                listOfStock.value = listOfStock.value.map((rec) => rec?.id !== id)
-                emitStock()
+                // remove stock in parent
+                emitStock(id)
             } else {
                 // remove stock from state
                 removeStockById(id)
@@ -230,9 +230,14 @@ const handleBtnTable = (operation, id) => {
 }
 
 // function to emit to parent
-const emit = defineEmits(['stockAdded'])
-const emitStock = () => {
-    emit('stockAdded', listOfStock.value)
+const emit = defineEmits(['stockAdded', 'stockRemoved'])
+const emitStock = (id) => {
+    // id not null it means remove stock record by id
+    if(id) {
+        emit('stockRemoved', id)
+    } else {
+        emit('stockAdded', listOfStock.value)
+    }
 }
 
 // function to rerender listOfstock that contain master stock
@@ -242,6 +247,7 @@ const renderStock = () => {
     // list of stock parameter must be [ master_stock_id,master_stock_id, master_stock_id,  ]
     if(props?.isParentEditMode) {
         stock = props?.stockChild.map((idMaster) => getStockById(idMaster))
+        console.log('render stock: ', stock)
     } else {
         // getting stock without parent incoming id
         stock = getStockWithoutParent();

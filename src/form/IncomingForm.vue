@@ -88,7 +88,12 @@
         </div>
 
         <!-- Item picker -->
-         <PickItemVue :isParentEditMode="isEditMode" :stockChild="stockChild" @stock-added="handleStock"/>
+         <PickItemVue 
+            :isParentEditMode="isEditMode" 
+            :stockChild="stockChild" 
+            @stock-added="handleStock"
+            @stockRemoved="handleStock"
+          />
          <!-- End of Item picker -->
         
 
@@ -135,7 +140,15 @@ const stockChild = ref([])
 
 // to add new item form
 const handleStock = (e) => {
-  stockChild.value = e.map((stock) => stock?.id)
+  console.log('before edit', stockChild.value)
+  // it means delete stock from record
+  if(typeof e === 'string') {
+    stockChild.value = stockChild.value.filter((idStock) => idStock !== e)
+  } else {
+    stockChild.value = e.map((stock) => stock?.id)
+  }
+  
+  console.log('after edit', stockChild.value)
 }
 
 const handleSubmit = () => {
