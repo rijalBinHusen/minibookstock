@@ -129,8 +129,7 @@ const item_detail = ref(null)
 // list of stock to show
 const listOfStock = ref([])
 // list of id stock
-const listOfIdStock = ref([])
-
+let listOfIdStock = []
 const timeoutHandleItem = ref(null)
 const handleItem = (e) => {
     if(e.target.value) {
@@ -190,7 +189,7 @@ const handleSubmit = async () => {
             // create stock 
             const stock = await createStock(item.value, kd_produksi.value, ymdTime(product_created.value), quantity.value)
             // add new stock to local state
-            listOfIdStock.value.push(stock?.id)
+            listOfIdStock.push(stock?.id)
             renderStock()
             emitStock()
         }
@@ -221,7 +220,7 @@ const handleBtnTable = (operation, id) => {
         let conf = confirm("Apakah anda yakin akan menghapusnya?")
         if(conf) {
             // remove stock from state
-            listOfIdStock.value = listOfIdStock.value.filter((id) => id !== id)
+            listOfIdStock = listOfIdStock.filter((id) => id !== id)
             // re render stock
             renderStock()
         }
@@ -233,15 +232,17 @@ const handleBtnTable = (operation, id) => {
 const emit = defineEmits(['stockAdded', 'stockRemoved'])
 const emitStock = (id) => {
     // id not null it means remove stock record by id
-    emit('stockAdded', listOfIdStock.value)
+    emit('stockAdded', listOfIdStock)
 }
 
 // function to rerender listOfstock that contain master stock
 const renderStock = () => {
-    const stock = listOfIdStock.value.map((idMaster) => getStockById(idMaster))
-    
-    if(stock) {
-        listOfStock.value = stockMapper(stock);
+    if(listOfIdStock.length) {
+        const stock = listOfIdStock.map((idMaster) => getStockById(idMaster))
+        
+        if(stock) {
+            listOfStock.value = stockMapper(stock);
+        }
     }
 }
 
@@ -251,7 +252,7 @@ watch([props],(newVal) => {
     // we can't do it in onMounted function
     // because it just triggered once
     if(newVal[0]?.isParentEditMode) {
-        listOfIdStock.value = props?.stockChild
+        listOfIdStock = props?.stockChild
         renderStock()
     }
 })

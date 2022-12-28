@@ -117,7 +117,7 @@ import Input from "../components/elements/Forms/Input.vue";
 import Button from "../components/elements/Button.vue";
 import PickItemVue from "../components/PickItem.vue";
 import { ref, onMounted } from "vue";
-import { gettingStartedRecord, Jurnal_produk_masuk } from "../composables/Setting_JurnalId"
+import { gettingStartedRecord as getJurnalMasuk, Jurnal_produk_masuk } from "../composables/Setting_JurnalId"
 import { createIncoming, getIncomingById, updateIncomingById } from "../composables/Incoming"
 import { closeModalOrDialog } from "../composables/launchForm"
 import { useStore } from "vuex";
@@ -180,7 +180,7 @@ const isEditMode = ref(null)
 
 
 onMounted( async () => {
-  await gettingStartedRecord()
+  await getJurnalMasuk()
   isEditMode.value = store.state.form?.document
   if(isEditMode.value) {
     // get record incoming
