@@ -93,8 +93,9 @@
             :stockChild="stockChildDetails" 
             @addStock="handleStock('add', $event)"
             @updateStock="handleStock('update', $event)"
-            :currentStockEdit="currentStockEdit"
             @editStock="handleStock('edit', $event)"
+            @removeStock="handleStock('remove', $event)"
+            :currentStockEdit="currentStockEdit"
           />
          <!-- End of Item picker -->
         
@@ -169,7 +170,8 @@ const handleStock = (operation, e) => {
       return rec
     })
     currentStockEdit.value = null
-
+  } else {
+    stockChild.value = stockChild.value.filter((rec) => rec?.id !== e)
   }
 }
 

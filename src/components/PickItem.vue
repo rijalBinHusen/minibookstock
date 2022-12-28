@@ -168,7 +168,7 @@ const handleUpdateDate = (whatDate, e) => {
     }
 }
 
-const emit = defineEmits(['addStock', 'stockRemoved', 'editStock', 'updateStock'])
+const emit = defineEmits(['addStock', 'removeStock', 'editStock', 'updateStock'])
 
 const handleSubmit = async () => {
     console.log(item.value, kd_produksi.value, product_created.value, quantity.value)
@@ -185,7 +185,7 @@ const handleSubmit = async () => {
             emit('addStock', record)
         }   
             // reset the form after submit
-            resetForm()
+        resetForm()
     } else {
         alert("Tidak boleh ada form yang kosong!")
     }
@@ -216,7 +216,10 @@ const handleBtnTable = (operation, id) => {
             isEditMode.value = id
         }, 500)
     } else {
-        
+        const confirm = window.confirm("Apakah anda yakin akan menghapus item tersebut")
+        if(confirm) {
+            emit('removeStock', id)
+        }
     }
 }
 
