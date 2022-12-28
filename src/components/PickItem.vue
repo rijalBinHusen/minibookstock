@@ -220,9 +220,11 @@ const handleBtnTable = (operation, id) => {
         let conf = confirm("Apakah anda yakin akan menghapusnya?")
         if(conf) {
             // remove stock from state
-            listOfIdStock = listOfIdStock.filter((id) => id !== id)
+            listOfIdStock = listOfIdStock.filter(id2 => id2 !== id)
             // re render stock
             renderStock()
+            // emit stock to parent
+            emitStock()
         }
         return
     }
@@ -230,7 +232,7 @@ const handleBtnTable = (operation, id) => {
 
 // function to emit to parent
 const emit = defineEmits(['stockAdded', 'stockRemoved'])
-const emitStock = (id) => {
+const emitStock = () => {
     // id not null it means remove stock record by id
     emit('stockAdded', listOfIdStock)
 }
