@@ -126,7 +126,7 @@ import { closeModalOrDialog } from "../composables/launchForm"
 import { useStore } from "vuex";
 import { getItemById } from "../composables/MasterItems";
 import { ddmmyyyy } from "../utils/dateFormat";
-import { createStock, setStockParent } from "../composables/StockMaster";
+import { createStock, getStockById, setStockParent, updateStockById, removeStockById } from "../composables/StockMaster";
 // vuex
 const store = useStore()
 // date record
@@ -146,9 +146,14 @@ const stockChild = ref([])
 // current stock editing
 const currentStockEdit=ref(null)
 
+// what todo whe update form
+const idStockToUpdate = ref([])
+const idStockToRemove = ref([])
+const idStockToCreate = ref([])
+
 const stockChildDetails = computed(() => stockChild.value.map((stock) => ({
       id: stock?.id,
-      item: getItemById(stock?.item).nm_item,
+      item: getItemById(stock?.item_id).nm_item,
       quantity: stock?.quantity,
       product_created: ddmmyyyy(stock?.tanggal, "-")
     })
@@ -161,6 +166,9 @@ const handleStock = (operation, e) => {
       id: stockChild.value.length +1 + "",
       ...e
     })
+    if(isEditMode.value) {
+      idStockToCreate.value.push(stockChild.value.length +1 + "")
+    }
   } else if(operation == 'edit') {
     currentStockEdit.value = stockChild.value.find((rec) => rec?.id == e)
   } else if(operation == 'update') {
@@ -171,8 +179,14 @@ const handleStock = (operation, e) => {
       return rec
     })
     currentStockEdit.value = null
+    if(isEditMode.value) {
+      idStockToUpdate.value.push(e.id)
+    }
   } else {
     stockChild.value = stockChild.value.filter((rec) => rec?.id !== e)
+    if(isEditMode.value) {
+      idStockToRemove.value.push(e)
+    }
   }
 }
 
@@ -180,15 +194,55 @@ const handleSubmit = async () => {
   if(date.value && shift.value && type.value && paper_id.value && diserahkan.value && diterima.value && stockChild.value) {
     // update record
     if(isEditMode.value) {
-      // const record = {
-      //   stock_master_ids: stockChild.value,
-      //   paper_id: paper_id.value,
-      //   tanggal: date.value,
-      //   shift: shift.value,
-      //   diterima: diterima.value,
-      //   type: type.value,
-      //   diserahkan: diserahkan.value
-      // }
+      // create stock
+      const insertedStock = await new Promise( async (resolve) => {
+        const eachIdStock = []
+        for (const stock of stockChild.value) {
+          // item: item.value, 
+          // kd_produksi: kd_produksi.value, 
+          // tanggal: ymdTime(product_created.value), 
+          // quantity: quantity.value
+          // because we cant detect stock to create, we are using this way
+          if(stock?.id.length < 4) {
+            console.log('stock would create', stock?.item_id, stock?.kd_produksi, stock?.tanggal, stock?.quantity)
+            // const insertStock = await createStock(stock?.item_id, stock?.kd_produksi, stock?.tanggal, stock?.quantity)
+            // eachIdStock.push(insertStock.id)
+          } 
+          // stock to udpate
+          else if (idStockToUpdate.value.includes(stock?.id)) {
+            // update stock
+            // updateStockById(stock?.id, {
+            //   item_id: stock?.item_id, 
+            //   kd_produksi: stock?.kd_produksi, 
+            //   product_created: stock?.tanggal, 
+            //   quantity: stock?.quantity
+            // })
+            // the update stock push too
+            console.log('stock would update', stock?.item_id, stock?.kd_produksi, stock?.tanggal, stock?.quantity)
+            eachIdStock.push(stock?.id)
+          } else if(idStockToRemove.value.includes(stock?.id)) {
+            // remove stock
+            // removeStockById(stock?.id)
+            console.log('stock would remove', stock?.item_id, stock?.kd_produksi, stock?.tanggal, stock?.quantity)
+          } else {
+            // console.log('stock would stay', stock?.item_id, stock?.kd_produksi, stock?.product_created, stock?.quantity)
+            console.log('stock would stay', stock)
+            eachIdStock.push(stock?.id)
+          }
+        }
+        resolve(eachIdStock)
+      })
+
+      const record = {
+        stock_master_ids: insertedStock,
+        paper_id: paper_id.value,
+        tanggal: date.value,
+        shift: shift.value,
+        diterima: diterima.value,
+        type: type.value,
+        diserahkan: diserahkan.value
+      }
+      console.log('new incoming record', record)
       // updateIncomingById(isEditMode.value, record)
     } else {
       // create incoming transaction
@@ -200,7 +254,7 @@ const handleSubmit = async () => {
           // kd_produksi: kd_produksi.value, 
           // tanggal: ymdTime(product_created.value), 
           // quantity: quantity.value
-          const insertStock = await createStock(stock?.id, stock?.kd_produksi, stock?.product_created, stock?.quantity)
+          const insertStock = await createStock(stock?.item_id, stock?.kd_produksi, stock?.tanggal, stock?.quantity)
           eachIdStock.push(insertStock.id)
         }
         resolve(eachIdStock)
@@ -232,8 +286,9 @@ onMounted( async () => {
     // get record incoming
     const record = getIncomingById(isEditMode.value)
     // set record master stock 
-    stockChild.value = Object.values(record?.stock_master_ids)
+    const childStocks = Object.values(record?.stock_master_ids)
     // stock_master_ids,
+    stockChild.value = childStocks.map((rec) => getStockById(rec))
     // set paper id value
     paper_id.value = record?.paper_id
     // set date value

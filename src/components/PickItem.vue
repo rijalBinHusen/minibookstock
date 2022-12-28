@@ -174,7 +174,7 @@ const emit = defineEmits(['addStock', 'removeStock', 'editStock', 'updateStock']
 const handleSubmit = async () => {
     if(item.value && kd_produksi.value && product_created.value && quantity.value) {
         const record = {
-                item: item.value, 
+                item_id: item.value, 
                 kd_produksi: kd_produksi.value, 
                 tanggal: ymdTime(product_created.value), 
                 quantity: quantity.value
