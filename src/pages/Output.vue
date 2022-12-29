@@ -26,8 +26,8 @@
                 <!-- @trig="handleAdd" -->
         </span>
         <datatable
-            :heads="['tanggal', 'shift', 'nomor dokumen', 'diterima', 'diserahkan']"
-            :keys="['tanggal', 'shift', 'paper_id', 'diterima', 'diserahkan']"
+            :heads="['tanggal', 'shift', 'Nomor so', 'nama item', 'tanggal produksi', 'quantity']"
+            :keys="['tanggal', 'shift', 'nomor_so', 'nm_item', 'product_created', 'quantity']"
             :datanya="lists"
             keydata="id"
             no
@@ -56,6 +56,7 @@ import Datatable from "../components/parts/Datatable.vue";
 import Button from "../components/elements/Button.vue";
 import { ref, onMounted } from "vue";
 import { launchFormAndsubscribeMutation } from "../composables/launchForm";
+import { outputTransactionMapped } from "../composables/Output"
 
 // what date to show record
 const tanggal = ref(new Date())
@@ -76,9 +77,9 @@ const renderRecord = () => {
     // get record
     // getIncomingRecord()
     // map record
-    // setTimeout(() => {
-    //     lists.value = incomingMapper(Incoming_transaction.value)
-    // }, 500)
+    setTimeout(() => {
+        lists.value = outputTransactionMapped()
+    }, 500)
 }
 
 onMounted(() => {

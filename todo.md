@@ -55,7 +55,7 @@ value yang perlu ditampilkan:
       - masukkan quantity
     - [v]  quantity number
   - [ ]  hal hal yang perlu dilakukan setelah insert document
-    - [ ]  update available stock master
+    - [v]  update available stock master
 - [ ]  Read document
   - [ ]  hal hal yang perlu ditampilkan
     - [ ]  tanggal date
@@ -64,7 +64,6 @@ value yang perlu ditampilkan:
     - [ ]  nama item string
     - [ ]  product_created
     - [ ]  quantity number
-    - [ ]  keterangan string
 - [ ]  Update document
   - [ ]  hal hal yang perlu di update
     - [ ]  tanggal date

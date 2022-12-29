@@ -117,36 +117,23 @@ export const getOutputById = (id) => {
 //   return stock;
 // };
 
-// export const incomingTransactionMapped = (docs) => {
-//   gettingStartedRecord()
-//   const result = Output_transaction.value.map((doc) => {
-//     // map stock master by stock master ids
-//     return doc?.stock_master_ids.map((id) => {
-//       // get stock master by id
-//         const stockMaster = getStockById(id)
-//         // get nm_item from based on stockMaster.item_id
-//         const item = getItemById(stockMaster?.item_id)
-//         /**
-//          * return {
-//          *  tanggal,
-//          * shift,
-//          * paper_id
-//          * nm_item,
-//          * quantity,
-//          * available
-//          * }
-//          */
-//         return {
-//           id: doc?.id,
-//           tanggal: ddmmyyyy(doc?.tanggal, "-"),
-//           shift: doc?.shift,
-//           paper_id: doc?.paper_id,
-//           nm_item: item?.nm_item,
-//           quantity: stockMaster?.quantity,
-//           available: stockMaster?.available
-//         }
-//     })
-//   }
-//   );
-//   return result.flat()
-// };
+export const outputTransactionMapped = () => {
+  gettingStartedRecord()
+  const result = Output_transaction.value.map((doc) => {
+    // get master stock
+    const master = getStockById(doc?.stock_master_id)
+    // get item
+    const item = getItemById(master.item_id)
+        return {
+          id: doc?.id,
+          tanggal: ddmmyyyy(doc?.tanggal, "-"),
+          shift: doc?.shift,
+          nomor_so: doc?.nomor_so,
+          nm_item: item?.nm_item,
+          product_created: ddmmyyyy(master.product_created, "-"),
+          quantity: doc?.quantity,
+        }
+  }
+  );
+  return result.flat()
+};
