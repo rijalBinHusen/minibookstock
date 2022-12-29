@@ -1,7 +1,7 @@
 <template>
     <div class="grid mx-2 gap-2">
         <span class="flex items-center justify-center">
-            <span class="text-3xl">Incoming</span>
+            <span class="text-3xl">Outpu</span>
             <date-picker 
                 class="ml-2 bg-base-200 p-2 rounded" 
                 v-model="tanggal"
@@ -31,20 +31,32 @@
             :datanya="lists"
             keydata="id"
             no
-            id="table-incoming"
+            id="table-output"
             option
             v-slot:default="slotProps"
         >
         
           <Button
-              accent
-              value="Edit"
+              v-if="!slotProps.prop?.isFinished"
+              secondary
+              value="hapus"
               type="button"
               small
               class="ml-2"
               :datanya="slotProps.prop.id"
-              @trig="handleButton('edit', $event)"
+              @trig="handleButton('remove', $event)"
               />
+        
+        <Button
+            v-if="!slotProps.prop?.isFinished"
+            accent
+            value="sudah muat"
+            type="button"
+            small
+            class="ml-2"
+            :datanya="slotProps.prop.id"
+            @trig="handleButton('finished', $event)"
+            />
 
         </datatable>
     </div>
@@ -55,17 +67,38 @@ import datePicker from "vue3-datepicker";
 import Datatable from "../components/parts/Datatable.vue";
 import Button from "../components/elements/Button.vue";
 import { ref, onMounted } from "vue";
-import { launchFormAndsubscribeMutation } from "../composables/launchForm";
-import { outputTransactionMapped } from "../composables/Output"
+import { launchFormAndsubscribeMutation, subscribeConfirmDialog } from "../composables/launchForm";
+import { outputTransactionMapped, removeOutputById, markAsFinished } from "../composables/Output"
 
 // what date to show record
 const tanggal = ref(new Date())
 // function to launch form to add income product
 const handleButton = async (operation, document) => {
+    // if operation === remove
+    let res = null;
     // add incoming transaction, waiting for tunnel message that send in form
-    const res = await launchFormAndsubscribeMutation('OutputForm', document, 'tunnelMessage')
+    if(operation === 'add') {
+        res = await launchFormAndsubscribeMutation('OutputForm', document, 'tunnelMessage')
+    }
     // if res true, it mean the add new record or update while false, itt close the modal without add record
+    else if(operation === 'remove') {
+        res = await subscribeConfirmDialog('confirm', 'Apakah anda yakin akan mengahapusnya?')
+    }
+    // if operation === finished
+    else if (operation === 'finished') {
+        res = await subscribeConfirmDialog('confirm', 'Apakah kendaraan selesai muat?')
+    }
+    // if tunnel message send you true
     if(res) {
+        // if operation remove record
+        if(operation === 'remove') {
+            // remove record from db
+            removeOutputById(document)
+        } else if(operation === 'finished') {
+            // mark as finished db
+            markAsFinished(document)
+        }
+        // re render record
         renderRecord()
     }
 }

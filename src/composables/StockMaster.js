@@ -153,7 +153,7 @@ export const itemThatAvailable = () => {
 export const getAvailableDateByItem = (item_id) => {
   const result = []
   Stock_masters.value.forEach((stock) => {
-    if(stock?.item_id == item_id) {
+    if(stock?.item_id == item_id && stock?.available > 0) {
       result.push({
         id: stock?.id,
         product_created: ddmmyyyy(stock?.product_created, "-")
@@ -172,3 +172,14 @@ export const changeAvaliableStock = (id_stock, yourNumberPlusOrMinus) => {
   })
   saveData()
 }
+
+
+// export const changeQuantityStock = (id_stock, yourNumberPlusOrMinus) => {
+//   Stock_masters.value = Stock_masters.value.map((stock) => {
+//     if(stock?.id == id_stock) {
+//       return { ...stock, quantity: Number(stock?.available) + Number(yourNumberPlusOrMinus)}
+//     } 
+//     return stock
+//   })
+//   saveData()
+// }

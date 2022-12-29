@@ -7,7 +7,7 @@ const store = "output_transaction";
 // generator id
 import { generateId } from "../utils/GeneratorId";
 // import set parent function for stock master
-import { setStockParent, getStockById, changeAvaliableStock } from "./StockMaster";
+import { getStockById, changeAvaliableStock } from "./StockMaster";
 import { getItemById } from "./MasterItems";
 
 // the state
@@ -40,7 +40,7 @@ export const createOutput = async (tanggal, type, shift, nomor_so, stock_master_
     : generateId("OUTPUT_TR22030000");
   // initiate new record
   const record = {
-    tanggal,
+    tanggal: ymdTime(tanggal),
     type,
     id: nextId,
     nomor_so,
@@ -73,7 +73,7 @@ export const removeOutputById = async (id) => {
         if(rec.id !== id) {
             return rec
         }
-        changeAvaliableStock(rec?.stock_master_id, rec?.quantity)
+        changeAvaliableStock(rec?.stock_master_id, Number(rec?.quantity))
     }
   );
   saveData();
@@ -132,8 +132,22 @@ export const outputTransactionMapped = () => {
           nm_item: item?.nm_item,
           product_created: ddmmyyyy(master.product_created, "-"),
           quantity: doc?.quantity,
+          isFinished: doc?.isFinished
         }
   }
   );
-  return result.flat()
+  return result
 };
+
+export const markAsFinished = (id) => {
+  Output_transaction.value = Output_transaction.value.map((doc) => {
+    if(doc?.id === id) {
+      // update the quantity
+      // changeAvaliableStock(doc?.stock_master_id,)
+      // mark as finished
+      return { ...doc, isFinished: true}
+    } 
+    return doc
+  });
+  saveData()
+}

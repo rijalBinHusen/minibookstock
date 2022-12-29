@@ -93,10 +93,9 @@
             style="overflow: auto; max-height: 300px"
             keyData="id"
             :contents="stockChild"
-            :options="['edit', 'delete']"
+            :options="['delete']"
             :thead="['Item', 'quantity', 'tanggal produksi']"
             :tbody="['item', 'quantity', 'product_created']"
-            @edit="handleBtnTable('edit', $event)"
             @deleteRec="handleBtnTable('hapus', $event)"
         />
     </div>
@@ -190,24 +189,11 @@ const resetForm = () => {
 }
 
 // // btn table handle
-// const handleBtnTable = (operation, id) => {
-//     if(operation == 'edit') {
-//         emit('editStock', id)
-//         setTimeout(() => {
-//             const item = getItemById(props?.currentStockEdit['item'])
-//             kd_produksi.value = props?.currentStockEdit['kd_produksi']
-//             product_created.value = new Date(props?.currentStockEdit['tanggal'])
-//             quantity.value = props?.currentStockEdit['quantity']
-//             item_full.value = item.kd_item + "* " + item.nm_item
-//             handleItem({target: { value: item_full.value }})
-//             isEditMode.value = id
-//         }, 500)
-//     } else {
-//         const confirm = window.confirm("Apakah anda yakin akan menghapus item tersebut")
-//         if(confirm) {
-//             emit('removeStock', id)
-//         }
-//     }
-// }
+const handleBtnTable = (operation, id) => {
+    const confirm = window.confirm("Apakah anda yakin akan menghapus item tersebut")
+    if(confirm) {
+        emit('removeStock', id)
+    }
+}
 
 </script>

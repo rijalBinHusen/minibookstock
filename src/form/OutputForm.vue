@@ -92,8 +92,6 @@
             :isParentEditMode="isEditMode" 
             :stockChild="stockChildDetails" 
             @addStock="handleStock('add', $event)"
-            @updateStock="handleStock('update', $event)"
-            @editStock="handleStock('edit', $event)"
             @removeStock="handleStock('remove', $event)"
             :currentStockEdit="currentStockEdit"
           />
@@ -170,91 +168,19 @@ const handleStock = (operation, e) => {
       id: stockChild.value.length +1 + "",
       ...e
     })
-    if(isEditMode.value) {
-      idStockToCreate.value.push(stockChild.value.length +1 + "")
-    }
-  } else if(operation == 'edit') {
-    currentStockEdit.value = stockChild.value.find((rec) => rec?.id == e)
-  } else if(operation == 'update') {
-    stockChild.value = stockChild.value.map((rec) => {
-      if(rec?.id == e.id) {
-        return e.value
-      }
-      return rec
-    })
-    currentStockEdit.value = null
-    if(isEditMode.value) {
-      idStockToUpdate.value.push(e.id)
-    }
-  } else {
+  }  else {
     stockChild.value = stockChild.value.filter((rec) => rec?.id !== e)
-    if(isEditMode.value) {
-      idStockToRemove.value.push(e)
-    }
   }
 }
 
 const handleSubmit = async () => {
   // stock child value = data from child = { stock_master_id, quantity }
   if(date.value && shift.value && type.value && nomor_so.value && stockChild.value) {
-    // update record
-    // if(isEditMode.value) {
-    //   // create stock or update stock
-    //   const insertedStock = await new Promise( async (resolve) => {
-    //     const eachIdStock = []
-    //     for (const stock of stockChild.value) {
-    //       // item: item.value, 
-    //       // kd_produksi: kd_produksi.value, 
-    //       // tanggal: ymdTime(product_created.value), 
-    //       // quantity: quantity.value
-    //       // because we cant detect stock to create, we are using this way
-    //       if(stock?.id.length < 4) {
-    //         changeAvaliableStock(stock?.stock_master_id, -stock?.quantity)
-    //         eachIdStock.push(insertStock.id)
-    //       } else {
-    //         // stocok would stay
-    //         eachIdStock.push(stock?.id)
-    //       }
-    //     }
-    //     resolve(eachIdStock)
-    //   })
-    //   // remove stock
-    //   idStockToRemove.value.forEach(id => changeAvaliableStock(id, +))
-    //   // update incoming transaction
-    //   const record = {
-    //     stock_master_ids: insertedStock,
-    //     nomor_so: nomor_so.value,
-    //     tanggal: date.value,
-    //     shift: shift.value,
-    //     diterima: diterima.value,
-    //     type: type.value,
-    //     diserahkan: diserahkan.value
-    //   }
-    //   // update in db
-    //   updateIncomingById(isEditMode.value, record)
-    // } 
-    // else {
-      // create incoming transaction
-      // first insert all stock
-      // const insertedStock = await new Promise( async (resolve) => {
-      //   const eachIdStock = []
-      //   for (const stock of stockChild.value) {
-      //     // item: item.value, 
-      //     // kd_produksi: kd_produksi.value, 
-      //     // tanggal: ymdTime(product_created.value), 
-      //     // quantity: quantity.value
-      //     changeAvaliableStock(stock?.stock_master_id, -stock?.quantity)
-      //     eachIdStock.push(stock?.stock_master_id)
-      //   }
-      //   resolve(eachIdStock)
-      // })
       // then insert incoming transction with child from insert all stock
       for (const stock of stockChild.value) {
         createOutput(date.value, type.value, shift.value, nomor_so.value, stock?.stock_master_id, stock?.quantity )
       }
-      // await createIncoming(insertedStock, nomor_so.value, date.value, shift.value, diterima.value, type.value, diserahkan.value, null)
-    // }
-    // close modal and send tunnel message true, it mean we are add new record or update a record
+      
     closeModalOrDialog(true)
   } else {
     alert("Tidak boleh ada form yang kosong")
@@ -269,27 +195,6 @@ const isEditMode = ref(null)
 
 onMounted( async () => {
   await gettingJurnalProdukKeluarRecord()
-  isEditMode.value = store.state.form?.document
-  if(isEditMode.value) {
-    // get record incoming
-    const record = getIncomingById(isEditMode.value)
-    // set record master stock 
-    const childStocks = Object.values(record?.stock_master_ids)
-    // stock_master_ids,
-    stockChild.value = childStocks.map((rec) => getStockById(rec))
-    // set paper id value
-    nomor_so.value = record?.nomor_so
-    // set date value
-    date.value = new Date(record?.tanggal)
-    // set shift value
-    shift.value = record?.shift
-    // set diterima value
-    diterima.value = record?.diterima
-    // set type value
-    type.value = record?.type
-    // set diserahkan value
-    diserahkan.value = record?.diserahkan
-  }
 })
 
 </script>
