@@ -106,9 +106,8 @@ import Input from "./elements/Forms/Input.vue";
 import datePicker from "vue3-datepicker";
 import Button from "@/components/elements/Button.vue";
 import TableVue from "./elements/Table.vue";
-import { ref, onMounted, defineEmits, defineProps, watch } from 'vue';
+import { ref, onMounted, defineEmits, defineProps } from 'vue';
 import { gettingStartedRecord as getItem, Master_items, getItemIdByKdItem, getItemById } from "../composables/MasterItems";
-import { createStock, getStockWithoutParent, updateStockById, getStockById, removeStockById, documentsMapper as stockMapper } from "../composables/StockMaster"
 import { ymdTime } from "../utils/dateFormat"
 
 const props = defineProps({

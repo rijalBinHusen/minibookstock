@@ -149,3 +149,16 @@ export const itemThatAvailable = () => {
   })
   return result;
 }
+
+export const getAvailableDateByItem = (item_id) => {
+  const result = []
+  Stock_masters.value.forEach((stock) => {
+    if(stock?.item_id == item_id) {
+      result.push({
+        id: stock?.id,
+        product_created: ddmmyyyy(stock?.product_created, "-")
+      })
+    }
+  })
+  return result;
+}
