@@ -12,7 +12,7 @@
                     placeholder="Masukkan item"
                     class="w-64 input input-sm input-primary"
                     @change="handleItem"
-                    v-model="item_full"
+                    v-model="itemModel"
                     list="item"
                 />
                 <datalist id="item">
@@ -48,7 +48,7 @@
                     type="text"
                     placeholder="Quantity"
                     class="w-56 input input-sm input-primary"
-                    @keyup="quantity = quantity"
+                    @keyup="quantity = $event.target.value"
                     :value="quantity"
                     />
                 </div>
@@ -123,6 +123,8 @@ const isEditMode = ref(null)
 
 const itemAvailable = computed(() => itemThatAvailable())
 
+// item mode
+const itemModel = ref(null)
 const quantity = ref(null)
 // item kd and name
 const item = ref(null);
@@ -183,36 +185,35 @@ const hadleStockMaster = (id_stock_master) => {
 //     }
 // }
 
-// const handleSubmit = async () => {
-//     if(item.value && kd_produksi.value && product_created.value && quantity.value) {
-//         const record = {
-//                 item_id: item.value, 
-//                 kd_produksi: kd_produksi.value, 
-//                 tanggal: ymdTime(product_created.value), 
-//                 quantity: quantity.value
-//             }
-//         if(isEditMode.value) {
-//             emit('updateStock', { id: isEditMode.value, value: record})
-//         }  else {
-//             emit('addStock', record)
-//         }   
-//             // reset the form after submit
-//         resetForm()
-//     } else {
-//         alert("Tidak boleh ada form yang kosong!")
-//     }
-//     isEditMode.value = null
-// }
+const handleSubmit = async () => {
+    const condition = currentStockMaster.value && quantity.value <= quantityAvailableStockMaster.value
+    if(condition) {
+        const record = {
+                stock_master_id: currentStockMaster.value, 
+                quantity: quantity.value,
+            }
+        if(isEditMode.value) {
+            emit('updateStock', { id: isEditMode.value, value: record})
+        }  else {
+            emit('addStock', record)
+        }   
+            // reset the form after submit
+        resetForm()
+    } else {
+        alert("Tidak boleh ada form yang kosong, dan quantity tidak melebihi maximal")
+    }
+    isEditMode.value = null
+}
 
-// const resetForm = () => {
-//     setTimeout(() => {
-//         item_detail.value = ""
-//         item.value = ""
-//         kd_produksi.value = ""
-//         quantity.value = ""
-//         item_full.value = ""
-//     }, 500)
-// }
+const resetForm = () => {
+    setTimeout(() => {
+        item_detail.value = ""
+        item.value = ""
+        itemModel.value = ""
+        quantity.value = ""
+        itemAvilabelDate.value = ""
+    }, 300)
+}
 
 // // btn table handle
 // const handleBtnTable = (operation, id) => {

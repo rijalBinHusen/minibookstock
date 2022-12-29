@@ -153,16 +153,21 @@ const idStockToUpdate = ref([])
 const idStockToRemove = ref([])
 const idStockToCreate = ref([])
 
-const stockChildDetails = computed(() => stockChild.value.map((stock) => ({
-      id: stock?.id,
-      item: getItemById(stock?.item_id).nm_item,
-      quantity: stock?.quantity,
-      product_created: ddmmyyyy(stock?.tanggal, "-")
-    })
+const stockChildDetails = computed(() => stockChild.value.map((stock) => {
+      const getStockMaster = getStockById(stock?.stock_master_id)
+      const getItem = getItemById(getStockMaster?.item_id)
+      return {
+        id: stock?.id,
+        item: getItem.nm_item,
+        quantity: stock?.quantity,
+        product_created: ddmmyyyy(getStockMaster.product_created, "-")
+      }
+    }
   )
 )
 // to add new item form
 const handleStock = (operation, e) => {
+  //  data from child = { stock_master_id, quantity }
   if(operation == 'add') {
     stockChild.value.push({
       id: stockChild.value.length +1 + "",
