@@ -5,6 +5,7 @@ const store = "items";
 // generator id
 import { generateId } from "../utils/GeneratorId";
 // // import { dayPlusOrMinus } from "../utils/dateFormat";
+import { useIdb } from "../utils/localforage";
 
 // the state
 export const Master_items = ref([]);
@@ -21,6 +22,7 @@ export const createItem = async (
   last_used,
   age_item
 ) => {
+  const dbitems = await useIdb(store);
   // get last id
   const summaryRecord = await summary(store);
   // generate next id
@@ -42,12 +44,16 @@ export const createItem = async (
   // // update summary
   await summaryRecord.updateSummary(nextId);
   // // save tolocalstorage
+  await dbitems.setItem(nextId, record);
   saveData();
 
   return nextId;
 };
 
-export const gettingStartedRecord = () => {
+export const gettingStartedRecord = async () => {
+  const dbitems = await useIdb(store);
+  const rec = await dbitems.getItems(199);
+  console.log(rec);
   // dapatkan last used
   if (!Master_items.value.length) {
     const item = localStorage.getItem(store);
