@@ -172,8 +172,9 @@ const handleStock = (operation, e) => {
       idStockToCreate.value.push(stockChild.value.length +1 + "")
     }
   } else if(operation == 'edit') {
+    
+    // prevent edit when stock has been taked
     currentStockEdit.value = stockChild.value.find((rec) => rec?.id == e)
-    console.log(currentStockEdit.value)
   } else if(operation == 'update') {
     stockChild.value = stockChild.value.map((rec) => {
       if(rec?.id == e.id) {
@@ -186,6 +187,8 @@ const handleStock = (operation, e) => {
       idStockToUpdate.value.push(e.id)
     }
   } else {
+    // remove stock
+    // prevent remove when stock has been taked
     stockChild.value = stockChild.value.filter((rec) => rec?.id !== e)
     if(isEditMode.value) {
       idStockToRemove.value.push(e)
@@ -240,7 +243,6 @@ const handleSubmit = async () => {
         type: type.value,
         diserahkan: diserahkan.value
       }
-      console.log(record)
       // if there is child stock, delete the document
       if(insertedStock.length) {
         // update in db
@@ -294,6 +296,7 @@ onMounted( async () => {
     const childStocks = Object.values(record?.stock_master_ids)
     // stock_master_ids,
     stockChild.value = childStocks.map((rec) => getStockById(rec))
+    console.log('stock that will update', stockChild.value)
     // set paper id value
     paper_id.value = record?.paper_id
     // set date value
