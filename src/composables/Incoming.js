@@ -6,9 +6,9 @@ import { ymdTime, ddmmyyyy } from "../utils/dateFormat";
 const store = "incoming_transaction";
 // generator id
 import { generateId } from "../utils/GeneratorId";
-// // import { dayPlusOrMinus } from "../utils/dateFormat";
 // import set parent function for stock master
-import { setStockParent } from "./StockMaster";
+import { setStockParent, getStockById } from "./StockMaster";
+import { getItemById } from "./MasterItems";
 
 // the state
 export const Incoming_transaction = ref([]);
@@ -126,15 +126,36 @@ export const updateIncomingById = (id, keyValueToUpdate) => {
 //   return stock;
 // };
 
-export const documentsMapper = (docs) => {
-  const res = docs.map((doc) => ({
-    id: doc?.id,
-    tanggal: ddmmyyyy(doc?.tanggal, "-"),
-    shift: doc?.shift,
-    diterima: doc?.diterima,
-    paper_id: doc?.paper_id,
-    diserahkan: doc?.diserahkan,
-  }));
-
-  return res;
+export const incomingTransactionMapped = (docs) => {
+  gettingStartedRecord()
+  const result = Incoming_transaction.value.map((doc) => {
+    // map stock master by stock master ids
+    return doc?.stock_master_ids.map((id) => {
+      // get stock master by id
+        const stockMaster = getStockById(id)
+        // get nm_item from based on stockMaster.item_id
+        const item = getItemById(stockMaster?.item_id)
+        /**
+         * return {
+         *  tanggal,
+         * shift,
+         * paper_id
+         * nm_item,
+         * quantity,
+         * available
+         * }
+         */
+        return {
+          id: doc?.id,
+          tanggal: ddmmyyyy(doc?.tanggal, "-"),
+          shift: doc?.shift,
+          paper_id: doc?.paper_id,
+          nm_item: item?.nm_item,
+          quantity: stockMaster?.quantity,
+          available: stockMaster?.available
+        }
+    })
+  }
+  );
+  return result.flat()
 };

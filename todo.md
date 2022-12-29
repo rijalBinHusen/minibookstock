@@ -19,7 +19,7 @@ value yang perlu ditampilkan:
     - [v] dapatkan semua data incoming
     - [v] mapping data incoming
     - [v] tampilkan ditabel
-    - [ ] buat fungsi untuk edit
+    - [v] buat fungsi untuk edit
       - [v] Luncurkan form edit
       - [v] Kirim juga id document yang akan diedit
       - [v] Ketika form tampil, dapatkan id dokument yang akan di edit
@@ -29,6 +29,50 @@ value yang perlu ditampilkan:
       - [v] jika parent edit mode ambil props stock child dari parent
       - [v] dapatkan semua stock child parent dengan get stock by id
       - [v] tampilkan semua stock master ditabel
-      - [ ] edit record on incoming form
-      - [ ] update record
+      - [v] edit record on incoming form
+      - [v] update record
     - [ ] buat fungsi untuk hapus
+
+<!-- 29 desember 2022 -->
+## Ubah tampilan incoming product
+  - [ ] hal hal yang perlu ditampilkan
+    - [v] tanggal
+    - [v] shift
+    - [v] paper_id
+    - [ ] nm_item
+    - [ ] quanitity
+    - [ ] available
+
+## CRUD transaksi pengeluaran
+- [ ] Create document
+  - [ ] hal hal yang perlu di insert
+    - [ ]  tanggal date
+    - [ ]  shift number
+    - [ ]  vehicle_id string (Sementara nomor SO Saja)
+    - [ ]  stock_master string
+    - [ ]  keterangan string
+    - [ ]  quantity number
+  - [ ]  hal hal yang perlu dilakukan setelah insert document
+    - [ ]  update available stock master
+- [ ]  Read document
+  - [ ]  hal hal yang perlu ditampilkan
+    - [ ]  tanggal date
+    - [ ]  shift number
+    - [ ]  vehicle_id string (Sementara nomor SO Saja)
+    - [ ]  nama item string
+    - [ ]  product_created
+    - [ ]  quantity number
+    - [ ]  keterangan string
+- [ ]  Update document
+  - [ ]  hal hal yang perlu di update
+    - [ ]  tanggal date
+    - [ ]  shift number
+    - [ ]  vehicle_id string (Sementara nomor SO Saja)
+    - [ ]  stock_master string
+    - [ ]  keterangan string
+    - [ ]  quantity number
+  - [ ]  hal hal yang perlu dilakukan setelah update document
+    - [ ]  update available stock master
+- [ ]  Delete document
+  - [ ]  hal hal yang perlu dilakukan setelah delete document
+    - [ ]  update available stock master
