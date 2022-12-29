@@ -183,3 +183,7 @@ export const changeAvaliableStock = (id_stock, yourNumberPlusOrMinus) => {
 //   })
 //   saveData()
 // }
+
+export const markStockAsTaken = (id) => {
+  updateStockById(id, { isTaken: true })
+}

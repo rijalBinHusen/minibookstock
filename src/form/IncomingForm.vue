@@ -16,7 +16,6 @@
               id="date-picker"
               class="input input-outline input-primary input-sm"
               v-model="date"
-              :upper-limit="new Date()"
             ></date-picker>
           </div>
           <!-- end of date picker -->
@@ -125,7 +124,7 @@ import { createIncoming, getIncomingById, updateIncomingById, removeIncomingById
 import { closeModalOrDialog } from "../composables/launchForm"
 import { useStore } from "vuex";
 import { getItemById } from "../composables/MasterItems";
-import { ddmmyyyy } from "../utils/dateFormat";
+import { ddmmyyyy, ymdTime } from "../utils/dateFormat";
 import { createStock, getStockById, setStockParent, updateStockById, removeStockById } from "../composables/StockMaster";
 // vuex
 const store = useStore()
@@ -158,7 +157,7 @@ const stockChildDetails = computed(() => stockChild.value.map((stock) => ({
       id: stock?.id,
       item: getItemById(stock?.item_id).nm_item,
       quantity: stock?.quantity,
-      product_created: ddmmyyyy(stock?.tanggal, "-")
+      product_created: ddmmyyyy(stock?.product_created, "-")
     })
   )
 )
@@ -174,6 +173,7 @@ const handleStock = (operation, e) => {
     }
   } else if(operation == 'edit') {
     currentStockEdit.value = stockChild.value.find((rec) => rec?.id == e)
+    console.log(currentStockEdit.value)
   } else if(operation == 'update') {
     stockChild.value = stockChild.value.map((rec) => {
       if(rec?.id == e.id) {
@@ -207,7 +207,7 @@ const handleSubmit = async () => {
           // quantity: quantity.value
           // because we cant detect stock to create, we are using this way
           if(stock?.id.length < 4) {
-            const insertStock = await createStock(stock?.item_id, stock?.kd_produksi, stock?.tanggal, stock?.quantity)
+            const insertStock = await createStock(stock?.item_id, stock?.kd_produksi, stock?.product_created, stock?.quantity)
             eachIdStock.push(insertStock.id)
           } 
           // stock to udpate
@@ -216,7 +216,7 @@ const handleSubmit = async () => {
             updateStockById(stock?.id, {
               item_id: stock?.item_id, 
               kd_produksi: stock?.kd_produksi, 
-              product_created: stock?.tanggal, 
+              product_created: stock?.product_created, 
               quantity: stock?.quantity
             })
             // the update stock push too
@@ -234,12 +234,13 @@ const handleSubmit = async () => {
       const record = {
         stock_master_ids: insertedStock,
         paper_id: paper_id.value,
-        tanggal: date.value,
+        tanggal: ymdTime(date.value),
         shift: shift.value,
         diterima: diterima.value,
         type: type.value,
         diserahkan: diserahkan.value
       }
+      console.log(record)
       // if there is child stock, delete the document
       if(insertedStock.length) {
         // update in db
@@ -258,7 +259,7 @@ const handleSubmit = async () => {
           // kd_produksi: kd_produksi.value, 
           // tanggal: ymdTime(product_created.value), 
           // quantity: quantity.value
-          const insertStock = await createStock(stock?.item_id, stock?.kd_produksi, stock?.tanggal, stock?.quantity)
+          const insertStock = await createStock(stock?.item_id, stock?.kd_produksi, stock?.product_created, stock?.quantity)
           eachIdStock.push(insertStock.id)
         }
         resolve(eachIdStock)

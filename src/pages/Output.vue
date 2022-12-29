@@ -5,7 +5,6 @@
             <date-picker 
                 class="ml-2 bg-base-200 p-2 rounded" 
                 v-model="tanggal"
-                :upperLimit="tanggal"
             >
             </date-picker>
             <Button

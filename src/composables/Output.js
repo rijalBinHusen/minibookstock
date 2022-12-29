@@ -7,7 +7,7 @@ const store = "output_transaction";
 // generator id
 import { generateId } from "../utils/GeneratorId";
 // import set parent function for stock master
-import { getStockById, changeAvaliableStock } from "./StockMaster";
+import { getStockById, changeAvaliableStock, markStockAsTaken } from "./StockMaster";
 import { getItemById } from "./MasterItems";
 
 // the state
@@ -148,6 +148,7 @@ export const markAsFinished = (id) => {
       // update the quantity
       // changeAvaliableStock(doc?.stock_master_id,)
       // mark as finished
+      markStockAsTaken(doc?.stock_master_id)
       return { ...doc, isFinished: true}
     } 
     return doc

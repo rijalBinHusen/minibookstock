@@ -175,7 +175,7 @@ const handleSubmit = async () => {
         const record = {
                 item_id: item.value, 
                 kd_produksi: kd_produksi.value, 
-                tanggal: ymdTime(product_created.value), 
+                product_created: ymdTime(product_created.value), 
                 quantity: quantity.value
             }
         if(isEditMode.value) {

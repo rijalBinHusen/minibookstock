@@ -16,7 +16,6 @@
               id="date-picker"
               class="input input-outline input-primary input-sm"
               v-model="date"
-              :upper-limit="new Date()"
             ></date-picker>
           </div>
           <!-- end of date picker -->
@@ -142,11 +141,6 @@ const currentStockEdit=ref(null)
 
 // use the composable jurnal produk masuk
 const { gettingJurnalProdukKeluarRecord, Jurnal_produk_keluar } = useJurnalProdukKeluar()
-
-// what todo whe update form
-const idStockToUpdate = ref([])
-const idStockToRemove = ref([])
-const idStockToCreate = ref([])
 
 const stockChildDetails = computed(() => stockChild.value.map((stock) => {
       const getStockMaster = getStockById(stock?.stock_master_id)

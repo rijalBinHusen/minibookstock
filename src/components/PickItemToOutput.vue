@@ -1,5 +1,5 @@
 <template>
-    <div id="stock_master" class="w-full">
+    <div style="width:750px;" id="stock_master" class="w-full">
         <div id="incoming_items" class="flex gap-4 mb-2 items-end">
             <!-- items -->
             <div class="form-control">
