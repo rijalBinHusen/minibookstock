@@ -45,7 +45,7 @@ export const createStock = async (
     item_id,
     kd_produksi,
     product_created,
-    quantity,
+    quantity: Number(quantity),
     available: quantity,
   };
   // // push to state
@@ -161,4 +161,14 @@ export const getAvailableDateByItem = (item_id) => {
     }
   })
   return result;
+}
+
+export const changeAvaliableStock = (id_stock, yourNumberPlusOrMinus) => {
+  Stock_masters.value = Stock_masters.value.map((stock) => {
+    if(stock?.id == id_stock) {
+      return { ...stock, available: Number(stock?.available) + Number(yourNumberPlusOrMinus)}
+    } 
+    return stock
+  })
+  saveData()
 }

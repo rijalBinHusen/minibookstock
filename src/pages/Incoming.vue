@@ -26,8 +26,8 @@
                 <!-- @trig="handleAdd" -->
         </span>
         <datatable
-            :heads="['tanggal', 'shift', 'item', 'nomor dokumen', 'Quantity', 'available']"
-            :keys="['tanggal', 'shift', 'nm_item', 'paper_id', 'quantity', 'available']"
+            :heads="['tanggal', 'shift', 'item', 'nomor dokumen', 'Quantity', 'available', 'Tanggal produksi']"
+            :keys="['tanggal', 'shift', 'nm_item', 'paper_id', 'quantity', 'available', 'product_created']"
             :datanya="lists"
             keydata="id"
             no

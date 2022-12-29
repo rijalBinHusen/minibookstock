@@ -1,5 +1,5 @@
 <template>
-    <div id="stock_master">
+    <div id="stock_master" class="w-full">
         <div id="incoming_items" class="flex gap-4 mb-2 items-end">
             <!-- items -->
             <div class="form-control">
@@ -47,7 +47,7 @@
                 <input
                     type="text"
                     placeholder="Quantity"
-                    class="w-56 input input-sm input-primary"
+                    class="w-32 input input-sm input-primary"
                     @keyup="quantity = $event.target.value"
                     :value="quantity"
                     />
@@ -159,38 +159,12 @@ const hadleStockMaster = (id_stock_master) => {
     // console.log(stockMaster)
 }
 
-// const handleUpdateDate = (whatDate, e) => {
-//     //     // const 1 month
-//     const aMonth = 1000*60*60*24*30;
-//     // set product date that to input to daatabase
-//     product_created.value = e
-//     // get age of product
-//     const age_product = item_detail.value?.age_item
-//     // get expired of product
-//     const new_date = e.getTime()
-//     // if product create date date changed
-//     if(item.value && whatDate === 'created') {
-//         // set expired date
-//         const expired_date = new Date( new_date + (aMonth*age_product))
-//         // product expired
-//         product_expired.value = expired_date
-//         // set value
-//     } 
-//     // expired date changed
-//     else {
-//         // set expired date
-//         const created_date = new Date( new_date - (aMonth*age_product))
-//         // product expired
-//         product_created.value = created_date
-//     }
-// }
-
 const handleSubmit = async () => {
-    const condition = currentStockMaster.value && quantity.value <= quantityAvailableStockMaster.value
+    const condition = currentStockMaster.value && Number(quantity.value) <= Number(quantityAvailableStockMaster.value)
     if(condition) {
         const record = {
                 stock_master_id: currentStockMaster.value, 
-                quantity: quantity.value,
+                quantity: Number(quantity.value),
             }
         if(isEditMode.value) {
             emit('updateStock', { id: isEditMode.value, value: record})

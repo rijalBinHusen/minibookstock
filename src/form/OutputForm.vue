@@ -63,11 +63,11 @@
         <div id="incoming_paper" class="grid grid-cols-3 gap-4">
           <Input
             label="Nomor sales order"
-            @send="paper_id = $event"
+            @send="nomor_so = $event"
             small
             placeholder="Nomor sales order"
             tipe="primary"
-            :value="paper_id"
+            :value="nomor_so"
           />
           <!-- <Input
             label="Yang menyerahkan"
@@ -125,7 +125,8 @@ import { closeModalOrDialog } from "../composables/launchForm"
 import { useStore } from "vuex";
 import { getItemById } from "../composables/MasterItems";
 import { ddmmyyyy } from "../utils/dateFormat";
-import { createStock, getStockById, setStockParent, updateStockById, removeStockById } from "../composables/StockMaster";
+import { createStock, getStockById, setStockParent, updateStockById, removeStockById, changeAvaliableStock } from "../composables/StockMaster";
+import { createOutput } from "../composables/Output"
 // vuex
 const store = useStore()
 // date record
@@ -135,11 +136,7 @@ const shift = ref(1)
 // type incom product
 const type = ref(null)
 // paper id record
-const paper_id = ref(null)
-// handed by record
-const diserahkan = ref(null)
-// receiver product
-const diterima = ref(null)
+const nomor_so = ref(null)
 // master stock
 const stockChild = ref([])
 // current stock editing
@@ -198,76 +195,65 @@ const handleStock = (operation, e) => {
 }
 
 const handleSubmit = async () => {
-  if(date.value && shift.value && type.value && paper_id.value && diserahkan.value && diterima.value && stockChild.value) {
+  // stock child value = data from child = { stock_master_id, quantity }
+  if(date.value && shift.value && type.value && nomor_so.value && stockChild.value) {
     // update record
-    if(isEditMode.value) {
-      // create stock or update stock
-      const insertedStock = await new Promise( async (resolve) => {
-        const eachIdStock = []
-        for (const stock of stockChild.value) {
-          // item: item.value, 
-          // kd_produksi: kd_produksi.value, 
-          // tanggal: ymdTime(product_created.value), 
-          // quantity: quantity.value
-          // because we cant detect stock to create, we are using this way
-          if(stock?.id.length < 4) {
-            const insertStock = await createStock(stock?.item_id, stock?.kd_produksi, stock?.tanggal, stock?.quantity)
-            eachIdStock.push(insertStock.id)
-          } 
-          // stock to udpate
-          else if (idStockToUpdate.value.includes(stock?.id)) {
-            // update stock
-            updateStockById(stock?.id, {
-              item_id: stock?.item_id, 
-              kd_produksi: stock?.kd_produksi, 
-              product_created: stock?.tanggal, 
-              quantity: stock?.quantity
-            })
-            // the update stock push too
-            eachIdStock.push(stock?.id)
-          } else {
-            // stocok would stay
-            eachIdStock.push(stock?.id)
-          }
-        }
-        resolve(eachIdStock)
-      })
-      // remove stock
-      idStockToRemove.value.forEach(id => removeStockById(id))
-      // update incoming transaction
-      const record = {
-        stock_master_ids: insertedStock,
-        paper_id: paper_id.value,
-        tanggal: date.value,
-        shift: shift.value,
-        diterima: diterima.value,
-        type: type.value,
-        diserahkan: diserahkan.value
-      }
-      // update in db
-      updateIncomingById(isEditMode.value, record)
-    } else {
+    // if(isEditMode.value) {
+    //   // create stock or update stock
+    //   const insertedStock = await new Promise( async (resolve) => {
+    //     const eachIdStock = []
+    //     for (const stock of stockChild.value) {
+    //       // item: item.value, 
+    //       // kd_produksi: kd_produksi.value, 
+    //       // tanggal: ymdTime(product_created.value), 
+    //       // quantity: quantity.value
+    //       // because we cant detect stock to create, we are using this way
+    //       if(stock?.id.length < 4) {
+    //         changeAvaliableStock(stock?.stock_master_id, -stock?.quantity)
+    //         eachIdStock.push(insertStock.id)
+    //       } else {
+    //         // stocok would stay
+    //         eachIdStock.push(stock?.id)
+    //       }
+    //     }
+    //     resolve(eachIdStock)
+    //   })
+    //   // remove stock
+    //   idStockToRemove.value.forEach(id => changeAvaliableStock(id, +))
+    //   // update incoming transaction
+    //   const record = {
+    //     stock_master_ids: insertedStock,
+    //     nomor_so: nomor_so.value,
+    //     tanggal: date.value,
+    //     shift: shift.value,
+    //     diterima: diterima.value,
+    //     type: type.value,
+    //     diserahkan: diserahkan.value
+    //   }
+    //   // update in db
+    //   updateIncomingById(isEditMode.value, record)
+    // } 
+    // else {
       // create incoming transaction
       // first insert all stock
-      const insertedStock = await new Promise( async (resolve) => {
-        const eachIdStock = []
-        for (const stock of stockChild.value) {
-          // item: item.value, 
-          // kd_produksi: kd_produksi.value, 
-          // tanggal: ymdTime(product_created.value), 
-          // quantity: quantity.value
-          const insertStock = await createStock(stock?.item_id, stock?.kd_produksi, stock?.tanggal, stock?.quantity)
-          eachIdStock.push(insertStock.id)
-        }
-        resolve(eachIdStock)
-      })
+      // const insertedStock = await new Promise( async (resolve) => {
+      //   const eachIdStock = []
+      //   for (const stock of stockChild.value) {
+      //     // item: item.value, 
+      //     // kd_produksi: kd_produksi.value, 
+      //     // tanggal: ymdTime(product_created.value), 
+      //     // quantity: quantity.value
+      //     changeAvaliableStock(stock?.stock_master_id, -stock?.quantity)
+      //     eachIdStock.push(stock?.stock_master_id)
+      //   }
+      //   resolve(eachIdStock)
+      // })
       // then insert incoming transction with child from insert all stock
-      const incomingRecord = await createIncoming(insertedStock, paper_id.value, date.value, shift.value, diterima.value, type.value, diserahkan.value, null)
-      // update all stock with parent
-      insertedStock.forEach((idStock) => {
-        setStockParent(idStock, incomingRecord.id)
-      })
-    }
+      for (const stock of stockChild.value) {
+        createOutput(date.value, type.value, shift.value, nomor_so.value, stock?.stock_master_id, stock?.quantity )
+      }
+      // await createIncoming(insertedStock, nomor_so.value, date.value, shift.value, diterima.value, type.value, diserahkan.value, null)
+    // }
     // close modal and send tunnel message true, it mean we are add new record or update a record
     closeModalOrDialog(true)
   } else {
@@ -292,7 +278,7 @@ onMounted( async () => {
     // stock_master_ids,
     stockChild.value = childStocks.map((rec) => getStockById(rec))
     // set paper id value
-    paper_id.value = record?.paper_id
+    nomor_so.value = record?.nomor_so
     // set date value
     date.value = new Date(record?.tanggal)
     // set shift value
@@ -304,7 +290,6 @@ onMounted( async () => {
     // set diserahkan value
     diserahkan.value = record?.diserahkan
   }
-  console.log('tampil')
 })
 
 </script>

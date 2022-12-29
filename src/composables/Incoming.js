@@ -152,7 +152,8 @@ export const incomingTransactionMapped = (docs) => {
           paper_id: doc?.paper_id,
           nm_item: item?.nm_item,
           quantity: stockMaster?.quantity,
-          available: stockMaster?.available
+          available: stockMaster?.available,
+          product_created: ddmmyyyy(stockMaster?.product_created, "-")
         }
     })
   }
