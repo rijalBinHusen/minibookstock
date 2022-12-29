@@ -45,12 +45,12 @@
           <!-- Coming from -->
           <div class="form-control">
             <label for="type" class="label">
-              <span class="label-text">Asal produk</span>
+              <span class="label-text">Type output</span>
             </label>
             <Select
             @selectedd="type = $event"
               id="type"
-              :options="Jurnal_produk_masuk"
+              :options="Jurnal_produk_keluar"
               value="id"
               text="nama_jurnal"
               size="primary small"
@@ -62,14 +62,14 @@
 
         <div id="incoming_paper" class="grid grid-cols-3 gap-4">
           <Input
-            label="Nomor dokumen"
+            label="Nomor sales order"
             @send="paper_id = $event"
             small
-            placeholder="Nomor dokumen"
+            placeholder="Nomor sales order"
             tipe="primary"
             :value="paper_id"
           />
-          <Input
+          <!-- <Input
             label="Yang menyerahkan"
             @send="diserahkan = $event"
             small
@@ -84,11 +84,11 @@
             placeholder="Penerima"
             tipe="primary"
             :value="diterima"
-          />
+          /> -->
         </div>
 
         <!-- Item picker -->
-         <PickItemVue 
+         <PickItemToOutputVue 
             :isParentEditMode="isEditMode" 
             :stockChild="stockChildDetails" 
             @addStock="handleStock('add', $event)"
@@ -118,10 +118,9 @@ import datePicker from "vue3-datepicker";
 import Select from "../components/elements/Forms/Select.vue";
 import Input from "../components/elements/Forms/Input.vue";
 import Button from "../components/elements/Button.vue";
-import PickItemVue from "../components/PickItem.vue";
+import PickItemToOutputVue from "../components/PickItemToOutput.vue";
 import { ref, onMounted, computed } from "vue";
-import { useJurnalProdukMasuk } from "../composables/Setting_JurnalId"
-import { createIncoming, getIncomingById, updateIncomingById, removeIncomingById } from "../composables/Incoming"
+import { useJurnalProdukKeluar } from "../composables/Setting_JurnalId"
 import { closeModalOrDialog } from "../composables/launchForm"
 import { useStore } from "vuex";
 import { getItemById } from "../composables/MasterItems";
@@ -147,7 +146,7 @@ const stockChild = ref([])
 const currentStockEdit=ref(null)
 
 // use the composable jurnal produk masuk
-const { gettingJurnalProdukMasukRecord, Jurnal_produk_masuk } = useJurnalProdukMasuk()
+const { gettingJurnalProdukKeluarRecord, Jurnal_produk_keluar } = useJurnalProdukKeluar()
 
 // what todo whe update form
 const idStockToUpdate = ref([])
@@ -240,14 +239,8 @@ const handleSubmit = async () => {
         type: type.value,
         diserahkan: diserahkan.value
       }
-      // if there is child stock, delete the document
-      if(insertedStock.length) {
-        // update in db
-        updateIncomingById(isEditMode.value, record)
-      } else {
-        // remove incoming record from db
-        removeIncomingById(isEditMode.value)
-      }
+      // update in db
+      updateIncomingById(isEditMode.value, record)
     } else {
       // create incoming transaction
       // first insert all stock
@@ -284,7 +277,7 @@ const isEditMode = ref(null)
 
 
 onMounted( async () => {
-  await gettingJurnalProdukMasukRecord()
+  await gettingJurnalProdukKeluarRecord()
   isEditMode.value = store.state.form?.document
   if(isEditMode.value) {
     // get record incoming
@@ -306,6 +299,7 @@ onMounted( async () => {
     // set diserahkan value
     diserahkan.value = record?.diserahkan
   }
+  console.log('tampil')
 })
 
 </script>

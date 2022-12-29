@@ -35,22 +35,24 @@ value yang perlu ditampilkan:
 
 <!-- 29 desember 2022 -->
 ## Ubah tampilan incoming product
-  - [ ] hal hal yang perlu ditampilkan
+  - [v] hal hal yang perlu ditampilkan
     - [v] tanggal
     - [v] shift
     - [v] paper_id
-    - [ ] nm_item
-    - [ ] quanitity
-    - [ ] available
+    - [v] nm_item
+    - [v] quanitity
+    - [v] available
 
 ## CRUD transaksi pengeluaran
 - [ ] Create document
   - [ ] hal hal yang perlu di insert
-    - [ ]  tanggal date
-    - [ ]  shift number
-    - [ ]  vehicle_id string (Sementara nomor SO Saja)
+    - [v]  tanggal date
+    - [v]  shift number
+    - [v]  vehicle_id string (Sementara nomor SO Saja)
     - [ ]  stock_master string
-    - [ ]  keterangan string
+      - User pilih item dulu
+      - pilih expired date berapa refer to stock master
+      - masukkan quantity
     - [ ]  quantity number
   - [ ]  hal hal yang perlu dilakukan setelah insert document
     - [ ]  update available stock master

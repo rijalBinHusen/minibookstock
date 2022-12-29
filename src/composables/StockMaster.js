@@ -129,3 +129,23 @@ export const setStockParent = (idsOfStock, icoming_parent_id) => {
   })
   saveData()
 }
+
+export const itemThatAvailable = () => {
+  gettingStartedRecord();
+  // record item that was taken
+  let isItemTaken = []
+  // result of item
+  let result = []
+  Stock_masters.value.forEach((stock) => {
+    if(stock?.available > 0 && !isItemTaken.includes(stock?.item_id)) {
+      const item = getItemById(stock?.item_id)
+      isItemTaken.push(stock?.item_id)
+      result.push({
+        item_id: stock?.item_id,
+        kd_item: item?.kd_item,
+        nm_item: item?.nm_item,
+      })
+    }
+  })
+  return result;
+}

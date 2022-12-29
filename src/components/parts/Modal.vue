@@ -17,6 +17,7 @@
 import Loader from "./Loader.vue";
 import IncomingForm from "../../form/IncomingForm.vue";
 import VehiclesForm from "../../form/VehiclesForm.vue";
+import OutputForm from "../../form/OutputForm.vue";
 import { useStore } from 'vuex'
 import { computed, onMounted, onBeforeUnmount } from "vue";
 import { keyPressWoutEnter } from '@/composables/keyEvent.js'
@@ -33,7 +34,7 @@ const currentForm = computed(() => {
 })
 
 const forms = {
-  Loader, IncomingForm, VehiclesForm
+  Loader, IncomingForm, VehiclesForm, OutputForm
 }
 
 onMounted(() => {

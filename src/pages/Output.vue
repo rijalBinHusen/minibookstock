@@ -56,21 +56,16 @@ import Datatable from "../components/parts/Datatable.vue";
 import Button from "../components/elements/Button.vue";
 import { ref, onMounted } from "vue";
 import { launchFormAndsubscribeMutation } from "../composables/launchForm";
-import { gettingStartedRecord as getIncomingRecord, documentsMapper as incomingMapper, Incoming_transaction } from "../composables/Incoming"
 
 // what date to show record
 const tanggal = ref(new Date())
 // function to launch form to add income product
 const handleButton = async (operation, document) => {
-    if(operation == 'delete') {
-        // launchFormAndsubscribeMutation('IncomingForm', document, 'tunnelMessage')
-    } else {
-        // add incoming transaction, waiting for tunnel message that send in form
-        const res = await launchFormAndsubscribeMutation('IncomingForm', document, 'tunnelMessage')
-        // if res true, it mean the add new record or update while false, itt close the modal without add record
-        if(res) {
-            renderRecord()
-        }
+    // add incoming transaction, waiting for tunnel message that send in form
+    const res = await launchFormAndsubscribeMutation('OutputForm', document, 'tunnelMessage')
+    // if res true, it mean the add new record or update while false, itt close the modal without add record
+    if(res) {
+        renderRecord()
     }
 }
 
@@ -79,11 +74,11 @@ const lists = ref([])
 const renderRecord = () => {
     lists.value = []
     // get record
-    getIncomingRecord()
+    // getIncomingRecord()
     // map record
-    setTimeout(() => {
-        lists.value = incomingMapper(Incoming_transaction.value)
-    }, 500)
+    // setTimeout(() => {
+    //     lists.value = incomingMapper(Incoming_transaction.value)
+    // }, 500)
 }
 
 onMounted(() => {
