@@ -50,10 +50,10 @@ value yang perlu ditampilkan:
     - [v]  shift number
     - [v]  vehicle_id string (Sementara nomor SO Saja)
     - [ ]  stock_master string
-      - User pilih item dulu
-      - pilih expired date berapa refer to stock master
+      - [v] User pilih item dulu
+      - [v] pilih expired date berapa refer to stock master
       - masukkan quantity
-    - [ ]  quantity number
+    - [v]  quantity number
   - [ ]  hal hal yang perlu dilakukan setelah insert document
     - [ ]  update available stock master
 - [ ]  Read document

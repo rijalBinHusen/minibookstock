@@ -22,33 +22,37 @@
                 </div>
             </div>
             <!-- Select product created -->
-            <div class="form-control">
-                <Select 
-                    v-if="item"
+            <div v-if="item" class="form-control">
+                <label class="label" for="tanggal-produksi">
+                    <span class="label-text">Tanggal produksi</span>
+                </label>
+                <div class="relative">
+                <Select
                     value="id"
                     text="product_created"
-                    id="data_to_import"
+                    id="tanggal-produksi"
                     :options="itemAvilabelDate"
                     size="small"
-                    class="w-56"
-                    @selectedd="activeJurnalToInput = $event"
+                    class="w-32"
+                    @selectedd="hadleStockMaster($event)"
                 />
+                </div>
             </div>
             <!-- Kode produksi -->
-            <!-- <div class="form-control">
+            <div v-if="currentStockMaster" class="form-control">
                 <label class="label">
-                    <span class="label-text">Kode produksi</span>
+                    <span class="label-text">Qantity (Max: {{ quantityAvailableStockMaster }} Ctn)</span>
                 </label>
                 <div class="relative">
                 <input
                     type="text"
-                    placeholder="Kode"
-                    class="w-24 input input-sm input-primary"
-                    @keyup="kd_produksi = $event.target.value"
-                    :value="kd_produksi"
+                    placeholder="Quantity"
+                    class="w-56 input input-sm input-primary"
+                    @keyup="quantity = quantity"
+                    :value="quantity"
                     />
                 </div>
-            </div> -->
+            </div>
             <!-- tanggal produksi -->
             <!-- <div class="form-control">
                 <label for="date-picker" class="label">
@@ -105,7 +109,7 @@ import Button from "@/components/elements/Button.vue";
 import TableVue from "./elements/Table.vue";
 import { ref, defineEmits, defineProps, computed } from 'vue';
 import { getItemIdByKdItem } from "../composables/MasterItems";
-import { itemThatAvailable, getAvailableDateByItem } from "../composables/StockMaster"
+import { itemThatAvailable, getAvailableDateByItem, getStockById } from "../composables/StockMaster"
 import Select from "./elements/Forms/Select.vue";
 
 const props = defineProps({
@@ -120,12 +124,15 @@ const isEditMode = ref(null)
 const itemAvailable = computed(() => itemThatAvailable())
 
 const quantity = ref(null)
-const kd_produksi = ref(null)
 // item kd and name
 const item = ref(null);
 const item_detail = ref(null)
 // lists of date that availablel to taken
 const itemAvilabelDate = ref([])
+// stock master that should we take
+const currentStockMaster = ref(null)
+// available stock that can take to quantity output
+const quantityAvailableStockMaster = ref(null)
 
 const handleItem = (e) => {
     if(e.target.value) {
@@ -137,6 +144,17 @@ const handleItem = (e) => {
         // get product created by it item that available to take
         itemAvilabelDate.value = getAvailableDateByItem(item_detail.value?.id)
     }
+}
+
+const hadleStockMaster = (id_stock_master) => {
+    // set the stock master
+    currentStockMaster.value = id_stock_master
+    // get stock master by id
+    const stockMaster = getStockById(id_stock_master)
+    // get the quantity
+    // show the maximum quantity
+    quantityAvailableStockMaster.value = stockMaster.available
+    // console.log(stockMaster)
 }
 
 // const handleUpdateDate = (whatDate, e) => {
