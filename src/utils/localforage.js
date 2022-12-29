@@ -20,18 +20,13 @@ export const useIdb = async (storeName) => {
     const result = [];
     return store
       .iterate(function (value, key, iterationNumber) {
-        if (iterationNumber < limit) {
-          result.push(value)
-          console.log('limit', result)
-        } else {
-          console.log('iteration', result)
-          return result;
+        if (iterationNumber < limit && value && key) {
+          result.push(value);
         }
-        return result
+        // return result;
       })
-      .then(function (result) {
-        console.log("Iteration has completed, last iterated pair:");
-        console.log('result', result)
+      .then(function () {
+        // console.log("Iteration has completed, last iterated pair:");
         return result;
       })
       .catch(function (err) {
