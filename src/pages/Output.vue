@@ -1,7 +1,7 @@
 <template>
     <div class="grid mx-2 gap-2">
         <span class="flex items-center justify-center">
-            <span class="text-3xl">Outpu</span>
+            <span class="text-3xl">Output</span>
             <date-picker 
                 class="ml-2 bg-base-200 p-2 rounded" 
                 v-model="tanggal"
@@ -14,6 +14,7 @@
                 type="button"
                 small
                 class="ml-2"
+                @trig="renderRecord"
             />
             <Button
                 primary
@@ -111,7 +112,7 @@ const renderRecord = () => {
     // getIncomingRecord()
     // map record
     setTimeout(() => {
-        lists.value = outputTransactionMapped()
+        lists.value = outputTransactionMapped(tanggal.value)
     }, 500)
 }
 

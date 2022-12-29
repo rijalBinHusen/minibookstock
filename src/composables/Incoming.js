@@ -126,37 +126,40 @@ export const updateIncomingById = (id, keyValueToUpdate) => {
 //   return stock;
 // };
 
-export const incomingTransactionMapped = (docs) => {
+export const incomingTransactionMapped = (date_) => {
   gettingStartedRecord()
-  const result = Incoming_transaction.value.map((doc) => {
+  const result = []
+  Incoming_transaction.value.forEach((doc) => {
+    if(doc?.tanggal == ymdTime(date_)) {
     // map stock master by stock master ids
-    return doc?.stock_master_ids.map((id) => {
-      // get stock master by id
-        const stockMaster = getStockById(id)
-        // get nm_item from based on stockMaster.item_id
-        const item = getItemById(stockMaster?.item_id)
-        /**
-         * return {
-         *  tanggal,
-         * shift,
-         * paper_id
-         * nm_item,
-         * quantity,
-         * available
-         * }
-         */
-        return {
-          id: doc?.id,
-          tanggal: ddmmyyyy(doc?.tanggal, "-"),
-          shift: doc?.shift,
-          paper_id: doc?.paper_id,
-          nm_item: item?.nm_item,
-          quantity: stockMaster?.quantity,
-          available: stockMaster?.available,
-          product_created: ddmmyyyy(stockMaster?.product_created, "-")
-        }
-    })
+      doc?.stock_master_ids.forEach((id) => {
+        // get stock master by id
+          const stockMaster = getStockById(id)
+          // get nm_item from based on stockMaster.item_id
+          const item = getItemById(stockMaster?.item_id)
+          /**
+           * return {
+           *  tanggal,
+           * shift,
+           * paper_id
+           * nm_item,
+           * quantity,
+           * available
+           * }
+           */
+          result.push ({
+            id: doc?.id,
+            tanggal: ddmmyyyy(doc?.tanggal, "-"),
+            shift: doc?.shift,
+            paper_id: doc?.paper_id,
+            nm_item: item?.nm_item,
+            quantity: stockMaster?.quantity,
+            available: stockMaster?.available,
+            product_created: ddmmyyyy(stockMaster?.product_created, "-")
+          })
+      })
+    }
   }
   );
-  return result.flat()
+  return result
 };

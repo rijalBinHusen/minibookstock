@@ -14,6 +14,7 @@
                 type="button"
                 small
                 class="ml-2"
+                @trig="renderRecord"
             />
             <Button
                 primary
@@ -76,7 +77,7 @@ const renderRecord = () => {
     lists.value = []
     // get the mapped record
     setTimeout(() => {
-        lists.value = incomingTransactionMapped()
+        lists.value = incomingTransactionMapped(tanggal.value)
     }, 500)
 }
 

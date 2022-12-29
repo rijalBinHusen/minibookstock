@@ -117,23 +117,26 @@ export const getOutputById = (id) => {
 //   return stock;
 // };
 
-export const outputTransactionMapped = () => {
+export const outputTransactionMapped = (date_) => {
   gettingStartedRecord()
-  const result = Output_transaction.value.map((doc) => {
-    // get master stock
-    const master = getStockById(doc?.stock_master_id)
-    // get item
-    const item = getItemById(master.item_id)
-        return {
-          id: doc?.id,
-          tanggal: ddmmyyyy(doc?.tanggal, "-"),
-          shift: doc?.shift,
-          nomor_so: doc?.nomor_so,
-          nm_item: item?.nm_item,
-          product_created: ddmmyyyy(master.product_created, "-"),
-          quantity: doc?.quantity,
-          isFinished: doc?.isFinished
-        }
+  const result = []
+  Output_transaction.value.forEach((doc) => {
+    if(doc?.tanggal == ymdTime(date_)) {
+      // get master stock
+      const master = getStockById(doc?.stock_master_id)
+      // get item
+      const item = getItemById(master.item_id)
+      result.push ({
+        id: doc?.id,
+        tanggal: ddmmyyyy(doc?.tanggal, "-"),
+        shift: doc?.shift,
+        nomor_so: doc?.nomor_so,
+        nm_item: item?.nm_item,
+        product_created: ddmmyyyy(master.product_created, "-"),
+        quantity: doc?.quantity,
+        isFinished: doc?.isFinished
+      })
+    }
   }
   );
   return result
