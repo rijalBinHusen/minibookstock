@@ -305,7 +305,6 @@ onMounted( async () => {
     const childStocks = Object.values(record?.stock_master_ids)
     // stock_master_ids,
     stockChild.value = childStocks.map((rec) => getStockById(rec))
-    console.log('stock that will update', stockChild.value)
     // set paper id value
     paper_id.value = record?.paper_id
     // set date value

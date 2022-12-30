@@ -62,7 +62,7 @@ import { incomingTransactionMapped, dateRecordToShow } from "../composables/Inco
 // dateRecordToShow.value (using that ^ date)
 // const tanggal = ref(new Date())
 // function to launch form to add income product
-const handleButton = async (document) => {
+const handleButton = async (operation, document) => {
     // add incoming transaction, waiting for tunnel message that send in form
     const res = await launchFormAndsubscribeMutation('IncomingForm', document, 'tunnelMessage')
     // if res true, it mean the add new record or update while false, itt close the modal without add record
