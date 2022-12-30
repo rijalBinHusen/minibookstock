@@ -4,7 +4,7 @@
             <span class="text-3xl">Output</span>
             <date-picker 
                 class="ml-2 bg-base-200 p-2 rounded" 
-                v-model="tanggal"
+                v-model="dateRecordToShow"
             >
             </date-picker>
             <Button
@@ -68,10 +68,12 @@ import Datatable from "../components/parts/Datatable.vue";
 import Button from "../components/elements/Button.vue";
 import { ref, onMounted } from "vue";
 import { launchFormAndsubscribeMutation, subscribeConfirmDialog } from "../composables/launchForm";
-import { outputTransactionMapped, removeOutputById, markAsFinished } from "../composables/Output"
+import { outputTransactionMapped, removeOutputById, markAsFinished, dateRecordToShow } from "../composables/Output"
 
 // what date to show record
-const tanggal = ref(new Date())
+// dateRecordToShow
+// using ^ that variable
+// const tanggal = ref(new Date())
 // function to launch form to add income product
 const handleButton = async (operation, document) => {
     // if operation === remove
@@ -111,7 +113,7 @@ const renderRecord = () => {
     // getIncomingRecord()
     // map record
     setTimeout(() => {
-        lists.value = outputTransactionMapped(tanggal.value)
+        lists.value = outputTransactionMapped()
     }, 500)
 }
 

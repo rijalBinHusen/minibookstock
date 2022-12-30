@@ -172,8 +172,12 @@ const handleStock = (operation, e) => {
       idStockToCreate.value.push(stockChild.value.length +1 + "")
     }
   } else if(operation == 'edit') {
-    
+    const stock = getStockById(e)
     // prevent edit when stock has been taked
+    if(stock?.isTaken) {
+      alert("Barang sudah dimuat di kendaraan, tidak bisa diedit!")
+      return;
+    }
     currentStockEdit.value = stockChild.value.find((rec) => rec?.id == e)
   } else if(operation == 'update') {
     stockChild.value = stockChild.value.map((rec) => {
@@ -188,7 +192,12 @@ const handleStock = (operation, e) => {
     }
   } else {
     // remove stock
+    const stock = getStockById(e)
     // prevent remove when stock has been taked
+    if(stock?.isTaken) {
+      alert("Barang sudah dimuat di kendaraan, tidak bisa dihapus!")
+      return;
+    }
     stockChild.value = stockChild.value.filter((rec) => rec?.id !== e)
     if(isEditMode.value) {
       idStockToRemove.value.push(e)

@@ -18,6 +18,8 @@ const saveData = () => {
   localStorage.setItem(store, data);
 };
 
+export const dateRecordToShow = ref(new Date())
+
 /**
  * 
   id string [pk]
@@ -126,11 +128,11 @@ export const updateIncomingById = (id, keyValueToUpdate) => {
 //   return stock;
 // };
 
-export const incomingTransactionMapped = (date_) => {
+export const incomingTransactionMapped = () => {
   gettingStartedRecord()
   const result = []
   Incoming_transaction.value.forEach((doc) => {
-    if(doc?.tanggal == ymdTime(date_)) {
+    if(doc?.tanggal == ymdTime(dateRecordToShow.value)) {
     // map stock master by stock master ids
       doc?.stock_master_ids.forEach((id) => {
         // get stock master by id

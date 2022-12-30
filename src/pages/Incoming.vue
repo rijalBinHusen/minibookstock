@@ -4,7 +4,7 @@
             <span class="text-3xl">Incoming</span>
             <date-picker 
                 class="ml-2 bg-base-200 p-2 rounded" 
-                v-model="tanggal"
+                v-model="dateRecordToShow"
             >
             </date-picker>
             <Button
@@ -56,12 +56,13 @@ import Datatable from "../components/parts/Datatable.vue";
 import Button from "../components/elements/Button.vue";
 import { ref, onMounted } from "vue";
 import { launchFormAndsubscribeMutation } from "../composables/launchForm";
-import { incomingTransactionMapped } from "../composables/Incoming"
+import { incomingTransactionMapped, dateRecordToShow } from "../composables/Incoming"
 
 // what date to show record
-const tanggal = ref(new Date())
+// dateRecordToShow.value (using that ^ date)
+// const tanggal = ref(new Date())
 // function to launch form to add income product
-const handleButton = async (operation, document) => {
+const handleButton = async (document) => {
     // add incoming transaction, waiting for tunnel message that send in form
     const res = await launchFormAndsubscribeMutation('IncomingForm', document, 'tunnelMessage')
     // if res true, it mean the add new record or update while false, itt close the modal without add record
@@ -76,7 +77,7 @@ const renderRecord = () => {
     lists.value = []
     // get the mapped record
     setTimeout(() => {
-        lists.value = incomingTransactionMapped(tanggal.value)
+        lists.value = incomingTransactionMapped()
     }, 500)
 }
 

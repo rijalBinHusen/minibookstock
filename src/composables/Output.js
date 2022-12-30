@@ -13,6 +13,8 @@ import { getItemById } from "./MasterItems";
 // the state
 export const Output_transaction = ref([]);
 
+// what date to show
+export const dateRecordToShow = ref(new Date())
 const saveData = () => {
   const data = JSON.stringify(Output_transaction.value);
   localStorage.setItem(store, data);
@@ -117,11 +119,11 @@ export const getOutputById = (id) => {
 //   return stock;
 // };
 
-export const outputTransactionMapped = (date_) => {
+export const outputTransactionMapped = () => {
   gettingStartedRecord()
   const result = []
   Output_transaction.value.forEach((doc) => {
-    if(doc?.tanggal == ymdTime(date_)) {
+    if(doc?.tanggal == ymdTime(dateRecordToShow.value)) {
       // get master stock
       const master = getStockById(doc?.stock_master_id)
       // get item
