@@ -13,7 +13,7 @@
       @selectedd="activeJurnalToInput = $event"
     />
     <!-- Type jurnal -->
-    <h1 class="text-2xl mb-2 text-center">Daftar {{  titleJurnal }}</h1>
+    <h1 class="text-2xl mb-2 text-center mt-11">Daftar {{  titleJurnal }}</h1>
     <!-- The form -->
     <form v-if="activeJurnalToInput" @submit.prevent="handleSubmit" class="mb-2">
       <Input

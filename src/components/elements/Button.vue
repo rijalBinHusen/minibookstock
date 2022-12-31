@@ -11,6 +11,20 @@
 </template>
 
 <script>
+
+/**
+ * How to use it?
+ * 
+    <Button
+        primary | secondary | accent
+        value="Your value of your button"
+        type="button | link"
+        small | or just remove that parameter
+        class="ml-2" | Your class to add to button component
+        @trig="renderRecord" the event when the button clicken or triggered
+    />
+ */
+
 export default {
   name: "Button",
   props: {

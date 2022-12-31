@@ -187,3 +187,12 @@ export const changeAvaliableStock = (id_stock, yourNumberPlusOrMinus) => {
 export const markStockAsTaken = (id) => {
   updateStockById(id, { isTaken: true })
 }
+
+
+export const getAllDataToBackup = () => {
+  // get all data
+  const allData = localStorage.getItem(store)
+  return allData 
+    ? { store, data: JSON.parse(allData)}
+    : []
+}

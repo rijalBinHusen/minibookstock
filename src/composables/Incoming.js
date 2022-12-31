@@ -165,3 +165,11 @@ export const incomingTransactionMapped = () => {
   );
   return result
 };
+
+export const getAllDataToBackup = () => {
+  // get all data
+  const allData = localStorage.getItem(store)
+  return allData 
+    ? { store, data: JSON.parse(allData)}
+    : []
+}

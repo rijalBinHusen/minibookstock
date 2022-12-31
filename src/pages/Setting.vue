@@ -1,20 +1,22 @@
 <template>
-  <div class="border-r-2 p-6 min-h-full flex gap-2">
+  <div class="border-r-2 p-6 min-h-screen flex gap-2">
     <!-- <component :is="activeComponent"></component> -->
     <JurnalId />
     <div class="bg-base-200 w-6/12 p-2">
-    <p class="text-3xl text-center">Import Data</p>
-    <Select 
-      value="id"
-      text="title"
-      id="data_to_import"
-      :options="listImportData"
-      size="small"
-      class="w-56"
-      @selectedd="selectedImportType = $event"
-    />
+      <p class="text-3xl text-center">{{ label }}</p>
+      <Select 
+        value="id"
+        text="title"
+        id="data_to_import"
+        :options="listData"
+        size="small"
+        class="w-56"
+        @selectedd="selectedDataType = $event"
+      />
+    
+    <component :is="components[selectedDataType]"></component>
     <!-- Crud the list location id that would be import to database -->
-    <div class="mt-4">
+    <!-- <div class="mt-4">
       <div id="incoming_add_submit" class="w-full flex">
         <Input
           @send="newLocationId = $event"
@@ -37,10 +39,10 @@
           </span>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <!-- End of Crud the list location id that would be import to database -->
-      <Input 
+      <!-- <Input 
         v-if="labelImport"
         type="file"
         tipe="primary"
@@ -48,7 +50,7 @@
         :label="labelImport"
         button="Import"
         ref="importerField"
-      />
+      /> -->
         <!-- @change="impor($event)" -->
   </div>
   </div>
@@ -62,53 +64,61 @@ import Select from "../components/elements/Forms/Select.vue";
 import Button from "../components/elements/Button.vue";
 import { computed, ref } from "vue";
 import { subscribeConfirmDialog } from "../composables/launchForm";
+import BackupData from "../components/BackupData.vue";
 
-const listImportData = [
-          { id: 'database', title: 'Database'}, 
-          { id: 'salesOrder', title: 'Outstanding SO'}
+const listData = [
+          // { id: 'database', type: 'import', title: 'Import Database'}, 
+          // { id: 'salesOrder', type: 'import', title: 'Import Outstanding SO'},
+          { id : 'BackupData', type: 'export', title: 'Backup data'}
         ]
 
-const selectedImportType = ref(null)
+// the variable that will contain id of listData what user selected in select option
+const selectedDataType = ref(null)
 
 // the label that would show in input type file
-const labelImport = computed(() => {
+const label = computed(() => {
   // if the selected import just selected
-  if(selectedImportType.value) {
+  if(selectedDataType.value) {
     // find the id of selected import
-    const findList = listImportData.find((list) => list.id === selectedImportType.value)
+    const findList = listData.find((list) => list.id === selectedDataType.value)
     // return label
     if(findList) {
-      return 'Import '+ findList?.title
+      return findList?.title
     }
   }
 })
 
+// the list of all components
+const components = {
+  BackupData,
+}
+
 
 // list of location id that would be import to database
 
-const locationsId = ref(['GJDP', 'GJDP - D'])
+// const locationsId = ref(['GJDP', 'GJDP - D'])
 
-const newLocationId = ref(null)
+// const newLocationId = ref(null)
 
-// action to add locations list
-const handleLocationID = async (value, operation) => {
-  // lets check the value first
-  // if includes
-  if(locationsId.value.includes(value)) {
-    if(!operation) {
-      const res = await subscribeConfirmDialog('confirm', `Apakah anda yakin akan menghapus location ID (${value})?`)
-      // remove location from lists
-      if(res) {
-        locationsId.value = locationsId.value.filter((val) => val !== value);
-      }
-    }
-  } else {
-    // push new location id to list
-    locationsId.value.push(value)
-  }
-  // empty the form
-  newLocationId.value = null
-}
+// // action to add locations list
+// const handleLocationID = async (value, operation) => {
+//   // lets check the value first
+//   // if includes
+//   if(locationsId.value.includes(value)) {
+//     if(!operation) {
+//       const res = await subscribeConfirmDialog('confirm', `Apakah anda yakin akan menghapus location ID (${value})?`)
+//       // remove location from lists
+//       if(res) {
+//         locationsId.value = locationsId.value.filter((val) => val !== value);
+//       }
+//     }
+//   } else {
+//     // push new location id to list
+//     locationsId.value.push(value)
+//   }
+//   // empty the form
+//   newLocationId.value = null
+// }
 
 // End of location id list
 </script>

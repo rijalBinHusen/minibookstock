@@ -99,3 +99,12 @@ export const getItemIdByKdItem = (kd_item) => {
         nm_item: "Not found",
       };
 };
+
+
+export const getAllDataToBackup = () => {
+  // get all data
+  const allData = localStorage.getItem(store)
+  return allData 
+    ? { store, data: JSON.parse(allData)}
+    : []
+}

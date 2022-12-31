@@ -66,12 +66,21 @@ export const useJurnalProdukMasuk = () => {
     localStorage.setItem(store, JSON.stringify(Jurnal_produk_masuk.value));
   };
 
+  const getAllDataToBackup = () => {
+    // get all data
+    const allData = localStorage.getItem(store)
+    return allData 
+      ? { store, data: JSON.parse(allData)}
+      : []
+  }
+
   return {
     Jurnal_produk_masuk,
     createJurnalProdukMasuk,
     getJurnalProdukMasukById,
     updateJurnalProdukMasukById,
     gettingJurnalProdukMasukRecord,
+    getAllDataToBackup
   };
 };
 
@@ -135,6 +144,13 @@ export const useJurnalProdukKeluar = () => {
   const saveData = () => {
     localStorage.setItem(store, JSON.stringify(Jurnal_produk_keluar.value));
   };
+  const getAllDataToBackup = () => {
+    // get all data
+    const allData = localStorage.getItem(store)
+    return allData 
+      ? { store, data: JSON.parse(allData)}
+      : []
+  }
 
   return {
     Jurnal_produk_keluar,
@@ -142,5 +158,6 @@ export const useJurnalProdukKeluar = () => {
     getJurnalProdukKeluarById,
     updateJurnalProdukKeluarById,
     gettingJurnalProdukKeluarRecord,
+    getAllDataToBackup
   };
 };
