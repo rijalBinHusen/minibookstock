@@ -174,6 +174,7 @@ const handleStock = (operation, e) => {
   } else if(operation == 'edit') {
     const stock = getStockById(e)
     // prevent edit when stock has been taked
+    console.log(stock)
     if(stock?.isTaken) {
       alert("Barang sudah dimuat di kendaraan, tidak bisa diedit!")
       return;

@@ -156,7 +156,7 @@ export const getAvailableDateByItem = (item_id) => {
     if(stock?.item_id == item_id && stock?.available > 0) {
       result.push({
         id: stock?.id,
-        product_created: ddmmyyyy(stock?.product_created, "-")
+        product_created: "kode " + stock?.kd_produksi+ " * Tanggal produk "+ ddmmyyyy(stock?.product_created, "-")
       })
     }
   })

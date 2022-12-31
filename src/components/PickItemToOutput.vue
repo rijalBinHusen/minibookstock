@@ -41,7 +41,7 @@
             <!-- Kode produksi -->
             <div v-if="currentStockMaster" class="form-control">
                 <label class="label">
-                    <span class="label-text">Qantity (Max: {{ quantityAvailableStockMaster }} Ctn)</span>
+                    <span class="label-text">Qantity (Max: {{ quantityAvailableStockMaster }})</span>
                 </label>
                 <div class="relative">
                 <input
