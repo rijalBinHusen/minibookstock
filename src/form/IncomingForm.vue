@@ -153,9 +153,9 @@ const idStockToUpdate = ref([])
 const idStockToRemove = ref([])
 const idStockToCreate = ref([])
 
-const stockChildDetails = computed(() => stockChild.value.map((stock) => ({
+const stockChildDetails = computed(() => stockChild.value.map( async (stock) => ({
       id: stock?.id,
-      item: getItemById(stock?.item_id).nm_item,
+      item: await getItemById(stock?.item_id).nm_item,
       quantity: stock?.quantity,
       product_created: ddmmyyyy(stock?.product_created, "-")
     })

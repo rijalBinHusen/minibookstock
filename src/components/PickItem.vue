@@ -135,7 +135,6 @@ const handleItem = async (e) => {
             const kd_item = e.target.value.split("*")[0]
             item_detail.value = await getItemIdByKdItem(kd_item)
             item.value = item_detail.value?.id
-            console.log('item detail value', item_detail.value)
         }, 1000)
     }
 }
@@ -149,24 +148,23 @@ const handleUpdateDate = (whatDate, e) => {
     // get age of product
     const age_product = item_detail.value?.age_item
     // if product create date date changed
+    // create new variable date
+    const date = new Date(e)
+    
     if(item.value && whatDate == 'created') {
         // set product date that to input to daatabase
         product_created.value = e
-        // create new variable date
-        const date = new Date(e)
         // get expired of product
         // set expired date
-        const expired_date = date.setMonth(date.getMonth() + age_product)
+        const expired_date = date.setMonth(date.getMonth() + Number(age_product))
         // product expired
-        product_expired.value = expired_date
+        product_expired.value = new Date(expired_date)
         // set value
     } else {
-        // create new variable date
-        const date = new Date(e)
         // set expired date
-        const created_date = date.setMonth(date.getMonth() - age_product)
+        const created_date = date.setMonth(date.getMonth() - Number(age_product))
         // product expired
-        product_created.value = created_date
+        product_created.value = new Date(created_date)
         // set value
     }
 }
@@ -210,7 +208,6 @@ const handleBtnTable = (operation, id) => {
         emit('editStock', id)
         setTimeout( () => {
             const item = getItemById(props?.currentStockEdit['item_id'])
-            console.log()
             kd_produksi.value = props?.currentStockEdit['kd_produksi']
             // set product created using this way, so the expired date automate show
             handleUpdateDate('created',
@@ -229,42 +226,9 @@ const handleBtnTable = (operation, id) => {
     }
 }
 
-// // function to emit to parent
-// const emitStock = () => {
-//     // id not null it means remove stock record by id
-//     emit('stockAdded', listOfIdStock)
-// }
-
-// // function to rerender listOfstock that contain master stock
-// const renderStock = () => {
-//     if(listOfIdStock.length) {
-//         const stock = listOfIdStock.map((idMaster) => getStockById(idMaster))
-        
-//         if(stock) {
-//             listOfStock.value = stockMapper(stock);
-//         }
-//     }
-// }
-
-// watch([props],(newVal) => {
-//     // we are watching the props because the default props is null
-//     // and after several time the props changed
-//     // we can't do it in onMounted function
-//     // because it just triggered once
-//     if(newVal[0]?.isParentEditMode) {
-//         listOfIdStock = props?.stockChild
-//         renderStock()
-//     }
-// })
-
 onMounted( async () => {
     // getting all item
     await getItem()
-    // render stock
-    // renderStock()
-    // // emit stock
-    // emitStock()
-    // if parent is edit mode
 })
 
 </script>
