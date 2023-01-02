@@ -85,7 +85,6 @@ export const gettingStartedRecord = async () => {
     // get all item
     const item = await incomedb.getItems();
     Incoming_transaction.value = item ? item : [];
-    console.log(Incoming_transaction.value);
   }
   return;
 };
@@ -157,7 +156,6 @@ export const incomingTransactionMapped = async () => {
     "tanggal",
     ymdTime(dateRecordToShow.value)
   );
-  // console.log(result)
   // if the state null
   if (!Incoming_transaction.value || !Incoming_transaction.value.length) {
     return result;

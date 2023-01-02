@@ -190,13 +190,16 @@ const handleStock = async (operation, e) => {
       return;
     }
     // set current stock edit
-    currentStockEdit.value = stockChild.value.find((rec) => rec?.id == e)    
+    currentStockEdit.value = stockChild.value.find((rec) => rec?.id == e)
   } 
   // update stock
   else if(operation == 'update') {
     // update localstate
     stockChild.value = stockChild.value.map((rec) => {
       if(rec?.id == e.id) {
+        if(isEditMode.value) {
+          return { id: e.id, ...e.value }
+        }
         return e.value
       }
       return rec
@@ -246,6 +249,7 @@ const handleSubmit = async () => {
         else if (idStockToUpdate.value.includes(stock?.id)) {
           // update stock
           await updateStockById(stock?.id, {
+            id: stock?.id,
             item_id: stock?.item_id, 
             kd_produksi: stock?.kd_produksi, 
             product_created: stock?.product_created, 
