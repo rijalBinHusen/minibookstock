@@ -10,11 +10,6 @@ import { useIdb } from "../utils/localforage";
 // the state
 export const Master_items = ref([]);
 
-const saveData = () => {
-  const data = JSON.stringify(Master_items.value);
-  localStorage.setItem(store, data);
-};
-
 export const createItem = async (
   kd_item,
   nm_item,
@@ -44,20 +39,24 @@ export const createItem = async (
   // // update summary
   await summaryRecord.updateSummary(nextId);
   // // save tolocalstorage
+  // saveData();
+
+  // save to indexeddb
   await dbitems.setItem(nextId, record);
-  saveData();
 
   return nextId;
 };
 
 export const gettingStartedRecord = async () => {
-  const dbitems = await useIdb(store);
-  const rec = await dbitems.getItems(199);
-  console.log(rec);
-  // dapatkan last used
   if (!Master_items.value.length) {
-    const item = localStorage.getItem(store);
-    Master_items.value = item ? JSON.parse(item) : [];
+    // using idb function
+    const dbitems = await useIdb(store);
+    // get all item
+    const rec = await dbitems.getItemsLimit(199);
+    // console.log(rec);
+    // dapatkan last used
+    // const item = localStorage.getItem(store);
+    Master_items.value = rec ? rec : [];
   }
   return;
 };
@@ -76,30 +75,43 @@ export const gettingStartedRecord = async () => {
 // //   return lastRec[0];
 // // };
 
-export const getItemById = (id) => {
-  gettingStartedRecord();
+export const getItemById = async (id) => {
+  // using idb function
+  const dbitems = await useIdb(store);
   // console.log(res[0]);
-  const findItem = Master_items.value.find((rec) => rec?.id == id);
-  return findItem
-    ? findItem
+  // const findItem = Master_items.value.find((rec) => rec?.id == id);
+  // get item
+  const item = await dbitems.getItem(id)
+  
+  return item
+    ? item
     : {
         kd_item: "Not found",
         nm_item: "Not found",
       };
 };
 
-export const updateItemById = (id, keyValueToUpdate) => {
+export const updateItemById = async (id, keyValueToUpdate) => {
+  // using idb function
+  const dbitems = await useIdb(store);
+  // update data in db
+  await dbitems.updateItem(id, keyValueToUpdate)
+  // update state
   Master_items.value = Master_items.value.map((item) => {
     return item?.id == id ? { ...item, ...keyValueToUpdate } : item;
   });
-  saveData();
+  // saveData();
   return;
 };
 
-export const getItemIdByKdItem = (kd_item) => {
-  const findItem = Master_items.value.find((rec) => rec?.kd_item == kd_item);
-  return findItem
-    ? findItem
+export const getItemIdByKdItem = async (kd_item) => {
+  // using idb function
+  const dbitems = await useIdb(store);
+  // const findItem = Master_items.value.find((rec) => rec?.kd_item == kd_item);
+  // get from db
+  const getOne = dbitems.findOneItemByKeyValue('kd_item', kd_item)
+  return getOne
+    ? getOne
     : {
         kd_item: "Not found",
         nm_item: "Not found",
@@ -107,9 +119,12 @@ export const getItemIdByKdItem = (kd_item) => {
 };
 
 
-export const getAllDataToBackup = () => {
+export const getAllDataToBackup = async () => {
+  // using idb function
+  const dbitems = await useIdb(store);
   // get all data
-  const allData = localStorage.getItem(store)
+  // const allData = localStorage.getItem(store)
+  const allData = dbitems.getItems()
   // return the result
   return { store, data: allData ? JSON.parse(allData) : null }
 }

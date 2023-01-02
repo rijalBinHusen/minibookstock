@@ -100,12 +100,12 @@ const handleSubmit = async () => {
       // update item
       // to update item
       if(isEditMode.value) {
-        updateItemById(isEditMode.value, changed.value);
+        await updateItemById(isEditMode.value, changed.value);
       }
       // insert item
       else {
         // setItem('items', nm_item.value)
-        createItem(kd_item.value, nm_item.value, null, new Date().getTime(), age_item.value)
+        await createItem(kd_item.value, nm_item.value, null, new Date().getTime(), age_item.value)
       }
       // reset the form
         resetForm()
@@ -113,10 +113,10 @@ const handleSubmit = async () => {
   }
 
 // to edit item
-const handleButton = (id) => {
+const handleButton = async (id) => {
   if(id && id !== isEditMode.value) {
     // get item by id from db
-    origin.value = getItemById(id)
+    origin.value = await getItemById(id)
     // fill the form
     nm_item.value = origin.value?.nm_item;
     kd_item.value = origin.value?.kd_item;
@@ -160,8 +160,8 @@ watch([nm_item, kd_item, age_item], (newVal) => {
   }
 })
 
-onMounted(() => {
-  gettingStartedRecord()
+onMounted( async () => {
+  await gettingStartedRecord()
 })
 
 </script>
