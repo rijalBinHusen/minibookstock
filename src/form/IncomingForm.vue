@@ -190,8 +190,7 @@ const handleStock = async (operation, e) => {
       return;
     }
     // set current stock edit
-    currentStockEdit.value = stockChild.value.find((rec) => rec?.id == e)
-    
+    currentStockEdit.value = stockChild.value.find((rec) => rec?.id == e)    
   } 
   // update stock
   else if(operation == 'update') {
@@ -246,7 +245,7 @@ const handleSubmit = async () => {
         // stock to udpate
         else if (idStockToUpdate.value.includes(stock?.id)) {
           // update stock
-          updateStockById(stock?.id, {
+          await updateStockById(stock?.id, {
             item_id: stock?.item_id, 
             kd_produksi: stock?.kd_produksi, 
             product_created: stock?.product_created, 
@@ -276,10 +275,10 @@ const handleSubmit = async () => {
       // if there is child stock, delete the document
       if(insertedStock.length) {
         // update in db
-        updateIncomingById(isEditMode.value, record)
+        await updateIncomingById(isEditMode.value, record)
       } else {
         // remove incoming record from db
-        removeIncomingById(isEditMode.value)
+        await removeIncomingById(isEditMode.value)
       }
     } else {
       // create incoming transaction
@@ -297,11 +296,7 @@ const handleSubmit = async () => {
         resolve(eachIdStock)
       })
       // then insert incoming transction with child from insert all stock
-      const incomingRecord = await createIncoming(insertedStock, paper_id.value, date.value, shift.value, diterima.value, type.value, diserahkan.value, null)
-      // update all stock with parent
-      // insertedStock.forEach((idStock) => {
-      //   setStockParent(idStock, incomingRecord.id)
-      // })
+      await createIncoming(insertedStock, paper_id.value, date.value, shift.value, diterima.value, type.value, diserahkan.value, null)
     }
     // close modal and send tunnel message true, it mean we are add new record or update a record
     closeModalOrDialog(true)
