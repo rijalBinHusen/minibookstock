@@ -22,18 +22,23 @@
 </template>
 
 <script setup>
+
 import { ref } from 'vue';
-    // ref for input type file
-    const inputFile = ref()
-    // function to read file as text
-    const handleImport = () => {
-        // get the first file on input element
-        const file = inputFile.value.files[0]
-        // initiate file reader
-        const reader = new FileReader();
-        // read file as text
-        reader.readAsText(file);
-        //when reading is completed load
-        reader.onload = (event) => console.log(JSON.parse(event.target.result));
-    }
+import { launchForm } from "../composables/launchForm"
+    
+// ref for input type file
+const inputFile = ref()
+// function to read file as text
+const handleImport = () => {
+    // launch the loader
+    launchForm('Loader', false)
+    // get the first file on input element
+    const file = inputFile.value.files[0]
+    // initiate file reader
+    const reader = new FileReader();
+    // read file as text
+    reader.readAsText(file);
+    //when reading is completed load
+    reader.onload = (event) => console.log(JSON.parse(event.target.result));
+}
 </script>

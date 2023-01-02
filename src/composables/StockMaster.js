@@ -166,7 +166,20 @@ export const getAvailableDateByItem = (item_id) => {
 export const changeAvaliableStock = (id_stock, yourNumberPlusOrMinus) => {
   Stock_masters.value = Stock_masters.value.map((stock) => {
     if(stock?.id == id_stock) {
-      return { ...stock, available: Number(stock?.available) + Number(yourNumberPlusOrMinus)}
+      // if available not equal to quantity, mark stock as taken
+      if(Number(stock?.quantity) != Number(stock?.available) + Number(yourNumberPlusOrMinus)) {
+        return { 
+            ...stock, 
+            available: Number(stock?.available) + Number(yourNumberPlusOrMinus),
+            isTaken: true
+          }
+      }
+      // else
+      return { 
+        ...stock, 
+        available: Number(stock?.available) + Number(yourNumberPlusOrMinus),
+        isTaken: false
+      }
     } 
     return stock
   })
@@ -192,7 +205,6 @@ export const markStockAsTaken = (id) => {
 export const getAllDataToBackup = () => {
   // get all data
   const allData = localStorage.getItem(store)
-  return allData 
-    ? { store, data: JSON.parse(allData)}
-    : []
+  // return the result
+  return { store, data: allData ? JSON.parse(allData) : null }
 }

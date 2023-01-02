@@ -104,7 +104,6 @@ export const getItemIdByKdItem = (kd_item) => {
 export const getAllDataToBackup = () => {
   // get all data
   const allData = localStorage.getItem(store)
-  return allData 
-    ? { store, data: JSON.parse(allData)}
-    : []
+  // return the result
+  return { store, data: allData ? JSON.parse(allData) : null }
 }
