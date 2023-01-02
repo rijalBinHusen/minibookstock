@@ -36,29 +36,21 @@ export const useIdb = async (storeName) => {
   };
 
   const removeItem = (key) => {
-    return store.removeItem(key)
-  }
+    return store.removeItem(key);
+  };
 
   const findOneItemByKeyValue = (keySearch, valueSearch) => {
-    let result = {};
-    store.iterate(function(value, key, iterationNumber) {
-        // Resulting key/value pair -- this callback
-        // will be executed for every item in the
-        // database.
-        // console.log([key, value]);
-        if(value[keySearch] == valueSearch) {
-          // save to result
-          result = value
-          return
-        }
-    }).then(function() {
-        // return result 
-        return result;
-    }).catch(function(err) {
-        // This code runs if there were any errors
-        console.log(err);
+    // let result = {};
+    return store.iterate(function (value, key, iterationNumber) {
+      // Resulting key/value pair -- this callback
+      // will be executed for every item in the
+      // database.
+      if (value[keySearch] == valueSearch) {
+        // save to result
+        return value;
+      }
     });
-  }
+  };
 
   const getItems = async () => {
     const result = [];
@@ -81,34 +73,45 @@ export const useIdb = async (storeName) => {
 
   const updateItem = async (key, keyValueToUpdate) => {
     // get item first
-    const item = await getItem(key)
+    const item = await getItem(key);
     // new item
-    const newItem = { ...item, ...keyValueToUpdate }
+    const newItem = { ...item, ...keyValueToUpdate };
     // then set item
-    await setItem(key, newItem)
+    await setItem(key, newItem);
     return;
-  }
+  };
 
   const getItemsByKeyValue = async (keySearch, valueSearch) => {
     let result = [];
-    await store.iterate(function(value, key, iterationNumber) {
+    await store
+      .iterate(function (value, key, iterationNumber) {
         // Resulting key/value pair -- this callback
         // will be executed for every item in the
         // database.
         // console.log([key, value]);
-        if(value[keySearch] == valueSearch) {
+        if (value[keySearch] == valueSearch) {
           // save to result
-          result.push(value)
+          result.push(value);
         }
-    }).then(function() {
-        // return result 
+      })
+      .then(function () {
+        // return result
         return result;
-    }).catch(function(err) {
+      })
+      .catch(function (err) {
         // This code runs if there were any errors
         console.log(err);
-    });
-  }
-  
+      });
+  };
 
-  return { setItem, getItem, getItems, removeItem, findOneItemByKeyValue, getItemsLimit, updateItem, getItemsByKeyValue };
+  return {
+    setItem,
+    getItem,
+    getItems,
+    removeItem,
+    findOneItemByKeyValue,
+    getItemsLimit,
+    updateItem,
+    getItemsByKeyValue,
+  };
 };

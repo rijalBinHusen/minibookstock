@@ -257,9 +257,9 @@ const handleBtnTable = (operation, id) => {
 //     }
 // })
 
-onMounted(() => {
+onMounted( async () => {
     // getting all item
-    getItem()
+    await getItem()
     // render stock
     // renderStock()
     // // emit stock
