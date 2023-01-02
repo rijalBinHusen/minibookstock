@@ -144,27 +144,29 @@ const isEditMode = ref(null)
 
 const handleUpdateDate = (whatDate, e) => {
     //     // const 1 month
-    const aMonth = 1000*60*60*24*30;
-    // set product date that to input to daatabase
-    product_created.value = e
+    // const aMonth = 1000*60*60*24*30;
     // get age of product
     const age_product = item_detail.value?.age_item
-    // get expired of product
-    const new_date = e.getTime()
     // if product create date date changed
-    if(item.value && whatDate === 'created') {
+    if(item.value && whatDate == 'created') {
+        // set product date that to input to daatabase
+        product_created.value = e
+        // create new variable date
+        const date = new Date(e)
+        // get expired of product
         // set expired date
-        const expired_date = new Date( new_date + (aMonth*age_product))
+        const expired_date = date.setMonth(date.getMonth() + age_product)
         // product expired
         product_expired.value = expired_date
         // set value
-    } 
-    // expired date changed
-    else {
+    } else {
+        // create new variable date
+        const date = new Date(e)
         // set expired date
-        const created_date = new Date( new_date - (aMonth*age_product))
+        const created_date = date.setMonth(date.getMonth() - age_product)
         // product expired
-        // product_created.value = created_date
+        product_created.value = created_date
+        // set value
     }
 }
 
@@ -205,10 +207,14 @@ const resetForm = () => {
 const handleBtnTable = (operation, id) => {
     if(operation == 'edit') {
         emit('editStock', id)
-        setTimeout(() => {
-            const item = getItemById(props?.currentStockEdit['item'])
+        setTimeout( () => {
+            const item = getItemById(props?.currentStockEdit['item_id'])
+            console.log()
             kd_produksi.value = props?.currentStockEdit['kd_produksi']
-            product_created.value = new Date(props?.currentStockEdit['tanggal'])
+            // set product created using this way, so the expired date automate show
+            handleUpdateDate('created',
+                new Date(props?.currentStockEdit['product_created'])
+            )
             quantity.value = props?.currentStockEdit['quantity']
             item_full.value = item.kd_item + "* " + item.nm_item
             handleItem({target: { value: item_full.value }})
