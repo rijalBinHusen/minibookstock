@@ -153,53 +153,74 @@ const idStockToUpdate = ref([])
 const idStockToRemove = ref([])
 const idStockToCreate = ref([])
 
-const stockChildDetails = computed(() => stockChild.value.map((stock) => ({
-      id: stock?.id,
-      item: getItemByIdInState(stock?.item_id).nm_item,
-      quantity: stock?.quantity,
-      product_created: ddmmyyyy(stock?.product_created, "-")
-    })
-  )
+const stockChildDetails = computed(() => {
+  if(!stockChild.value.length) {
+    return []
+  }
+  return stockChild.value.map((stock) => ({
+        id: stock?.id,
+        item: getItemByIdInState(stock?.item_id).nm_item,
+        quantity: stock?.quantity,
+        product_created: ddmmyyyy(stock?.product_created, "-")
+      })
+    )
+  }
 )
 // to add new item form
 const handleStock = async (operation, e) => {
+  // add stock
   if(operation == 'add') {
+    // push to local state
     stockChild.value.push({
       id: stockChild.value.length +1 + "",
       ...e
     })
+    // record id to idStock to create it
     if(isEditMode.value) {
       idStockToCreate.value.push(stockChild.value.length +1 + "")
     }
-  } else if(operation == 'edit') {
+  } 
+  // edit stock
+  else if(operation == 'edit') {
+    // get stock and wait
     const stock = await getStockById(e)
     // prevent edit when stock has been taked
     if(stock?.isTaken) {
       alert("Barang sudah dimuat di kendaraan, tidak bisa diedit!")
       return;
     }
+    // set current stock edit
     currentStockEdit.value = stockChild.value.find((rec) => rec?.id == e)
     
-  } else if(operation == 'update') {
+  } 
+  // update stock
+  else if(operation == 'update') {
+    // update localstate
     stockChild.value = stockChild.value.map((rec) => {
       if(rec?.id == e.id) {
         return e.value
       }
       return rec
     })
+    // set current edit stock to null
     currentStockEdit.value = null
+    // if edit mode push idStock to update
     if(isEditMode.value) {
       idStockToUpdate.value.push(e.id)
     }
-  } else {
-    // remove stock
+  }
+  // remove stock
+   else {
+    // get and wait stock by id
     const stock = await getStockById(e)
     // prevent remove when stock has been taked
     if(stock?.isTaken) {
       alert("Barang sudah dimuat di kendaraan, tidak bisa dihapus!")
       return;
     }
+    // remove fromlocal state
     stockChild.value = stockChild.value.filter((rec) => rec?.id !== e)
+    // if edit mode, push to id stock to remove
     if(isEditMode.value) {
       idStockToRemove.value.push(e)
     }
@@ -211,38 +232,37 @@ const handleSubmit = async () => {
     // update record
     if(isEditMode.value) {
       // create stock or update stock
-      const insertedStock = await new Promise( async (resolve) => {
-        const eachIdStock = []
-        for (const stock of stockChild.value) {
-          // item: item.value, 
-          // kd_produksi: kd_produksi.value, 
-          // tanggal: ymdTime(product_created.value), 
-          // quantity: quantity.value
-          // because we cant detect stock to create, we are using this way
-          if(stock?.id.length < 4) {
-            const insertStock = await createStock(stock?.item_id, stock?.kd_produksi, stock?.product_created, stock?.quantity)
-            eachIdStock.push(insertStock.id)
-          } 
-          // stock to udpate
-          else if (idStockToUpdate.value.includes(stock?.id)) {
-            // update stock
-            updateStockById(stock?.id, {
-              item_id: stock?.item_id, 
-              kd_produksi: stock?.kd_produksi, 
-              product_created: stock?.product_created, 
-              quantity: stock?.quantity
-            })
-            // the update stock push too
-            eachIdStock.push(stock?.id)
-          } else {
-            // stocok would stay
-            eachIdStock.push(stock?.id)
-          }
+      const insertedStock = []
+      for (const stock of stockChild.value) {
+        // item: item.value, 
+        // kd_produksi: kd_produksi.value, 
+        // tanggal: ymdTime(product_created.value), 
+        // quantity: quantity.value
+        // because we cant detect stock to create, we are using this way
+        if(stock?.id && stock?.id.length < 4) {
+          const insertStock = await createStock(stock?.item_id, stock?.kd_produksi, stock?.product_created, stock?.quantity)
+          insertedStock.push(insertStock.id)
+        } 
+        // stock to udpate
+        else if (idStockToUpdate.value.includes(stock?.id)) {
+          // update stock
+          updateStockById(stock?.id, {
+            item_id: stock?.item_id, 
+            kd_produksi: stock?.kd_produksi, 
+            product_created: stock?.product_created, 
+            quantity: stock?.quantity
+          })
+          // the update stock push too
+          insertedStock.push(stock?.id)
+        } else {
+          // stocok would stay
+          insertedStock.push(stock?.id)
         }
-        resolve(eachIdStock)
-      })
+      }
       // remove stock
-      idStockToRemove.value.forEach(id => removeStockById(id))
+      for(const id of idStockToRemove.value) {
+        await removeStockById(id)
+      }
       // update incoming transaction
       const record = {
         stock_master_ids: insertedStock,
@@ -301,11 +321,14 @@ onMounted( async () => {
   isEditMode.value = store.state.form?.document
   if(isEditMode.value) {
     // get record incoming
-    const record = getIncomingById(isEditMode.value)
+    const record = await getIncomingById(isEditMode.value)
     // set record master stock 
     const childStocks = Object.values(record?.stock_master_ids)
     // stock_master_ids,
-    stockChild.value = childStocks.map((rec) => getStockById(rec))
+    for(const rec of childStocks) {
+      const stock = await getStockById(rec)
+      stockChild.value.push(stock)
+    }
     // set paper id value
     paper_id.value = record?.paper_id
     // set date value

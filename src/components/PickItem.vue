@@ -209,7 +209,8 @@ const resetForm = () => {
 const handleBtnTable = async (operation, id) => {
     if(operation == 'edit') {
         emit('editStock', id)
-        // setTimeout( async () => {
+        // detecting the current stock edit because it async in parent
+        if(props?.currentStockEdit) {
             // get item
             const item = await getItemById(props?.currentStockEdit['item_id'])
             // product kode
@@ -224,7 +225,12 @@ const handleBtnTable = async (operation, id) => {
             handleUpdateDate('created',
                 new Date(props?.currentStockEdit['product_created'])
             )
-        // }, 500)
+        } else {
+            // call this function again in 500ms
+            setTimeout(() => {
+                handleBtnTable('edit', id)
+            }, 500)
+        }
     } else {
         const confirm = window.confirm("Apakah anda yakin akan menghapus item tersebut")
         if(confirm) {
