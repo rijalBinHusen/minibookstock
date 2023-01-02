@@ -152,7 +152,6 @@ export const markAsFinished = (id) => {
       // mark as finished
       markStockAsTaken(doc?.stock_master_id)
       const docChanged = getStockById(doc?.stock_master_id)
-      console.log('stock that taken', docChanged)
       return { ...doc, isFinished: true}
     } 
     return doc

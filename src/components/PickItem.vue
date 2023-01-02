@@ -164,7 +164,7 @@ const handleUpdateDate = (whatDate, e) => {
         // set expired date
         const created_date = new Date( new_date - (aMonth*age_product))
         // product expired
-        product_created.value = created_date
+        // product_created.value = created_date
     }
 }
 

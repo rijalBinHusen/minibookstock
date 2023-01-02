@@ -172,7 +172,7 @@ const handleSubmit = async () => {
   if(date.value && shift.value && type.value && nomor_so.value && stockChild.value) {
       // then insert incoming transction with child from insert all stock
       for (const stock of stockChild.value) {
-        createOutput(date.value, type.value, shift.value, nomor_so.value, stock?.stock_master_id, stock?.quantity )
+        await createOutput(date.value, type.value, shift.value, nomor_so.value, stock?.stock_master_id, stock?.quantity )
       }
       
     closeModalOrDialog(true)
