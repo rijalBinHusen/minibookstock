@@ -127,16 +127,19 @@ const item_full = ref(null)
 const item_detail = ref(null)
 
 let timeoutHandleItem = null
-const handleItem = async (e) => {
-    if(e.target.value) {
-        // clearTimeout
-        clearTimeout(timeoutHandleItem)
-        timeoutHandleItem = setTimeout( async () => {
-            const kd_item = e.target.value.split("*")[0]
-            item_detail.value = await getItemIdByKdItem(kd_item)
-            item.value = item_detail.value?.id
-        }, 1000)
-    }
+const handleItem = (e) => {
+    return new Promise((resolve) => {
+        if(e.target.value) {
+            // clearTimeout
+            clearTimeout(timeoutHandleItem)
+            timeoutHandleItem = setTimeout( async () => {
+                const kd_item = e.target.value.split("*")[0]
+                item_detail.value = await getItemIdByKdItem(kd_item)
+                item.value = item_detail.value?.id
+                resolve()
+            }, 1000)
+        }
+    })
 }
 
 // will contain id of record that on edit
@@ -203,21 +206,25 @@ const resetForm = () => {
 }
 
 // btn table handle
-const handleBtnTable = (operation, id) => {
+const handleBtnTable = async (operation, id) => {
     if(operation == 'edit') {
         emit('editStock', id)
-        setTimeout( () => {
-            const item = getItemById(props?.currentStockEdit['item_id'])
+        // setTimeout( async () => {
+            // get item
+            const item = await getItemById(props?.currentStockEdit['item_id'])
+            // product kode
             kd_produksi.value = props?.currentStockEdit['kd_produksi']
+            quantity.value = props?.currentStockEdit['quantity']
+            item_full.value = item.kd_item + "* " + item.nm_item
+            // waiting item to input text
+            await handleItem({target: { value: item_full.value }})
+            // set editmode 
+            isEditMode.value = id
             // set product created using this way, so the expired date automate show
             handleUpdateDate('created',
                 new Date(props?.currentStockEdit['product_created'])
             )
-            quantity.value = props?.currentStockEdit['quantity']
-            item_full.value = item.kd_item + "* " + item.nm_item
-            handleItem({target: { value: item_full.value }})
-            isEditMode.value = id
-        }, 500)
+        // }, 500)
     } else {
         const confirm = window.confirm("Apakah anda yakin akan menghapus item tersebut")
         if(confirm) {

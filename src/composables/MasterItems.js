@@ -127,3 +127,7 @@ export const getAllDataToBackup = async () => {
   // return the result
   return { store, data: allData ? JSON.parse(allData) : null };
 };
+
+export const getItemByIdInState = (id_item) => {
+  return Master_items.value.find((item) => item?.id === id_item);
+};

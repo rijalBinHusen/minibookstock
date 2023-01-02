@@ -123,7 +123,7 @@ import { useJurnalProdukMasuk } from "../composables/Setting_JurnalId"
 import { createIncoming, getIncomingById, updateIncomingById, removeIncomingById } from "../composables/Incoming"
 import { closeModalOrDialog } from "../composables/launchForm"
 import { useStore } from "vuex";
-import { getItemById } from "../composables/MasterItems";
+import { getItemByIdInState } from "../composables/MasterItems";
 import { ddmmyyyy, ymdTime } from "../utils/dateFormat";
 import { createStock, getStockById, setStockParent, updateStockById, removeStockById } from "../composables/StockMaster";
 // vuex
@@ -153,16 +153,16 @@ const idStockToUpdate = ref([])
 const idStockToRemove = ref([])
 const idStockToCreate = ref([])
 
-const stockChildDetails = computed(() => stockChild.value.map( async (stock) => ({
+const stockChildDetails = computed(() => stockChild.value.map((stock) => ({
       id: stock?.id,
-      item: await getItemById(stock?.item_id).nm_item,
+      item: getItemByIdInState(stock?.item_id).nm_item,
       quantity: stock?.quantity,
       product_created: ddmmyyyy(stock?.product_created, "-")
     })
   )
 )
 // to add new item form
-const handleStock = (operation, e) => {
+const handleStock = async (operation, e) => {
   if(operation == 'add') {
     stockChild.value.push({
       id: stockChild.value.length +1 + "",
@@ -172,14 +172,14 @@ const handleStock = (operation, e) => {
       idStockToCreate.value.push(stockChild.value.length +1 + "")
     }
   } else if(operation == 'edit') {
-    const stock = getStockById(e)
+    const stock = await getStockById(e)
     // prevent edit when stock has been taked
-    console.log(stock)
     if(stock?.isTaken) {
       alert("Barang sudah dimuat di kendaraan, tidak bisa diedit!")
       return;
     }
     currentStockEdit.value = stockChild.value.find((rec) => rec?.id == e)
+    
   } else if(operation == 'update') {
     stockChild.value = stockChild.value.map((rec) => {
       if(rec?.id == e.id) {
@@ -193,7 +193,7 @@ const handleStock = (operation, e) => {
     }
   } else {
     // remove stock
-    const stock = getStockById(e)
+    const stock = await getStockById(e)
     // prevent remove when stock has been taked
     if(stock?.isTaken) {
       alert("Barang sudah dimuat di kendaraan, tidak bisa dihapus!")
