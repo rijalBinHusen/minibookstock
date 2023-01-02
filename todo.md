@@ -1,11 +1,11 @@
-[v] rekap stock master yang telah diinput
+[x] rekap stock master yang telah diinput
 
-[v] kirim ke parent
+[x] kirim ke parent
 
-[v]simpan sebagai incoming transaksi
+[x]simpan sebagai incoming transaksi
 datanya kek gini { id, tanggal, stock_master_ids: disini child stock nya}
 
-[v] di stock master juga nyimpan nama parentnya
+[x] di stock master juga nyimpan nama parentnya
 datanya kek gini { id, item_id, incoming_transaction_id: disini id parentnya }
 
 <!-- 28 Desember 2022 -->
@@ -16,46 +16,46 @@ value yang perlu ditampilkan:
   diterima string
   type string (perlu dikonversi)
   diserahkan string
-    - [v] dapatkan semua data incoming
-    - [v] mapping data incoming
-    - [v] tampilkan ditabel
-    - [v] buat fungsi untuk edit
-      - [v] Luncurkan form edit
-      - [v] Kirim juga id document yang akan diedit
-      - [v] Ketika form tampil, dapatkan id dokument yang akan di edit
-      - [v] isi form sesuai dengan record incoming form
-      - [v] lemparkan stock master child ke component pick item, dan isParentEditMode
-      - [v] dikomponen pick item, deteksi apakah parent mode edit atau tidak
-      - [v] jika parent edit mode ambil props stock child dari parent
-      - [v] dapatkan semua stock child parent dengan get stock by id
-      - [v] tampilkan semua stock master ditabel
-      - [v] edit record on incoming form
-      - [v] update record
+    - [x] dapatkan semua data incoming
+    - [x] mapping data incoming
+    - [x] tampilkan ditabel
+    - [x] buat fungsi untuk edit
+      - [x] Luncurkan form edit
+      - [x] Kirim juga id document yang akan diedit
+      - [x] Ketika form tampil, dapatkan id dokument yang akan di edit
+      - [x] isi form sesuai dengan record incoming form
+      - [x] lemparkan stock master child ke component pick item, dan isParentEditMode
+      - [x] dikomponen pick item, deteksi apakah parent mode edit atau tidak
+      - [x] jika parent edit mode ambil props stock child dari parent
+      - [x] dapatkan semua stock child parent dengan get stock by id
+      - [x] tampilkan semua stock master ditabel
+      - [x] edit record on incoming form
+      - [x] update record
     - [ ] buat fungsi untuk hapus
 
 <!-- 29 desember 2022 -->
 ## Ubah tampilan incoming product
-  - [v] hal hal yang perlu ditampilkan
-    - [v] tanggal
-    - [v] shift
-    - [v] paper_id
-    - [v] nm_item
-    - [v] quanitity
-    - [v] available
+  - [x] hal hal yang perlu ditampilkan
+    - [x] tanggal
+    - [x] shift
+    - [x] paper_id
+    - [x] nm_item
+    - [x] quanitity
+    - [x] available
 
 ## CRUD transaksi pengeluaran
 - [ ] Create document
-  - [ ] hal hal yang perlu di insert
-    - [v]  tanggal date
-    - [v]  shift number
-    - [v]  vehicle_id string (Sementara nomor SO Saja)
-    - [v]  stock_master string
-      - [v] User pilih item dulu
-      - [v] pilih expired date berapa refer to stock master
+  - [x] hal hal yang perlu di insert
+    - [x]  tanggal date
+    - [x]  shift number
+    - [x]  vehicle_id string (Sementara nomor SO Saja)
+    - [x]  stock_master string
+      - [x] User pilih item dulu
+      - [x] pilih expired date berapa refer to stock master
       - masukkan quantity
-    - [v]  quantity number
+    - [x]  quantity number
   - [ ]  hal hal yang perlu dilakukan setelah insert document
-    - [v]  update available stock master
+    - [x]  update available stock master
 - [ ]  Read document
   - [ ]  hal hal yang perlu ditampilkan
     - [ ]  tanggal date
@@ -77,3 +77,12 @@ value yang perlu ditampilkan:
 - [ ]  Delete document
   - [ ]  hal hal yang perlu dilakukan setelah delete document
     - [ ]  update available stock master
+
+# 2 January 2023
+
+Membuat fungsi untuk mengubah row excel menjadi object
+
+parameter yang dibutuhkan fungsi
+```javascript
+{ key: 'Judul key object', value: ' Nama kolom di excelnya' }
+```

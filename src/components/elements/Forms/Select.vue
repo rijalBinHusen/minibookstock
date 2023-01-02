@@ -65,7 +65,6 @@ export default {
       if (this.size.includes("large")) className.push("select-lg");
       if (this.size.includes("small")) className.push("select-sm");
       if (this.size.includes("xsmall")) className.push("select-xs");
-      console.log(className)
       return className.join(" ");
     },
     activated() {

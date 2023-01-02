@@ -1,12 +1,18 @@
 import { summary } from "../utils/summaryIdb";
 import { ref } from "vue";
-import { getItemById } from "./MasterItems";
-import { ddmmyyyy } from "../utils/dateFormat";
+// item function
+import { getItemById, getItemIdByKdItem, createItem } from "./MasterItems";
+// date formatter
+import { ddmmyyyy, ymdTime } from "../utils/dateFormat";
 // store name
 const store = "stock_master";
 // generator id
 import { generateId } from "../utils/GeneratorId";
-// // import { dayPlusOrMinus } from "../utils/dateFormat";
+// incoming function
+import { createIncoming } from "./Incoming"
+// conver excel date to javascript date
+import excelToJSDate from "../utils/ExcelDateToJs"
+
 
 // the state
 export const Stock_masters = ref([]);
@@ -207,4 +213,30 @@ export const getAllDataToBackup = () => {
   const allData = localStorage.getItem(store)
   // return the result
   return { store, data: allData ? JSON.parse(allData) : null }
+}
+
+export const createStockAwal = async (kode_item, nama_item, umur_product, quantity, tanggal_produksi) => {
+  // convert excel date to javascript date
+  const date = excelToJSDate(tanggal_produksi)
+  // cari dulu itemnya sudah ada atau belum
+  const isItemExists = getItemIdByKdItem(kode_item)
+  // jika ada langsung input ke master
+  if(isItemExists?.id) {
+    // create new stock
+    const stock = await createStock(isItemExists.id, 'stock awal', date, quantity)
+    // create incoming record
+    const incoming = await createIncoming([stock.id], 'stock awal', ymdTime(), 1, 'stock awal', 'stock awal', 'stock awal', null)
+    // set parent stock
+    setStockParent(stock.id, incoming.id)
+  } else {
+    // jika belum ada buat item baru
+    // create new item, this will return only id
+    const item = await createItem(kode_item, nama_item, null, ymdTime(), Number(umur_product))
+    // create new stock
+    const stock = await createStock(item, 'stock awal', date, quantity)
+    // create incoming record
+    const incoming = await createIncoming([stock.id], 'stock awal', ymdTime(), 1, 'stock awal', 'stock awal', 'stock awal', null)
+    // set parent stock
+    setStockParent(stock.id, incoming.id)
+  }
 }
