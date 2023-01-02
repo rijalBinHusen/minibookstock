@@ -8,15 +8,13 @@ const store = "incoming_transaction";
 import { generateId } from "../utils/GeneratorId";
 // import set parent function for stock master
 import { setStockParent, getStockById } from "./StockMaster";
+// master item function
 import { getItemById } from "./MasterItems";
+// import localforage function
+import { useIdb } from "../utils/localforage"
 
 // the state
 export const Incoming_transaction = ref([]);
-
-const saveData = () => {
-  const data = JSON.stringify(Incoming_transaction.value);
-  localStorage.setItem(store, data);
-};
 
 export const dateRecordToShow = ref(new Date())
 
@@ -43,6 +41,8 @@ export const createIncoming = async (
   diserahkan,
   catatan
 ) => {
+  // initiate idb
+  const incomedb = await useIdb(store)
   // get last id
   const summaryRecord = await summary(store);
   // generate next id
@@ -66,26 +66,37 @@ export const createIncoming = async (
   // // update summary
   await summaryRecord.updateSummary(nextId);
   // // save tolocalstorage
-  saveData();
+  // saveData();
+  // save to indexeddb
+  await incomedb.setItem(nextId, value)
   // set parent for each stock master
   setStockParent(stock_master_ids, nextId);
+  // return the whole record
   return record;
 };
 
-export const gettingStartedRecord = () => {
+export const gettingStartedRecord = async () => {
   // dapatkan last used
   if (!Incoming_transaction.value.length) {
-    const item = localStorage.getItem(store);
-    Incoming_transaction.value = item ? JSON.parse(item) : [];
+    // initiate idb
+    const incomedb = await useIdb(store)
+    // get all item
+    const item = await incomedb.getItems()
+    Incoming_transaction.value = item ? item : [];
   }
   return;
 };
 
 export const removeIncomingById = async (id) => {
+  // initiate idb
+  const incomedb = await useIdb(store)
+  // remove from state
   Incoming_transaction.value = Incoming_transaction.value.filter(
     (rec) => rec.id !== id
   );
-  saveData();
+  // saveData();
+  // remove from indexeddb
+  await incomedb.removeItem(id)
   return;
 };
 
@@ -95,12 +106,13 @@ export const removeIncomingById = async (id) => {
 // //   return lastRec[0];
 // // };
 
-export const getIncomingById = (id) => {
-  gettingStartedRecord();
-  // console.log(res[0]);
-  const findStock = Incoming_transaction.value.find((rec) => rec?.id == id);
-  return findStock
-    ? findStock
+export const getIncomingById = async (id) => {
+  // initiate idb
+  const incomedb = await useIdb(store)
+  // find stock
+  const findIncome = await incomedb.getItem(id)
+  return findIncome
+    ? findIncome
     : {
         paper_id: "Not found",
         tanggal: "Not found",
@@ -112,11 +124,16 @@ export const getIncomingById = (id) => {
       };
 };
 
-export const updateIncomingById = (id, keyValueToUpdate) => {
+export const updateIncomingById = async (id, keyValueToUpdate) => {
+  // initiate idb
+  const incomedb = await useIdb(store)
+  // update the state
   Incoming_transaction.value = Incoming_transaction.value.map((item) => {
     return item?.id == id ? { ...item, ...keyValueToUpdate } : item;
   });
-  saveData();
+  // update in idb
+  incomedb.updateItem(id, keyValueToUpdate)
+  // saveData();
   return;
 };
 
@@ -128,47 +145,45 @@ export const updateIncomingById = (id, keyValueToUpdate) => {
 //   return stock;
 // };
 
-export const incomingTransactionMapped = () => {
-  gettingStartedRecord()
+export const incomingTransactionMapped = async () => {
   const result = []
-  Incoming_transaction.value.forEach((doc) => {
-    if(doc?.tanggal == ymdTime(dateRecordToShow.value)) {
+  // initiate idb
+  const incomedb = await useIdb(store)
+  // get income by date
+  Incoming_transaction.value = await incomedb.getItemsByKeyValue('tanggal', ymdTime(dateRecordToShow.value))
+  // console.log(result)
+  // if the state null
+  if(!Incoming_transaction.value || !Incoming_transaction.value.length) {
+    return result;
+  }
+  // map all state
+  for( const income of Incoming_transaction.value) {
     // map stock master by stock master ids
-      doc?.stock_master_ids.forEach((id) => {
-        // get stock master by id
-          const stockMaster = getStockById(id)
-          // get nm_item from based on stockMaster.item_id
-          const item = getItemById(stockMaster?.item_id)
-          /**
-           * return {
-           *  tanggal,
-           * shift,
-           * paper_id
-           * nm_item,
-           * quantity,
-           * available
-           * }
-           */
-          result.push ({
-            id: doc?.id,
-            tanggal: ddmmyyyy(doc?.tanggal, "-"),
-            shift: doc?.shift,
-            paper_id: doc?.paper_id,
-            nm_item: item?.nm_item,
-            quantity: stockMaster?.quantity,
-            available: stockMaster?.available,
-            product_created: ddmmyyyy(stockMaster?.product_created, "-")
-          })
+    for(const id of income?.stock_master_ids) {
+      // get stock master by id
+      const stockMaster = await getStockById(id)
+      // get nm_item from based on stockMaster.item_id
+      const item = await getItemById(stockMaster?.item_id)
+      result.push ({
+        id: doc?.id,
+        tanggal: ddmmyyyy(doc?.tanggal, "-"),
+        shift: doc?.shift,
+        paper_id: doc?.paper_id,
+        nm_item: item?.nm_item,
+        quantity: stockMaster?.quantity,
+        available: stockMaster?.available,
+        product_created: ddmmyyyy(stockMaster?.product_created, "-")
       })
     }
   }
-  );
   return result
 };
 
-export const getAllDataToBackup = () => {
+export const getAllDataToBackup = async () => {
+  // initiate idb
+  const incomedb = await useIdb(store)
   // get all data
-  const allData = localStorage.getItem(store)
+  const allData = await incomedb.getItems()
   // return the result
   return { store, data: allData ? JSON.parse(allData) : null }
 }

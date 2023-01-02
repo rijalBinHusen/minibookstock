@@ -89,5 +89,26 @@ export const useIdb = async (storeName) => {
     return;
   }
 
-  return { setItem, getItem, getItems, removeItem, findOneItemByKeyValue, getItemsLimit, updateItem };
+  const getItemsByKeyValue = async (keySearch, valueSearch) => {
+    let result = [];
+    await store.iterate(function(value, key, iterationNumber) {
+        // Resulting key/value pair -- this callback
+        // will be executed for every item in the
+        // database.
+        // console.log([key, value]);
+        if(value[keySearch] == valueSearch) {
+          // save to result
+          result.push(value)
+        }
+    }).then(function() {
+        // return result 
+        return result;
+    }).catch(function(err) {
+        // This code runs if there were any errors
+        console.log(err);
+    });
+  }
+  
+
+  return { setItem, getItem, getItems, removeItem, findOneItemByKeyValue, getItemsLimit, updateItem, getItemsByKeyValue };
 };

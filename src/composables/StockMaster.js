@@ -12,16 +12,12 @@ import { generateId } from "../utils/GeneratorId";
 import { createIncoming } from "./Incoming"
 // conver excel date to javascript date
 import excelToJSDate from "../utils/ExcelDateToJs"
+// import local forage
+import { useIdb } from "../utils/localforage"
 
 
 // the state
 export const Stock_masters = ref([]);
-
-const saveData = () => {
-  const data = JSON.stringify(Stock_masters.value);
-  localStorage.setItem(store, data);
-};
-
 /**
  * 
   id string
@@ -39,6 +35,8 @@ export const createStock = async (
   product_created,
   quantity
 ) => {
+  // initiate idb
+  const stockdb = await useIdb(store)
   // get last id
   const summaryRecord = await summary(store);
   // generate next id
@@ -59,23 +57,33 @@ export const createStock = async (
   // // update summary
   await summaryRecord.updateSummary(nextId);
   // // save tolocalstorage
-  saveData();
+  // saveData();
+  // save to indexeddb
+  await stockdb.setItem(nextId, record)
 
   return record;
 };
 
-export const gettingStartedRecord = () => {
+export const gettingStartedRecord = async () => {
   // dapatkan last used
   if (!Stock_masters.value.length) {
-    const item = localStorage.getItem(store);
-    Stock_masters.value = item ? JSON.parse(item) : [];
+    // initiate idb
+    const stockdb = await useIdb(store)
+    // get all items
+    const item = await stockdb.getItems();
+    // set state 
+    Stock_masters.value = item ? item : [];
   }
   return;
 };
 
 export const removeStockById = async (id) => {
+  // initiate idb
+  const stockdb = await useIdb(store)
+  // remove from state
   Stock_masters.value = Stock_masters.value.filter((rec) => rec.id !== id);
-  saveData();
+  // remove from idb
+  await stockdb.removeItem(id)
   return;
 };
 
@@ -85,10 +93,11 @@ export const removeStockById = async (id) => {
 // //   return lastRec[0];
 // // };
 
-export const getStockById = (id) => {
-  gettingStartedRecord();
+export const getStockById = async (id) => {
+  // initiate idb
+  const stockdb = await useIdb(store)
   // console.log(res[0]);
-  const findStock = Stock_masters.value.find((rec) => rec?.id == id);
+  const findStock = await stockdb.getItem(id)
   return findStock
     ? findStock
     : {
@@ -99,52 +108,62 @@ export const getStockById = (id) => {
       };
 };
 
-export const updateStockById = (id, keyValueToUpdate) => {
+export const updateStockById = async (id, keyValueToUpdate) => {
+  // initiate idb
+  const stockdb = await useIdb(store)
+  // update the state
   Stock_masters.value = Stock_masters.value.map((item) => {
     return item?.id == id ? { ...item, ...keyValueToUpdate } : item;
   });
-  saveData();
+  await stockdb.updateItem(id, keyValueToUpdate);
+  //saveData();
   return;
 };
 
 export const getStockWithoutParent = () => {
-  gettingStartedRecord();
   const stock = Stock_masters.value.filter(
     (stock) => !stock?.icoming_parent_id
   );
   return stock;
 };
 
-export const documentsMapper = (docs) => {
-  const res = docs.map((doc) => ({
-    id: doc?.id,
-    quantity: doc?.quantity,
-    item: getItemById(doc?.item_id)?.nm_item,
-    product_created: ddmmyyyy(doc?.product_created, "-"),
-  }));
+export const documentsMapper = async (docs) => {
+  let result = []
+  for(const doc of docs) {
+    result.push({
+      id: doc?.id,
+      quantity: doc?.quantity,
+      item: await getItemById(doc?.item_id)?.nm_item,
+      product_created: ddmmyyyy(doc?.product_created, "-")
+    })
+  }
+  
 
-  return res;
+  return result;
 };
 
-export const setStockParent = (idsOfStock, icoming_parent_id) => {
+export const setStockParent = async (idsOfStock, icoming_parent_id) => {
+  // updaate state
   Stock_masters.value = Stock_masters.value.map((stock) => {
     if(idsOfStock.includes(stock?.id)) {
-      return { ...stock, icoming_parent_id}
+      return { ...stock, icoming_parent_id }
     }
     return stock
   })
-  saveData()
+  // update in db
+  await updateStockById(idsOfStock, { icoming_parent_id })
 }
 
-export const itemThatAvailable = () => {
-  gettingStartedRecord();
-  // record item that was taken
+export const itemThatAvailable = async () => {
+  // get all item firsst
+  await gettingStartedRecord()
+  // get item that available not null
   let isItemTaken = []
   // result of item
   let result = []
-  Stock_masters.value.forEach((stock) => {
+  for(const stock of Stock_masters.value) {
     if(stock?.available > 0 && !isItemTaken.includes(stock?.item_id)) {
-      const item = getItemById(stock?.item_id)
+      const item = await getItemById(stock?.item_id)
       isItemTaken.push(stock?.item_id)
       result.push({
         item_id: stock?.item_id,
@@ -152,13 +171,14 @@ export const itemThatAvailable = () => {
         nm_item: item?.nm_item,
       })
     }
-  })
+  }
   return result;
 }
 
 export const getAvailableDateByItem = (item_id) => {
   const result = []
   Stock_masters.value.forEach((stock) => {
+    // if availabel and item_id == item_id
     if(stock?.item_id == item_id && stock?.available > 0) {
       result.push({
         id: stock?.id,
@@ -169,7 +189,10 @@ export const getAvailableDateByItem = (item_id) => {
   return result;
 }
 
-export const changeAvaliableStock = (id_stock, yourNumberPlusOrMinus) => {
+export const changeAvaliableStock = async (id_stock, yourNumberPlusOrMinus) => {
+  // initiate idb
+  const stockdb = await useIdb(store)
+  // update state
   Stock_masters.value = Stock_masters.value.map((stock) => {
     if(stock?.id == id_stock) {
       // if available not equal to quantity, mark stock as taken
@@ -189,7 +212,19 @@ export const changeAvaliableStock = (id_stock, yourNumberPlusOrMinus) => {
     } 
     return stock
   })
-  saveData()
+  // get the record
+  const findRec = stockdb.getItem(id_stock)
+  // isTaken value
+  const isTaken = Number(findRec?.quantity) != (Number(findRec?.available) + Number(yourNumberPlusOrMinus))
+                    ? true
+                    : false
+  // new item
+  const newItem = { 
+    ...findRec, 
+    available: Number(findRec?.available) + Number(yourNumberPlusOrMinus),
+    isTaken
+  }
+  // saveData()
 }
 
 
@@ -203,14 +238,16 @@ export const changeAvaliableStock = (id_stock, yourNumberPlusOrMinus) => {
 //   saveData()
 // }
 
-export const markStockAsTaken = (id) => {
-  updateStockById(id, { isTaken: true })
+export const markStockAsTaken = async (id) => {
+  await updateStockById(id, { isTaken: true })
 }
 
 
-export const getAllDataToBackup = () => {
+export const getAllDataToBackup = async () => {
+  // initiate idb
+  const stockdb = await useIdb(store)
   // get all data
-  const allData = localStorage.getItem(store)
+  const allData = await stockdb.getItems()
   // return the result
   return { store, data: allData ? JSON.parse(allData) : null }
 }
@@ -227,7 +264,7 @@ export const createStockAwal = async (kode_item, nama_item, umur_product, quanti
     // create incoming record
     const incoming = await createIncoming([stock.id], 'stock awal', ymdTime(), 1, 'stock awal', 'stock awal', 'stock awal', null)
     // set parent stock
-    setStockParent(stock.id, incoming.id)
+    await setStockParent(stock.id, incoming.id)
   } else {
     // jika belum ada buat item baru
     // create new item, this will return only id
@@ -237,6 +274,6 @@ export const createStockAwal = async (kode_item, nama_item, umur_product, quanti
     // create incoming record
     const incoming = await createIncoming([stock.id], 'stock awal', ymdTime(), 1, 'stock awal', 'stock awal', 'stock awal', null)
     // set parent stock
-    setStockParent(stock.id, incoming.id)
+    await setStockParent(stock.id, incoming.id)
   }
 }

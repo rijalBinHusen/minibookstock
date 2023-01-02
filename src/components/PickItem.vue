@@ -127,14 +127,15 @@ const item_full = ref(null)
 const item_detail = ref(null)
 
 let timeoutHandleItem = null
-const handleItem = (e) => {
+const handleItem = async (e) => {
     if(e.target.value) {
         // clearTimeout
         clearTimeout(timeoutHandleItem)
         timeoutHandleItem = setTimeout( async () => {
             const kd_item = e.target.value.split("*")[0]
-            item_detail.value = getItemIdByKdItem(kd_item)
+            item_detail.value = await getItemIdByKdItem(kd_item)
             item.value = item_detail.value?.id
+            console.log('item detail value', item_detail.value)
         }, 1000)
     }
 }

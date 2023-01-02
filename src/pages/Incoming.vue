@@ -76,8 +76,8 @@ const lists = ref([])
 const renderRecord = () => {
     lists.value = []
     // get the mapped record
-    setTimeout(() => {
-        lists.value = incomingTransactionMapped()
+    setTimeout( async () => {
+        lists.value = await incomingTransactionMapped()
     }, 500)
 }
 
