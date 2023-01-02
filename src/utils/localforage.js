@@ -8,7 +8,6 @@ export const useIdb = async (storeName) => {
   });
 
   const setItem = async (key, value) => {
-    console.log(key, value);
     await store.setItem(key, value);
     return;
   };

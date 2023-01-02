@@ -279,9 +279,9 @@ const handleSubmit = async () => {
       // then insert incoming transction with child from insert all stock
       const incomingRecord = await createIncoming(insertedStock, paper_id.value, date.value, shift.value, diterima.value, type.value, diserahkan.value, null)
       // update all stock with parent
-      insertedStock.forEach((idStock) => {
-        setStockParent(idStock, incomingRecord.id)
-      })
+      // insertedStock.forEach((idStock) => {
+      //   setStockParent(idStock, incomingRecord.id)
+      // })
     }
     // close modal and send tunnel message true, it mean we are add new record or update a record
     closeModalOrDialog(true)

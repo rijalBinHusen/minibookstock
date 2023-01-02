@@ -70,7 +70,9 @@ export const createIncoming = async (
   // save to indexeddb
   await incomedb.setItem(nextId, record);
   // set parent for each stock master
-  setStockParent(stock_master_ids, nextId);
+  stock_master_ids.forEach((stockId) => {
+    setStockParent(stockId, nextId);
+  });
   // return the whole record
   return record;
 };
