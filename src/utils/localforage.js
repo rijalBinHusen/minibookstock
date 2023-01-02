@@ -8,6 +8,7 @@ export const useIdb = async (storeName) => {
   });
 
   const setItem = async (key, value) => {
+    console.log(key, value);
     await store.setItem(key, value);
     return;
   };
@@ -83,7 +84,7 @@ export const useIdb = async (storeName) => {
 
   const getItemsByKeyValue = async (keySearch, valueSearch) => {
     let result = [];
-    await store
+    return store
       .iterate(function (value, key, iterationNumber) {
         // Resulting key/value pair -- this callback
         // will be executed for every item in the
