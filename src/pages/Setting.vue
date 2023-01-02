@@ -3,14 +3,14 @@
     <!-- <component :is="activeComponent"></component> -->
     <JurnalId />
     <div class="bg-base-200 w-6/12 p-2">
-      <p class="text-3xl text-center">{{ label }}</p>
+      <p class="text-3xl text-center">{{ label || 'Export atau Import data' }}</p>
       <Select 
         value="id"
         text="title"
         id="data_to_import"
         :options="listData"
         size="small"
-        class="w-56"
+        class="w-56 mt-10"
         @selectedd="selectedDataType = $event"
       />
     
@@ -66,12 +66,14 @@ import { computed, ref } from "vue";
 import { subscribeConfirmDialog } from "../composables/launchForm";
 import BackupData from "../components/BackupData.vue";
 import ImportData from "../components/ImportData.vue";
+import ImportStockAwal from "../components/ImportStockAwal.vue"
 
 const listData = [
           // { id: 'database', type: 'import', title: 'Import Database'}, 
           // { id: 'salesOrder', type: 'import', title: 'Import Outstanding SO'},
           { id : 'BackupData', type: 'export', title: 'Backup data'},
-          { id: 'ImportData', type: 'import', title: 'Import data kedatabase'}
+          { id: 'ImportData', type: 'import', title: 'Import database'},
+          { id: 'ImportStockAwal', type: 'import', title: 'Import stock awal'}
         ]
 
 // the variable that will contain id of listData what user selected in select option
@@ -92,7 +94,7 @@ const label = computed(() => {
 
 // the list of all components
 const components = {
-  BackupData, ImportData
+  BackupData, ImportData, ImportStockAwal
 }
 
 

@@ -15,7 +15,8 @@
     "localforage": "^1.10.0",
     "vue": "^3.2.16",
     "vue3-datepicker": "^0.2.5",
-    "vuex": "^4.0.2"
+    "vuex": "^4.0.2",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^1.9.3",

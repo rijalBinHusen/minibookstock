@@ -2,6 +2,8 @@
   <div
     class="rounded md:w-6/12 md:max-h-screen overflow-auto p-2 bg-base-200"
   >
+  <!-- title -->
+  <p v-if="!titleJurnal" class="text-3xl text-center">Tambah atau edit jurnal</p>
     <!-- Select type jurnal -->
     <Select 
       value="id"
@@ -13,7 +15,7 @@
       @selectedd="activeJurnalToInput = $event"
     />
     <!-- Type jurnal -->
-    <h1 class="text-2xl mb-2 text-center mt-11">Daftar {{  titleJurnal }}</h1>
+    <h1 class="text-2xl mb-2 text-center mt-11 ">Daftar {{  titleJurnal }}</h1>
     <!-- The form -->
     <form v-if="activeJurnalToInput" @submit.prevent="handleSubmit" class="mb-2">
       <Input

@@ -54,7 +54,7 @@ export default {
     selectTipe() {
       let className = ["select", "select-bordered"];
 
-      if (this.class) className.push(this.class.split(" "));
+      if (this.class) className.push(this.class);
       if (this.size.includes("primary")) className.push("select-primary");
       if (this.size.includes("secondary")) className.push("select-secondary");
       if (this.size.includes("accent")) className.push("select-accent");
@@ -65,7 +65,7 @@ export default {
       if (this.size.includes("large")) className.push("select-lg");
       if (this.size.includes("small")) className.push("select-sm");
       if (this.size.includes("xsmall")) className.push("select-xs");
-
+      console.log(className)
       return className.join(" ");
     },
     activated() {
