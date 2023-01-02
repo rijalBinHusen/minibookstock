@@ -24,7 +24,7 @@
 <script setup>
 
 import { ref } from 'vue';
-import { launchForm } from "../composables/launchForm"
+import { launchForm, closeModalOrDialog } from "../composables/launchForm"
     
 // ref for input type file
 const inputFile = ref()
@@ -39,6 +39,22 @@ const handleImport = () => {
     // read file as text
     reader.readAsText(file);
     //when reading is completed load
-    reader.onload = (event) => console.log(JSON.parse(event.target.result));
+    reader.onload = (event) => startImport(JSON.parse(event.target.result));
+}
+
+const startImport = (arr) => {
+  arr.forEach((records) => {
+    // records = { store: 'nameOfStore': data: [12,2,3,4,,5,6,6,7,] }
+    if(records?.data) {
+      // set to local storage
+      localStorage.setItem(records?.store, JSON.stringify(records?.data))
+    }
+  })
+  // close the loader
+  closeModalOrDialog(false)
+    .then(() => {
+      // refresh browser
+      window.location.reload()
+    })
 }
 </script>

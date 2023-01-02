@@ -84,11 +84,20 @@ export const launchFormAndsubscribeMutation = async (
 };
 
 export const closeModalOrDialog = (bool = false) => {
-  // send message to tunnelMessage
-  store.commit("tunnelMessage", bool);
-  // set state modal empty
-  store.commit("confirmPayload", false);
-  store.commit("form", false);
-  // close modal
-  window.location.href = "#";
+  // read current form
+  const currentForm = store.state.form?.form
+  
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      // send message to tunnelMessage
+      store.commit("tunnelMessage", bool);
+      // set state modal empty
+      store.commit("confirmPayload", false);
+      store.commit("form", false);
+      // close modal
+      window.location.href = "#";
+      // finish the promise
+      resolve()
+    }, currentForm == 'Loader' ? 500 : 100)
+  })
 };
