@@ -109,9 +109,9 @@ const handleSubmit = async () => {
 const handleButton = async (id) => {
   let rec;
   if(activeJurnalToInput.value === 'incoming') {
-    rec = getJurnalProdukMasukById(id)
+    rec = await getJurnalProdukMasukById(id)
   } else {
-    rec = getJurnalProdukKeluarById(id)
+    rec = await getJurnalProdukKeluarById(id)
   }
   newJurnal.value = rec?.nama_jurnal
   isEditMode.value = id
