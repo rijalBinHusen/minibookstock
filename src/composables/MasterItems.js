@@ -123,9 +123,9 @@ export const getAllDataToBackup = async () => {
   const dbitems = await useIdb(store);
   // get all data
   // const allData = localStorage.getItem(store)
-  const allData = dbitems.getItems();
+  const allData = await dbitems.getItems();
   // return the result
-  return { store, data: allData ? JSON.parse(allData) : null };
+  return { store, data: allData ? allData : null };
 };
 
 export const getItemByIdInState = (id_item) => {

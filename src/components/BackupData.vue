@@ -21,6 +21,7 @@ import { getAllDataToBackup as getBackupMasterItems } from '../composables/Maste
 import { getAllDataToBackup as getBackupOutput } from '../composables/Output'
 import { getAllDataToBackup as getBackupStockMaster } from '../composables/StockMaster'
 import { useJurnalProdukKeluar, useJurnalProdukMasuk } from '../composables/Setting_JurnalId'
+import { summary } from "../utils/summaryIdb"
 // import function to export text to file and download it
 import { startExport } from "../composables/ExportAsFile"
 // import date time formater
@@ -30,11 +31,13 @@ const handleBackup = async () => {
     // import function get all jurnal
     const { getAllDataToBackup: getBackupJurnalKeluar } = useJurnalProdukKeluar()
     const { getAllDataToBackup: getBackupJurnalIncoming } = useJurnalProdukMasuk()
+    const { getAllDataToBackup: getBackupSummary } = await summary()
     // the list of function that return data that we'are gonna backup
-    const list = [getBackupIncoming, getBackupMasterItems, getBackupOutput, getBackupStockMaster, getBackupJurnalIncoming, getBackupJurnalKeluar]
+    const list = [getBackupIncoming, getBackupMasterItems, getBackupOutput, getBackupStockMaster, getBackupJurnalIncoming, getBackupJurnalKeluar, getBackupSummary]
     // map all function to get all data in local storage
-    const result = list.map((get) => get())
+    const result = await Promise.all(list.map((get) => get()))
     // export all data as file
     startExport(result, full() + '.json')
+    // console.log(result)
 }
 </script>

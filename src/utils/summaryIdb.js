@@ -1,9 +1,6 @@
 import { useIdb } from "./localforage";
 
-let timeOut;
-let storeToUpdate = []; //store that would to update
-
-// store would contain { lastId: value, total: value }
+// 1ore would contain { lastId: value, total: value }
 export async function summary(storeName) {
   const summaryDB = await useIdb("summary")
   // would return { }
@@ -15,5 +12,14 @@ export async function summary(storeName) {
     return;
   };
 
-  return { lastUpdated, updateSummary };
+  const getAllDataToBackup = async () => {
+    // initiate idb
+    const summarydb = await useIdb("summary");
+    // get all data
+    const allData = await summarydb.getItems();
+    // return the result
+    return { store: "summary", data: allData ? allData : null };
+  };
+
+  return { lastUpdated, updateSummary, getAllDataToBackup };
 }

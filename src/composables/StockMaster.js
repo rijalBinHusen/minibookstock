@@ -232,7 +232,7 @@ export const getAllDataToBackup = async () => {
   // get all data
   const allData = await stockdb.getItems();
   // return the result
-  return { store, data: allData ? JSON.parse(allData) : null };
+  return { store, data: allData ? allData : null };
 };
 
 export const createStockAwal = async (
