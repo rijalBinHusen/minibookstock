@@ -50,7 +50,7 @@ export const createStock = async (
     kd_produksi,
     product_created,
     quantity: Number(quantity),
-    available: quantity,
+    available: Number(quantity),
   };
   // // push to state
   Stock_masters.value.unshift(record);
@@ -199,7 +199,7 @@ export const changeAvailableStock = async (id_stock, yourNumberPlusOrMinus) => {
   // initiate idb
   const stockdb = await useIdb(store);
   // get the record
-  const findRec = stockdb.getItem(id_stock);
+  const findRec = await stockdb.getItem(id_stock);
   // isTaken value
   const isTaken =
     Number(findRec?.quantity) !=

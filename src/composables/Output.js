@@ -145,6 +145,10 @@ export const updateOutputById = async (id, keyValueToUpdate) => {
 
 export const outputTransactionMapped = async () => {
   const result = []
+  // if the state null
+  if (!Output_transaction.value || !Output_transaction.value.length) {
+    return result;
+  }
   // Output_transaction.value.forEach((doc) => {
   for(const doc of Output_transaction.value) {
 

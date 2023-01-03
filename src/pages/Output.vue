@@ -13,7 +13,7 @@
                 type="button"
                 small
                 class="ml-2"
-                @trig="renderRecord"
+                @trig="handlePeriode"
             />
             <Button
                 primary
@@ -106,6 +106,11 @@ const handleButton = async (operation, document) => {
 }
 
 const lists = ref([])
+
+const handlePeriode = async () => {
+    await getRecordByDate()
+    renderRecord()
+}
 
 const renderRecord = () => {
     lists.value = []
