@@ -8,17 +8,16 @@ const store = "output_transaction";
 import { generateId } from "../utils/GeneratorId";
 // import set parent function for stock master
 import { getStockById, changeAvaliableStock, markStockAsTaken } from "./StockMaster";
+// import item function
 import { getItemById } from "./MasterItems";
+// import idb
+import { useIdb } from "../utils/localforage";
 
 // the state
 export const Output_transaction = ref([]);
 
 // what date to show
 export const dateRecordToShow = ref(new Date())
-const saveData = () => {
-  const data = JSON.stringify(Output_transaction.value);
-  localStorage.setItem(store, data);
-};
 
 /**
  * 
@@ -34,6 +33,8 @@ const saveData = () => {
  */
 
 export const createOutput = async (tanggal, type, shift, nomor_so, stock_master_id, quantity) => {
+  // initiate db
+  const outputdb = await useIdb(store)
   // get last id
   const summaryRecord = await summary(store);
   // generate next id
@@ -55,22 +56,38 @@ export const createOutput = async (tanggal, type, shift, nomor_so, stock_master_
   // // update summary
   await summaryRecord.updateSummary(nextId);
   // // save tolocalstorage
-  saveData();
+  // saveData();
+  await outputdb.setItem(nextId, record)
   // set parent for each stock master
-  changeAvaliableStock(stock_master_id, -Number(quantity))
+  await changeAvaliableStock(stock_master_id, -Number(quantity))
   return record;
 };
 
-export const gettingStartedRecord = () => {
-  // dapatkan last used
-  if (!Output_transaction.value.length) {
-    const item = localStorage.getItem(store);
-    Output_transaction.value = item ? JSON.parse(item) : [];
-  }
+// export const gettingStartedRecord = () => {
+//   // dapatkan last used
+//   if (!Output_transaction.value.length) {
+//     const item = localStorage.getItem(store);
+//     Output_transaction.value = item ? JSON.parse(item) : [];
+//   }
+//   return;
+// };
+
+export const getRecordByDate = async () => {
+  // initiate db
+  const outputdb = await useIdb(store)
+  // get record by date
+  Output_transaction.value = await outputdb.getItemsByKeyValue(
+    "tanggal",
+    ymdTime(dateRecordToShow.value)
+  );
+  // 
   return;
-};
+}
 
 export const removeOutputById = async (id) => {
+  // initiate db
+  const outputdb = await useIdb(store)
+  // remove from statate
   Output_transaction.value = Output_transaction.value.filter((rec) => {
         if(rec.id !== id) {
             return rec
@@ -78,7 +95,8 @@ export const removeOutputById = async (id) => {
         changeAvaliableStock(rec?.stock_master_id, Number(rec?.quantity))
     }
   );
-  saveData();
+  // saveData();
+  await outputdb.removeItem(id);
   return;
 };
 
@@ -88,10 +106,11 @@ export const removeOutputById = async (id) => {
 // //   return lastRec[0];
 // // };
 
-export const getOutputById = (id) => {
-  gettingStartedRecord();
+export const getOutputById = async (id) => {
+  // initiate db
+  const outputdb = await useIdb(store)
   // console.log(res[0]);
-  const findStock = Output_transaction.value.find((rec) => rec?.id == id);
+  const findStock = await outputdb.getItem(id)
   return findStock
     ? findStock
     : {
@@ -103,13 +122,17 @@ export const getOutputById = (id) => {
       };
 };
 
-// export const updateIncomingById = (id, keyValueToUpdate) => {
-//   Output_transaction.value = Output_transaction.value.map((item) => {
-//     return item?.id == id ? { ...item, ...keyValueToUpdate } : item;
-//   });
-//   saveData();
-//   return;
-// };
+export const updateOutputById = async (id, keyValueToUpdate) => {
+  // initiate db
+  const outputdb = await useIdb(store)
+  // update in state
+  Output_transaction.value = Output_transaction.value.map((item) => {
+    return item?.id == id ? { ...item, ...keyValueToUpdate } : item;
+  });
+  // update in db
+  outputdb.updateItem(id, keyValueToUpdate);
+  return;
+};
 
 // export const getStockWithoutParent = () => {
 //   gettingStartedRecord();
@@ -119,15 +142,16 @@ export const getOutputById = (id) => {
 //   return stock;
 // };
 
-export const outputTransactionMapped = () => {
-  gettingStartedRecord()
+export const outputTransactionMapped = async () => {
   const result = []
-  Output_transaction.value.forEach((doc) => {
+  // Output_transaction.value.forEach((doc) => {
+  for(const doc of Output_transaction.value) {
+
     if(doc?.tanggal == ymdTime(dateRecordToShow.value)) {
       // get master stock
-      const master = getStockById(doc?.stock_master_id)
+      const master = await getStockById(doc?.stock_master_id)
       // get item
-      const item = getItemById(master.item_id)
+      const item = await getItemById(master.item_id)
       result.push ({
         id: doc?.id,
         tanggal: ddmmyyyy(doc?.tanggal, "-"),
@@ -140,28 +164,32 @@ export const outputTransactionMapped = () => {
       })
     }
   }
-  );
+  // }
+  // );
   return result
 };
 
-export const markAsFinished = (id) => {
+export const markAsFinished = async (id) => {
+  // mark in state
   Output_transaction.value = Output_transaction.value.map((doc) => {
     if(doc?.id === id) {
       // update the quantity
       // changeAvaliableStock(doc?.stock_master_id,)
       // mark as finished
       markStockAsTaken(doc?.stock_master_id)
-      const docChanged = getStockById(doc?.stock_master_id)
       return { ...doc, isFinished: true}
     } 
     return doc
   });
-  saveData()
+  await updateOutputById(id, { isFinished: true })
+  
 }
 
-export const getAllDataToBackup = () => {
+export const getAllDataToBackup = async () => {
+  // initiate db
+  const outputdb = await useIdb(store)
   // get all data
-  const allData = localStorage.getItem(store)
+  const allData = await outputdb.getItems(store)
   // return the result
-  return { store, data: allData ? JSON.parse(allData) : null }
+  return { store, data: allData ? allData : null }
 }

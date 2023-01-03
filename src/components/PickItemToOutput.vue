@@ -106,9 +106,9 @@
 import Input from "./elements/Forms/Input.vue";
 import Button from "@/components/elements/Button.vue";
 import TableVue from "./elements/Table.vue";
-import { ref, defineEmits, defineProps, computed } from 'vue';
+import { ref, defineEmits, defineProps, computed, onMounted } from 'vue';
 import { getItemIdByKdItem } from "../composables/MasterItems";
-import { itemThatAvailable, getAvailableDateByItem, getStockById } from "../composables/StockMaster"
+import { itemThatAvailable, getAvailableDateByItem, getStockById, gettingStartedRecord as getMasterStocks } from "../composables/StockMaster"
 import Select from "./elements/Forms/Select.vue";
 
 const props = defineProps({
@@ -119,8 +119,8 @@ const props = defineProps({
 const emit = defineEmits(['addStock', 'removeStock', 'editStock', 'updateStock'])
 // will contain id of record that on edit
 const isEditMode = ref(null)
-
-const itemAvailable = computed(() => itemThatAvailable())
+// item llist that available
+const itemAvailable = ref([])
 
 // item mode
 const itemModel = ref(null)
@@ -135,11 +135,11 @@ const currentStockMaster = ref(null)
 // available stock that can take to quantity output
 const quantityAvailableStockMaster = ref(null)
 
-const handleItem = (e) => {
+const handleItem = async (e) => {
     if(e.target.value) {
         // getItem
         const kd_item = e.target.value.split("*")[0]
-        item_detail.value = getItemIdByKdItem(kd_item)
+        item_detail.value = await getItemIdByKdItem(kd_item)
         item.value = item_detail.value?.id
         // after item taken
         // get product created by it item that available to take
@@ -147,11 +147,11 @@ const handleItem = (e) => {
     }
 }
 
-const hadleStockMaster = (id_stock_master) => {
+const hadleStockMaster = async (id_stock_master) => {
     // set the stock master
     currentStockMaster.value = id_stock_master
     // get stock master by id
-    const stockMaster = getStockById(id_stock_master)
+    const stockMaster = await getStockById(id_stock_master)
     // get the quantity
     // show the maximum quantity
     quantityAvailableStockMaster.value = stockMaster.available
@@ -195,5 +195,10 @@ const handleBtnTable = (operation, id) => {
         emit('removeStock', id)
     }
 }
+
+onMounted( async () => {
+    await getMasterStocks()
+    itemAvailable.value = await itemThatAvailable()
+})
 
 </script>

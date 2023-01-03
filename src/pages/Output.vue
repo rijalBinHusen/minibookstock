@@ -68,7 +68,7 @@ import Datatable from "../components/parts/Datatable.vue";
 import Button from "../components/elements/Button.vue";
 import { ref, onMounted } from "vue";
 import { launchFormAndsubscribeMutation, subscribeConfirmDialog } from "../composables/launchForm";
-import { outputTransactionMapped, removeOutputById, markAsFinished, dateRecordToShow } from "../composables/Output"
+import { outputTransactionMapped, removeOutputById, markAsFinished, dateRecordToShow, getRecordByDate } from "../composables/Output"
 
 // what date to show record
 // dateRecordToShow
@@ -112,12 +112,12 @@ const renderRecord = () => {
     // get record
     // getIncomingRecord()
     // map record
-    setTimeout(() => {
-        lists.value = outputTransactionMapped()
+    setTimeout( async () => {
+        lists.value = await outputTransactionMapped()
     }, 500)
 }
 
-onMounted(() => {
+onMounted(async () => {
     renderRecord()
 })
 

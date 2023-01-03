@@ -1,7 +1,7 @@
 import { summary } from "../utils/summaryIdb";
 import { ref } from "vue";
 // item function
-import { getItemById, getItemIdByKdItem, createItem } from "./MasterItems";
+import { getItemById, getItemIdByKdItem, createItem, Master_items } from "./MasterItems";
 // date formatter
 import { ddmmyyyy, ymdTime } from "../utils/dateFormat";
 // store name
@@ -181,9 +181,9 @@ export const getAvailableDateByItem = (item_id) => {
       result.push({
         id: stock?.id,
         product_created:
-          "kode " +
+          "#" +
           stock?.kd_produksi +
-          " * Tanggal produk " +
+          " | " +
           ddmmyyyy(stock?.product_created, "-"),
       });
     }
@@ -317,3 +317,7 @@ export const createStockAwal = async (
     await setStockParent(stock.id, incoming.id);
   }
 };
+
+export const getSTockByIdInState = (idStock) => {
+  return Stock_masters.value.find((rec) => rec?.id === idStock)
+}

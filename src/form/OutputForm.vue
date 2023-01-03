@@ -120,9 +120,9 @@ import { ref, onMounted, computed } from "vue";
 import { useJurnalProdukKeluar } from "../composables/Setting_JurnalId"
 import { closeModalOrDialog } from "../composables/launchForm"
 import { useStore } from "vuex";
-import { getItemById } from "../composables/MasterItems";
+import { getItemByIdInState, gettingStartedRecord as getItems } from "../composables/MasterItems";
 import { ddmmyyyy } from "../utils/dateFormat";
-import { createStock, getStockById, setStockParent, updateStockById, removeStockById, changeAvaliableStock } from "../composables/StockMaster";
+import { getSTockByIdInState } from "../composables/StockMaster";
 import { createOutput } from "../composables/Output"
 // vuex
 const store = useStore()
@@ -143,8 +143,8 @@ const currentStockEdit=ref(null)
 const { gettingJurnalProdukKeluarRecord, Jurnal_produk_keluar } = useJurnalProdukKeluar()
 
 const stockChildDetails = computed(() => stockChild.value.map((stock) => {
-      const getStockMaster = getStockById(stock?.stock_master_id)
-      const getItem = getItemById(getStockMaster?.item_id)
+      const getStockMaster = getSTockByIdInState(stock?.stock_master_id)
+      const getItem = getItemByIdInState(getStockMaster?.item_id)
       return {
         id: stock?.id,
         item: getItem.nm_item,
@@ -189,6 +189,7 @@ const isEditMode = ref(null)
 
 onMounted( async () => {
   await gettingJurnalProdukKeluarRecord()
+  await getItems()
 })
 
 </script>
