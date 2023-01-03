@@ -245,7 +245,7 @@ export const createStockAwal = async (
   // convert excel date to javascript date
   const date = excelToJSDate(tanggal_produksi);
   // cari dulu itemnya sudah ada atau belum
-  const isItemExists = getItemIdByKdItem(kode_item);
+  const isItemExists = await getItemIdByKdItem(kode_item);
   // jika ada langsung input ke master
   if (isItemExists?.id) {
     // create new stock
