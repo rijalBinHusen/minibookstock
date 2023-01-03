@@ -152,22 +152,20 @@ export const outputTransactionMapped = async () => {
   // Output_transaction.value.forEach((doc) => {
   for(const doc of Output_transaction.value) {
 
-    if(doc?.tanggal == ymdTime(dateRecordToShow.value)) {
-      // get master stock
-      const master = await getStockById(doc?.stock_master_id)
-      // get item
-      const item = await getItemById(master.item_id)
-      result.push ({
-        id: doc?.id,
-        tanggal: ddmmyyyy(doc?.tanggal, "-"),
-        shift: doc?.shift,
-        nomor_so: doc?.nomor_so,
-        nm_item: item?.nm_item,
-        product_created: ddmmyyyy(master.product_created, "-"),
-        quantity: doc?.quantity,
-        isFinished: doc?.isFinished
-      })
-    }
+    // get master stock
+    const master = await getStockById(doc?.stock_master_id)
+    // get item
+    const item = await getItemById(master.item_id)
+    result.push ({
+      id: doc?.id,
+      tanggal: ddmmyyyy(doc?.tanggal, "-"),
+      shift: doc?.shift,
+      nomor_so: doc?.nomor_so,
+      nm_item: item?.nm_item,
+      product_created: ddmmyyyy(master.product_created, "-"),
+      quantity: doc?.quantity,
+      isFinished: doc?.isFinished
+    })
   }
   // }
   // );
