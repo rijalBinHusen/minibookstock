@@ -149,13 +149,6 @@ export const updateIncomingById = async (id, keyValueToUpdate) => {
 
 export const incomingTransactionMapped = async () => {
   const result = [];
-  // initiate idb
-  const incomedb = await useIdb(store);
-  // get income by date
-  Incoming_transaction.value = await incomedb.getItemsByKeyValue(
-    "tanggal",
-    ymdTime(dateRecordToShow.value)
-  );
   // if the state null
   if (!Incoming_transaction.value || !Incoming_transaction.value.length) {
     return result;
@@ -191,3 +184,15 @@ export const getAllDataToBackup = async () => {
   // return the result
   return { store, data: allData ? JSON.parse(allData) : null };
 };
+
+export const getRecordByDate = async () => {
+  // initiate idb
+  const incomedb = await useIdb(store);
+  // get income by date
+  Incoming_transaction.value = await incomedb.getItemsByKeyValue(
+    "tanggal",
+    ymdTime(dateRecordToShow.value)
+  );
+  // return
+  return;
+}

@@ -13,7 +13,7 @@
                 type="button"
                 small
                 class="ml-2"
-                @trig="renderRecord"
+                @trig="handlePeriode"
             />
             <Button
                 primary
@@ -56,7 +56,7 @@ import Datatable from "../components/parts/Datatable.vue";
 import Button from "../components/elements/Button.vue";
 import { ref, onMounted } from "vue";
 import { launchFormAndsubscribeMutation } from "../composables/launchForm";
-import { incomingTransactionMapped, dateRecordToShow } from "../composables/Incoming"
+import { incomingTransactionMapped, dateRecordToShow, getRecordByDate } from "../composables/Incoming"
 
 // what date to show record
 // dateRecordToShow.value (using that ^ date)
@@ -72,6 +72,11 @@ const handleButton = async (operation, document) => {
 }
 
 const lists = ref([])
+
+const handlePeriode = async () => {
+    await getRecordByDate()
+    renderRecord()
+}
 
 const renderRecord = () => {
     lists.value = []
