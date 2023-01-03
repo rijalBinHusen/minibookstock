@@ -47,10 +47,13 @@ const startImport = async (arr) => {
   for(const record of arr) {
     // initiate db
     const db = await useIdb(record.store)
-    // loop the data
-    for(const datum of record.data) {
-      // insert to indexeddb
-      await db.setItem(datum.id, datum)
+    // if data is not null
+    if(record?.data && record?.data.length) {
+      // loop the data
+      for(const datum of record.data) {
+        // insert to indexeddb
+        await db.setItem(datum.id, datum)
+      }
     }
   }
   // close the loader

@@ -95,10 +95,10 @@ const handleButton = async (operation, document) => {
         // if operation remove record
         if(operation === 'remove') {
             // remove record from db
-            removeOutputById(document)
+            await removeOutputById(document)
         } else if(operation === 'finished') {
             // mark as finished db
-            markAsFinished(document)
+           await  markAsFinished(document)
         }
         // re render record
         renderRecord()
