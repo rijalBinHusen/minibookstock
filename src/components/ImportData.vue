@@ -25,6 +25,7 @@
 
 import { ref } from 'vue';
 import { launchForm, closeModalOrDialog } from "../composables/launchForm"
+import { useIdb } from "../utils/localforage"
     
 // ref for input type file
 const inputFile = ref()
@@ -42,14 +43,16 @@ const handleImport = () => {
     reader.onload = (event) => startImport(JSON.parse(event.target.result));
 }
 
-const startImport = (arr) => {
-  arr.forEach((records) => {
-    // records = { store: 'nameOfStore': data: [12,2,3,4,,5,6,6,7,] }
-    if(records?.data) {
-      // set to local storage
-      localStorage.setItem(records?.store, JSON.stringify(records?.data))
+const startImport = async (arr) => {
+  for(const record of arr) {
+    // initiate db
+    const db = await useIdb(record.store)
+    // loop the data
+    for(const datum of record.data) {
+      // insert to indexeddb
+      await db.setItem(datum.id, datum)
     }
-  })
+  }
   // close the loader
   closeModalOrDialog(false)
     .then(() => {
