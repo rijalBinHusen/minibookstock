@@ -253,7 +253,7 @@ const handleSubmit = async () => {
             item_id: stock?.item_id, 
             kd_produksi: stock?.kd_produksi, 
             product_created: stock?.product_created, 
-            quantity: stock?.quantity
+            quantity: Number(stock?.quantity)
           })
           // the update stock push too
           insertedStock.push(stock?.id)

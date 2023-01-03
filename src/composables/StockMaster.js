@@ -14,6 +14,7 @@ import { createIncoming } from "./Incoming";
 import excelToJSDate from "../utils/ExcelDateToJs";
 // import local forage
 import { useIdb } from "../utils/localforage";
+import { keys } from "localforage";
 
 // the state
 export const Stock_masters = ref([]);
@@ -110,10 +111,13 @@ export const getStockById = async (id) => {
 export const updateStockById = async (id, keyValueToUpdate) => {
   // initiate idb
   const stockdb = await useIdb(store);
-  // update the state
-  Stock_masters.value = Stock_masters.value.map((item) => {
-    return item?.id == id ? { ...item, ...keyValueToUpdate } : item;
-  });
+  // detecting if keyvalue has own property quantity, change the available too
+  if(keyValueToUpdate.hasOwnProperty('quantity')) {
+    // update with the available property
+    await stockdb.setItem(id,  { ...keyValueToUpdate, available: keyValueToUpdate['quantity']})
+    return
+  }
+  // update database
   await stockdb.updateItem(id, keyValueToUpdate);
   //saveData();
   return;
@@ -191,32 +195,9 @@ export const getAvailableDateByItem = (item_id) => {
   return result;
 };
 
-export const changeAvaliableStock = async (id_stock, yourNumberPlusOrMinus) => {
+export const changeAvailableStock = async (id_stock, yourNumberPlusOrMinus) => {
   // initiate idb
   const stockdb = await useIdb(store);
-  // update state
-  Stock_masters.value = Stock_masters.value.map((stock) => {
-    if (stock?.id == id_stock) {
-      // if available not equal to quantity, mark stock as taken
-      if (
-        Number(stock?.quantity) !=
-        Number(stock?.available) + Number(yourNumberPlusOrMinus)
-      ) {
-        return {
-          ...stock,
-          available: Number(stock?.available) + Number(yourNumberPlusOrMinus),
-          isTaken: true,
-        };
-      }
-      // else
-      return {
-        ...stock,
-        available: Number(stock?.available) + Number(yourNumberPlusOrMinus),
-        isTaken: false,
-      };
-    }
-    return stock;
-  });
   // get the record
   const findRec = stockdb.getItem(id_stock);
   // isTaken value
@@ -226,12 +207,9 @@ export const changeAvaliableStock = async (id_stock, yourNumberPlusOrMinus) => {
       ? true
       : false;
   // new item
-  const newItem = {
-    ...findRec,
-    available: Number(findRec?.available) + Number(yourNumberPlusOrMinus),
-    isTaken,
-  };
+  const keyValueToUpdate = { available: Number(findRec?.available) + Number(yourNumberPlusOrMinus), isTaken };
   // saveData()
+  await updateStockById(id_stock, keyValueToUpdate)
 };
 
 // export const changeQuantityStock = (id_stock, yourNumberPlusOrMinus) => {

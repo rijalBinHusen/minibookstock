@@ -205,9 +205,12 @@ const resetForm = () => {
     }, 500)
 }
 
+const countOfHandleItem = ref(0)
+
 // btn table handle
 const handleBtnTable = async (operation, id) => {
     if(operation == 'edit') {
+        countOfHandleItem.value = countOfHandleItem.value +1
         emit('editStock', id)
         // detecting the current stock edit because it async in parent
         if(props?.currentStockEdit) {
@@ -226,10 +229,14 @@ const handleBtnTable = async (operation, id) => {
                 new Date(props?.currentStockEdit['product_created'])
             )
         } else {
-            // call this function again in 500ms
-            setTimeout(() => {
-                handleBtnTable('edit', id)
-            }, 500)
+            // call this function again in 500ms because the props come too late,
+            // but we face infinite loop this function,
+            // so we are using this way
+            if(countOfHandleItem.value < 2) {
+                setTimeout(() => {
+                    handleBtnTable('edit', id)
+                }, 500)
+            }
         }
     } else {
         const confirm = window.confirm("Apakah anda yakin akan menghapus item tersebut")

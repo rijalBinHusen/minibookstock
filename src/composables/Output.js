@@ -7,7 +7,7 @@ const store = "output_transaction";
 // generator id
 import { generateId } from "../utils/GeneratorId";
 // import set parent function for stock master
-import { getStockById, changeAvaliableStock, markStockAsTaken } from "./StockMaster";
+import { getStockById, changeAvailableStock, markStockAsTaken } from "./StockMaster";
 // import item function
 import { getItemById } from "./MasterItems";
 // import idb
@@ -58,8 +58,8 @@ export const createOutput = async (tanggal, type, shift, nomor_so, stock_master_
   // // save tolocalstorage
   // saveData();
   await outputdb.setItem(nextId, record)
-  // set parent for each stock master
-  await changeAvaliableStock(stock_master_id, -Number(quantity))
+  // change available master stock
+  await changeAvailableStock(stock_master_id, -Number(quantity))
   return record;
 };
 
@@ -92,7 +92,8 @@ export const removeOutputById = async (id) => {
         if(rec.id !== id) {
             return rec
         }
-        changeAvaliableStock(rec?.stock_master_id, Number(rec?.quantity))
+        // change available stock
+        changeAvailableStock(rec?.stock_master_id, Number(rec?.quantity))
     }
   );
   // saveData();
@@ -174,7 +175,7 @@ export const markAsFinished = async (id) => {
   Output_transaction.value = Output_transaction.value.map((doc) => {
     if(doc?.id === id) {
       // update the quantity
-      // changeAvaliableStock(doc?.stock_master_id,)
+      // changeAvailableStock(doc?.stock_master_id,)
       // mark as finished
       markStockAsTaken(doc?.stock_master_id)
       return { ...doc, isFinished: true}
