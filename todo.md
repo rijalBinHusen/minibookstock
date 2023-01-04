@@ -95,5 +95,6 @@ parameter yang dibutuhkan fungsi
   - [x] type
   - [x] paper_id
 - [v] Membuat item incoming bisa diubah meskipun item sudah ditandai isTaken, selama quantity nya tidak kurang dari yang diambil di output stock
-- Membuat quantity stock berukarang setelah ditandai item sudah dimuat
+- [v] Membuat quantity stock berukarang setelah ditandai item sudah dimuat
+- Menampilkan item quantity incoming seluruhnya (termasuk yang sudah taken)
 - Membuat item output dapat diedit sehingga user tidak perlu menghapus item jika terjadi ketidak sesuaian

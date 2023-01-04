@@ -7,7 +7,7 @@ const store = "output_transaction";
 // generator id
 import { generateId } from "../utils/GeneratorId";
 // import set parent function for stock master
-import { getStockById, changeAvailableStock, markStockAsTaken } from "./StockMaster";
+import { getStockById, changeAvailableStock, changeQuantityStock } from "./StockMaster";
 // import item function
 import { getItemById } from "./MasterItems";
 // import idb
@@ -179,13 +179,18 @@ export const markAsFinished = async (id) => {
       // update the quantity
       // changeAvailableStock(doc?.stock_master_id,)
       // mark as finished
-      markStockAsTaken(doc?.stock_master_id)
       return { ...doc, isFinished: true}
     } 
     return doc
   });
+  // get record
+  const findRec = await getOutputById(id)
+  // get stock master id
+  const masterId = findRec?.stock_master_id
+  // update quantity stock
+  await changeQuantityStock(masterId, -Number(findRec?.quantity))
+  // mark in db output as finished
   await updateOutputById(id, { isFinished: true })
-  
 }
 
 export const getAllDataToBackup = async () => {

@@ -14,7 +14,6 @@ import { createIncoming } from "./Incoming";
 import excelToJSDate from "../utils/ExcelDateToJs";
 // import local forage
 import { useIdb } from "../utils/localforage";
-import { keys } from "localforage";
 
 // the state
 export const Stock_masters = ref([]);
@@ -114,7 +113,7 @@ export const updateStockById = async (id, keyValueToUpdate) => {
   // detecting if keyvalue has own property quantity, change the available too
   if(keyValueToUpdate.hasOwnProperty('quantity')) {
     // update with the available property
-    await stockdb.setItem(id,  { ...keyValueToUpdate, available: keyValueToUpdate['quantity']})
+    await stockdb.updateItem(id,  { ...keyValueToUpdate, available: keyValueToUpdate['quantity']})
     return
   }
   // update database
@@ -299,3 +298,16 @@ export const createStockAwal = async (
 export const getSTockByIdInState = (idStock) => {
   return Stock_masters.value.find((rec) => rec?.id === idStock)
 }
+
+
+export const changeQuantityStock = async (id_stock, yourNumberPlusOrMinus) => {
+  // initiate idb
+  const stockdb = await useIdb(store);
+  // get the record
+  const findRec = await stockdb.getItem(id_stock);
+  // decrement or increment quantity
+  const keyValueToUpdate = { quantity: findRec?.quantity + yourNumberPlusOrMinus };
+  // saveData()
+  await updateStockById(id_stock, keyValueToUpdate)
+  return;
+};
