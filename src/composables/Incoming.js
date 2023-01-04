@@ -12,6 +12,8 @@ import { setStockParent, getStockById } from "./StockMaster";
 import { getItemById } from "./MasterItems";
 // import localforage function
 import { useIdb } from "../utils/localforage";
+// import typep jurnal
+import { useJurnalProdukMasuk } from "./Setting_JurnalId"
 
 // the state
 export const Incoming_transaction = ref([]);
@@ -195,4 +197,28 @@ export const getRecordByDate = async () => {
   );
   // return
   return;
+}
+
+export const mapIncomingTransactionWoutItem = async () => {
+  const result = [];
+  // if the state null
+  if (!Incoming_transaction.value || !Incoming_transaction.value.length) {
+    return result;
+  }
+  // use jurnal produk masuk
+  const { getJurnalProdukMasukById } = useJurnalProdukMasuk()
+  // map all state
+  for (const income of Incoming_transaction.value) {
+    // get name jurnal
+    const jurnal = await getJurnalProdukMasukById(income?.type)
+    // push it
+    result.push({
+        id: income?.id,
+        tanggal: ddmmyyyy(income?.tanggal, "-"),
+        shift: income?.shift,
+        type: jurnal.nama_jurnal,
+        paper_id: income?.paper_id,
+      });
+  }
+  return result;
 }

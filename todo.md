@@ -80,9 +80,20 @@ value yang perlu ditampilkan:
 
 # 2 January 2023
 
-Membuat fungsi untuk mengubah row excel menjadi object
+- [x] Membuat fungsi untuk mengubah row excel menjadi object
 
 parameter yang dibutuhkan fungsi
 ```javascript
 { key: 'Judul key object', value: ' Nama kolom di excelnya' }
 ```
+
+# 4 January 2023
+- [x] Menampilkan incoming berdasarkan record incoming, bukan semua item yang masuk
+  - hal hal yang perlu ditampilkan
+  - [x] tanggal
+  - [x] shift
+  - [x] type
+  - [x] paper_id
+- Membuat item incoming bisa diubah meskipun item sudah ditandai isTaken, selama quantity nya tidak kurang dari yang diambil di output stock
+- Membuat quantity stock berukarang setelah ditandai item sudah dimuat
+- Membuat item output dapat diedit sehingga user tidak perlu menghapus item jika terjadi ketidak sesuaian

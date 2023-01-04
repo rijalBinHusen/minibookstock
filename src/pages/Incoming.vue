@@ -26,8 +26,8 @@
                 <!-- @trig="handleAdd" -->
         </span>
         <datatable
-            :heads="['tanggal', 'shift', 'item', 'nomor dokumen', 'Quantity', 'available', 'Tanggal produksi']"
-            :keys="['tanggal', 'shift', 'nm_item', 'paper_id', 'quantity', 'available', 'product_created']"
+            :heads="['tanggal', 'shift', 'type', 'nomor dokumen']"
+            :keys="['tanggal', 'shift', 'type', 'paper_id']"
             :datanya="lists"
             keydata="id"
             no
@@ -56,7 +56,7 @@ import Datatable from "../components/parts/Datatable.vue";
 import Button from "../components/elements/Button.vue";
 import { ref, onMounted } from "vue";
 import { launchFormAndsubscribeMutation } from "../composables/launchForm";
-import { incomingTransactionMapped, dateRecordToShow, getRecordByDate } from "../composables/Incoming"
+import { mapIncomingTransactionWoutItem, dateRecordToShow, getRecordByDate } from "../composables/Incoming"
 
 // what date to show record
 // dateRecordToShow.value (using that ^ date)
@@ -82,7 +82,7 @@ const renderRecord = () => {
     lists.value = []
     // get the mapped record
     setTimeout( async () => {
-        lists.value = await incomingTransactionMapped()
+        lists.value = await mapIncomingTransactionWoutItem()
     }, 500)
 }
 
