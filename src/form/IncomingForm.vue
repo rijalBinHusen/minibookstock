@@ -188,7 +188,6 @@ const handleStock = async (operation, e) => {
   } 
   // update stock
   else if(operation == 'update') {
-    console.log(e.value)
     // total quantity taken
     const stockTaken = await getTotalStockTaken(e.id)
     // prevent update stock when quantity < total taken
