@@ -94,7 +94,11 @@ parameter yang dibutuhkan fungsi
   - [x] shift
   - [x] type
   - [x] paper_id
-- [v] Membuat item incoming bisa diubah meskipun item sudah ditandai isTaken, selama quantity nya tidak kurang dari yang diambil di output stock
-- [v] Membuat quantity stock berukarang setelah ditandai item sudah dimuat
-- Menampilkan item quantity incoming seluruhnya (termasuk yang sudah taken)
+- [x] Membuat item incoming bisa diubah meskipun item sudah ditandai isTaken, selama quantity nya tidak kurang dari yang diambil di output stock
+- [x] Membuat quantity stock berukarang setelah ditandai item sudah dimuat
+- [x] Menampilkan item quantity incoming seluruhnya (termasuk yang sudah taken)
+  -  Ketentuan
+     1. Total Stock available = (quantity + total output isFinished=true|false )
+     2. Total Stock quantity = (quantity + total output isFinished=true )
+     3. Stock quantity Tidak boleh < total output that isFinished=true (apllied)
 - Membuat item output dapat diedit sehingga user tidak perlu menghapus item jika terjadi ketidak sesuaian

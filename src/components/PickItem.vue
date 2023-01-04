@@ -8,7 +8,8 @@
                 </label>
                 <div class="relative">
                 <input
-                    type="text"
+                    :disabled="Boolean(isParentEditMode)"
+                    :type="Boolean(isParentEditMode) ? 'button' : 'text'"
                     placeholder="Masukkan item"
                     class="w-64 input input-sm input-primary"
                     @change="handleItem"
@@ -62,6 +63,7 @@
                 v-model="product_created"
                 input-format="yyyy-MM-dd"
                 @update:model-value="handleUpdateDate('created', $event)"
+                :disabled="Boolean(isParentEditMode)"
                 ></date-picker>
             </div>
             <!-- tanggal produksi -->
@@ -75,6 +77,7 @@
                 v-model="product_expired"
                 input-format="yyyy-MM-dd"
                 @update:model-value="handleUpdateDate('expired', $event)"
+                :disabled="Boolean(isParentEditMode)"
                 ></date-picker>
             </div>
             <div id="incoming_item_add" class="w-full text-right">

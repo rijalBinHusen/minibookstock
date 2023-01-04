@@ -14,6 +14,7 @@ import { createIncoming } from "./Incoming";
 import excelToJSDate from "../utils/ExcelDateToJs";
 // import local forage
 import { useIdb } from "../utils/localforage";
+import { getTotalStockTaken } from "./Output";
 
 // the state
 export const Stock_masters = ref([]);
@@ -65,15 +66,15 @@ export const createStock = async (
 
 export const gettingStartedRecord = async () => {
   // dapatkan last used
-  if (!Stock_masters.value.length) {
+  // if (!Stock_masters.value.length) {
     // initiate idb
     const stockdb = await useIdb(store);
     // get all items
     const item = await stockdb.getItems();
     // set state
     Stock_masters.value = item ? item : [];
-  }
-  return;
+  // }
+  // return;
 };
 
 export const removeStockById = async (id) => {
@@ -112,8 +113,16 @@ export const updateStockById = async (id, keyValueToUpdate) => {
   const stockdb = await useIdb(store);
   // detecting if keyvalue has own property quantity, change the available too
   if(keyValueToUpdate.hasOwnProperty('quantity')) {
+    // get all output
+    const getOutput = await getTotalStockTaken(id)
+    // 1. Total Stock quantity = (quantity + total output isFinished=true )
+    //  it means Now Quantity = quantity - total output isFinished=true
+    const quantity = Number(keyValueToUpdate['quantity']) - getOutput.allFinished
+    // 2. Total Stock available = (quantity + total output isFinished=true|false )
+    // it means available = total quantity - total output isFinished=true|false
+    const available = Number(keyValueToUpdate['quantity']) - Number(getOutput.allTaken)
     // update with the available property
-    await stockdb.updateItem(id,  { ...keyValueToUpdate, available: keyValueToUpdate['quantity']})
+    await stockdb.updateItem(id,  { ...keyValueToUpdate, quantity, available})
     return
   }
   // update database
@@ -306,8 +315,28 @@ export const changeQuantityStock = async (id_stock, yourNumberPlusOrMinus) => {
   // get the record
   const findRec = await stockdb.getItem(id_stock);
   // decrement or increment quantity
+  console.log('before', findRec)
   const keyValueToUpdate = { quantity: findRec?.quantity + yourNumberPlusOrMinus };
   // saveData()
-  await updateStockById(id_stock, keyValueToUpdate)
+  console.log('after', keyValueToUpdate);
+  await stockdb.updateItem(id_stock, keyValueToUpdate)
   return;
+};
+
+
+export const getStockByIdForIncomingForm = async (id) => {
+  // initiate idb
+  const stockdb = await useIdb(store);
+  // get all output
+  const allOutput = await getTotalStockTaken(id)
+  // console.log(res[0]);
+  const findStock = await stockdb.getItem(id);
+  return findStock
+    ? { ...findStock, quantity: (findStock?.quantity + allOutput.allFinished)}
+    : {
+        item_id: "Not found",
+        kd_produksi: "Not found",
+        product_created: "Not found",
+        quantity: "Not found",
+      };
 };

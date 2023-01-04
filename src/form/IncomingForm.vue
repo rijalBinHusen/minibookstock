@@ -125,7 +125,7 @@ import { closeModalOrDialog } from "../composables/launchForm"
 import { useStore } from "vuex";
 import { getItemByIdInState } from "../composables/MasterItems";
 import { ddmmyyyy, ymdTime } from "../utils/dateFormat";
-import { createStock, getStockById, updateStockById, removeStockById } from "../composables/StockMaster";
+import { createStock, getStockById, updateStockById, removeStockById, getStockByIdForIncomingForm } from "../composables/StockMaster";
 import { getTotalStockTaken } from "../composables/Output"
 // vuex
 const store = useStore()
@@ -188,12 +188,13 @@ const handleStock = async (operation, e) => {
   } 
   // update stock
   else if(operation == 'update') {
+    console.log(e.value)
     // total quantity taken
     const stockTaken = await getTotalStockTaken(e.id)
     // prevent update stock when quantity < total taken
-    if(Number(e.value.quantity) < Number(stockTaken)) {
+    if(Number(e.value.quantity) < Number(stockTaken.allTaken)) {
       // show message
-      alert(`Stock sudah terambil ${stockTaken}, quantity tidak boleh kurang dari ${stockTaken}!`)
+      alert(`Stock sudah terambil ${stockTaken.allTaken}, quantity tidak boleh kurang dari ${stockTaken.allTaken}!`)
       return;
     }
     // update localstate
@@ -327,7 +328,7 @@ onMounted( async () => {
     const childStocks = Object.values(record?.stock_master_ids)
     // stock_master_ids,
     for(const rec of childStocks) {
-      const stock = await getStockById(rec)
+      const stock = await getStockByIdForIncomingForm(rec)
       stockChild.value.push(stock)
     }
     // set paper id value

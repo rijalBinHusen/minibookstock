@@ -208,5 +208,22 @@ export const getTotalStockTaken = async (id_stock_master) => {
   // get all Stock master that taken
   const allOutput = await outputdb.getItemsByKeyValue('stock_master_id', id_stock_master)
   // total all output
-  return allOutput.reduce((partialSum, a) => partialSum + a['quantity'], 0 )
+  let allTaken = 0
+  // total output that finished = true
+  let allFinished = 0;
+  // loop all output
+  if(allOutput && allOutput.length) {
+    for(const out of allOutput) {
+      //  if finished true
+      if(out?.isFinished) {
+        // increment is finished
+        allFinished = allFinished + Number(out?.quantity)
+      }
+      // incremen all taken
+      allTaken = allTaken + Number(out?.quantity)
+    }
+  }
+
+  // will return 0 or > 0
+  return { allTaken, allFinished}
 }
