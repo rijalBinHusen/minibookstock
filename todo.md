@@ -94,6 +94,6 @@ parameter yang dibutuhkan fungsi
   - [x] shift
   - [x] type
   - [x] paper_id
-- Membuat item incoming bisa diubah meskipun item sudah ditandai isTaken, selama quantity nya tidak kurang dari yang diambil di output stock
+- [v] Membuat item incoming bisa diubah meskipun item sudah ditandai isTaken, selama quantity nya tidak kurang dari yang diambil di output stock
 - Membuat quantity stock berukarang setelah ditandai item sudah dimuat
 - Membuat item output dapat diedit sehingga user tidak perlu menghapus item jika terjadi ketidak sesuaian

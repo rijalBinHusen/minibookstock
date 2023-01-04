@@ -125,7 +125,8 @@ import { closeModalOrDialog } from "../composables/launchForm"
 import { useStore } from "vuex";
 import { getItemByIdInState } from "../composables/MasterItems";
 import { ddmmyyyy, ymdTime } from "../utils/dateFormat";
-import { createStock, getStockById, setStockParent, updateStockById, removeStockById } from "../composables/StockMaster";
+import { createStock, getStockById, updateStockById, removeStockById } from "../composables/StockMaster";
+import { getTotalStockTaken } from "../composables/Output"
 // vuex
 const store = useStore()
 // date record
@@ -182,18 +183,19 @@ const handleStock = async (operation, e) => {
   } 
   // edit stock
   else if(operation == 'edit') {
-    // get stock and wait
-    const stock = await getStockById(e)
-    // prevent edit when stock has been taked
-    if(stock?.isTaken) {
-      alert("Barang sudah dimuat di kendaraan, tidak bisa diedit!")
-      return;
-    }
     // set current stock edit
     currentStockEdit.value = stockChild.value.find((rec) => rec?.id == e)
   } 
   // update stock
   else if(operation == 'update') {
+    // total quantity taken
+    const stockTaken = await getTotalStockTaken(e.id)
+    // prevent update stock when quantity < total taken
+    if(Number(e.value.quantity) < Number(stockTaken)) {
+      // show message
+      alert(`Stock sudah terambil ${stockTaken}, quantity tidak boleh kurang dari ${stockTaken}!`)
+      return;
+    }
     // update localstate
     stockChild.value = stockChild.value.map((rec) => {
       if(rec?.id == e.id) {

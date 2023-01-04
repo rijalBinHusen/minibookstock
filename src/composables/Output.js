@@ -196,3 +196,12 @@ export const getAllDataToBackup = async () => {
   // return the result
   return { store, data: allData ? allData : null }
 }
+
+export const getTotalStockTaken = async (id_stock_master) => {
+  // initiate db
+  const outputdb = await useIdb(store)
+  // get all Stock master that taken
+  const allOutput = await outputdb.getItemsByKeyValue('stock_master_id', id_stock_master)
+  // total all output
+  return allOutput.reduce((partialSum, a) => partialSum + a['quantity'], 0 )
+}
