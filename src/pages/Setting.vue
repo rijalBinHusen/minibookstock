@@ -67,13 +67,15 @@ import { subscribeConfirmDialog } from "../composables/launchForm";
 import BackupData from "../components/BackupData.vue";
 import ImportData from "../components/ImportData.vue";
 import ImportStockAwal from "../components/ImportStockAwal.vue"
+import StockCard from "../components/StockCard.vue";
 
 const listData = [
           // { id: 'database', type: 'import', title: 'Import Database'}, 
           // { id: 'salesOrder', type: 'import', title: 'Import Outstanding SO'},
           { id : 'BackupData', type: 'export', title: 'Backup data'},
           { id: 'ImportData', type: 'import', title: 'Import database'},
-          { id: 'ImportStockAwal', type: 'import', title: 'Import stock awal'}
+          { id: 'ImportStockAwal', type: 'import', title: 'Import stock awal'},
+          { id: 'StockCard', type: 'export', 'title': 'Export kartu stock' },
         ]
 
 // the variable that will contain id of listData what user selected in select option
@@ -94,7 +96,7 @@ const label = computed(() => {
 
 // the list of all components
 const components = {
-  BackupData, ImportData, ImportStockAwal
+  BackupData, ImportData, ImportStockAwal, StockCard
 }
 
 

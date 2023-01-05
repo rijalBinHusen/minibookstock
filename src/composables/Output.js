@@ -12,6 +12,7 @@ import { getStockById, changeAvailableStock, changeQuantityStock } from "./Stock
 import { getItemById } from "./MasterItems";
 // import idb
 import { useIdb } from "../utils/localforage";
+import { useJurnalProdukKeluar } from "./Setting_JurnalId";
 
 // the state
 export const Output_transaction = ref([]);
@@ -239,4 +240,47 @@ export const getRecordIsFinishedFalse = async () => {
   Output_transaction.value = await outputdb.getItemsByKeyValue("isFinished", false);
   // 
   return;
+}
+
+export const getOutputByStockMasterId = async (stock_master_id) => {
+  // use jurnal output
+  const { getJurnalProdukKeluarById  } =  useJurnalProdukKeluar()
+  // variable that will contain result 
+  const result = []
+  // initiate db
+  const outputdb = await useIdb(store)
+  // get record by date
+  const allOutput = await outputdb.getItemsByKeyValue('stock_master_id', stock_master_id);
+  /**
+   * 
+   id string [pk]
+   stock_master_ids string
+   paper_id string
+   tanggal date
+   shift number
+   diterima string
+   type string
+   diserahkan string
+   catatan string
+   isFinished boolean
+   */
+  // loop all output for map it
+  for (const outStock of allOutput) {
+    // if record finished
+    if(outStock?.isFinished) {
+      // get type jurnal
+      const outputInfo = await getJurnalProdukKeluarById(outStock?.type)
+      // get stock master info to get item id
+      const stockInfo = await getStockById(outStock.stock_master_id)
+      // get item info
+      const item = await getItemById(stockInfo.item_id)
+      result.push({
+        tanggal: ddmmyyyy(outStock.tanggal, '-'),
+        nama_item: item.nm_item,
+        keterangan: outputInfo.nama_jurnal,
+        quantity: outStock?.quantity
+      })
+    }
+  }
+  return result;
 }

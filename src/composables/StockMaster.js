@@ -9,12 +9,13 @@ const store = "stock_master";
 // generator id
 import { generateId } from "../utils/GeneratorId";
 // incoming function
-import { createIncoming } from "./Incoming";
+import { createIncoming, getIncomingById } from "./Incoming";
 // conver excel date to javascript date
 import excelToJSDate from "../utils/ExcelDateToJs";
 // import local forage
 import { useIdb } from "../utils/localforage";
-import { getTotalStockTaken } from "./Output";
+import { getOutputByStockMasterId, getTotalStockTaken } from "./Output";
+import { useJurnalProdukMasuk } from "./Setting_JurnalId";
 
 // the state
 export const Stock_masters = ref([]);
@@ -26,6 +27,7 @@ export const Stock_masters = ref([]);
   item_id string
   kd_produksi datetime
   product_created number
+  icoming_parent_id string
   quantity number
   isTaken boolean
   available number
@@ -338,3 +340,37 @@ export const getStockByIdForIncomingForm = async (id) => {
         quantity: "Not found",
       };
 };
+
+export const getStockMasterByItemId = async (item_id) => {
+  // we will use jurnal produk masuk
+  const { getJurnalProdukMasukById } = useJurnalProdukMasuk()
+  // initiate idb
+  const stockdb = await useIdb(store);
+  // get item name
+  const item = await getItemById(item_id)
+  // vairable thatt will contain result
+  let result = []
+  // get data from db based on item id
+  const allStock = await stockdb.getItemsByKeyValue('item_id', item_id)
+  // loop all stock to map it
+  for( const stock of allStock) {
+    // get incoming information
+    const incomingInfo = await getIncomingById(stock?.icoming_parent_id);
+    // get incoming type info
+    const type = await getJurnalProdukMasukById(incomingInfo.type)
+    // push result
+    result.push({
+      tangal: ddmmyyyy(incomingInfo.tanggal, "-"),
+      nama_item: item.nm_item,
+      keterangan: type.nama_jurnal,
+      quantity: stock?.quantity,
+    })
+    // get output based on stock master id
+    const allOutput = await getOutputByStockMasterId()
+    // concat with result
+    if(allOutput.length) {
+      result = result.concat(allOutput)
+    }
+  }
+  return result
+}
