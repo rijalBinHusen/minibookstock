@@ -53,6 +53,7 @@ export const createIncoming = async (
     : generateId("INCOMING_TR22030000");
   // initiate new record
   const record = {
+    created: new Date().getTime(),
     id: nextId,
     stock_master_ids,
     paper_id,

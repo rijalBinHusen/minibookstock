@@ -89,6 +89,13 @@ export const dayPlusOrMinus = (yourDate, yourNumberOfDay) => {
   return date.getTime();
 };
 
+export const getNextYearTime = () => {
+  const dateNow = new Date()
+  // set to nextYear
+  dateNow.setFullYear(dateNow.getFullYear() + 1);
+  // return as unix time
+  return dateNow.getTime()
+}
 //     else if (a[0] == "-2") {
 //       a001.setDate(a002 - 2);
 //       return a001.getTime();

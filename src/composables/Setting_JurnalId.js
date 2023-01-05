@@ -22,6 +22,7 @@ export const useJurnalProdukMasuk = () => {
       : generateId("j_income_22030000");
     // initiate new record
     const record = {
+      created: new Date().getTime(),
       id: nextId,
       nama_jurnal,
     };
@@ -111,6 +112,7 @@ export const useJurnalProdukKeluar = () => {
       : generateId("j_output_22030000");
     // initiate new record
     const record = {
+      created: new Date().getTime(),
       id: nextId,
       nama_jurnal,
     };

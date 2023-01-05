@@ -26,6 +26,7 @@ export const createItem = async (
     : generateId("ITM22030000");
   // initiate new record
   const record = {
+    created: new Date().getTime(),
     id: nextId,
     kd_item,
     nm_item,

@@ -43,6 +43,7 @@ export const createOutput = async (tanggal, type, shift, nomor_so, stock_master_
     : generateId("OUTPUT_TR22030000");
   // initiate new record
   const record = {
+    created: new Date().getTime(),
     tanggal: ymdTime(tanggal),
     type,
     id: nextId,

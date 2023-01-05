@@ -3,7 +3,7 @@ import { ref } from "vue";
 // item function
 import { getItemById, getItemIdByKdItem, createItem, Master_items } from "./MasterItems";
 // date formatter
-import { ddmmyyyy, ymdTime } from "../utils/dateFormat";
+import { ddmmyyyy, ymdTime, getNextYearTime, time } from "../utils/dateFormat";
 // store name
 const store = "stock_master";
 // generator id
@@ -19,14 +19,17 @@ import { getTotalStockTaken } from "./Output";
 // the state
 export const Stock_masters = ref([]);
 /**
+ * \
  * 
+  created datetime
   id string
   item_id string
   kd_produksi datetime
   product_created number
   quantity number
+  isTaken boolean
   available number
-  icoming_parent_id
+  available_end dateNumber
  */
 
 export const createStock = async (
@@ -45,12 +48,14 @@ export const createStock = async (
     : generateId("STOCK_MASTER22030000");
   // initiate new record
   const record = {
+    created: new Date().getTime(),
     id: nextId,
     item_id,
     kd_produksi,
     product_created,
     quantity: Number(quantity),
     available: Number(quantity),
+    available_start: ymdTime(),
   };
   // // push to state
   Stock_masters.value.unshift(record);
@@ -220,16 +225,6 @@ export const changeAvailableStock = async (id_stock, yourNumberPlusOrMinus) => {
   await updateStockById(id_stock, keyValueToUpdate)
 };
 
-// export const changeQuantityStock = (id_stock, yourNumberPlusOrMinus) => {
-//   Stock_masters.value = Stock_masters.value.map((stock) => {
-//     if(stock?.id == id_stock) {
-//       return { ...stock, quantity: Number(stock?.available) + Number(yourNumberPlusOrMinus)}
-//     }
-//     return stock
-//   })
-//   saveData()
-// }
-
 export const markStockAsTaken = async (id) => {
   await updateStockById(id, { isTaken: true });
 };
@@ -260,7 +255,7 @@ export const createStockAwal = async (
     const stock = await createStock(
       isItemExists.id,
       "stock awal",
-      date,
+      ymdTime(date),
       quantity
     );
     // create incoming record
@@ -315,10 +310,13 @@ export const changeQuantityStock = async (id_stock, yourNumberPlusOrMinus) => {
   // get the record
   const findRec = await stockdb.getItem(id_stock);
   // decrement or increment quantity
-  console.log('before', findRec)
-  const keyValueToUpdate = { quantity: findRec?.quantity + yourNumberPlusOrMinus };
+  const quantity = findRec?.quantity + yourNumberPlusOrMinus
+  // available_end ate, if quantity 0 set to now, else next year
+  const keyValueToUpdate = { 
+    quantity, 
+    available_end: quantity == 0 ? time() : getNextYearTime(),
+  };
   // saveData()
-  console.log('after', keyValueToUpdate);
   await stockdb.updateItem(id_stock, keyValueToUpdate)
   return;
 };
