@@ -7,6 +7,7 @@
                 v-model="dateRecordToShow"
             >
             </date-picker>
+            <!-- Show record by date -->
             <Button
                 primary
                 value="Tampilkan"
@@ -15,6 +16,7 @@
                 class="ml-2"
                 @trig="handlePeriode"
             />
+            <!-- add new output record -->
             <Button
                 primary
                 value="Tambah"
@@ -22,8 +24,17 @@
                 small
                 class="ml-2"
                 @trig="handleButton('add')"
-                />
-                <!-- @trig="handleAdd" -->
+            />
+            <!-- show all output unfinished  -->
+            <Button
+                primary
+                value="Belum selesai"
+                type="button"
+                small
+                class="ml-2"
+                @trig="handleUnfinished"
+            />
+
         </span>
         <datatable
             :heads="['tanggal', 'shift', 'Nomor so', 'nama item', 'tanggal produksi', 'quantity']"
@@ -68,7 +79,7 @@ import Datatable from "../components/parts/Datatable.vue";
 import Button from "../components/elements/Button.vue";
 import { ref, onMounted } from "vue";
 import { launchFormAndsubscribeMutation, subscribeConfirmDialog } from "../composables/launchForm";
-import { outputTransactionMapped, removeOutputById, markAsFinished, dateRecordToShow, getRecordByDate } from "../composables/Output"
+import { getRecordIsFinishedFalse, outputTransactionMapped, removeOutputById, markAsFinished, dateRecordToShow, getRecordByDate } from "../composables/Output"
 
 // what date to show record
 // dateRecordToShow
@@ -109,6 +120,11 @@ const lists = ref([])
 
 const handlePeriode = async () => {
     await getRecordByDate()
+    renderRecord()
+}
+
+const handleUnfinished = async () => {
+    await getRecordIsFinishedFalse()
     renderRecord()
 }
 

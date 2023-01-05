@@ -30,6 +30,7 @@ export const dateRecordToShow = ref(new Date())
   type string
   diserahkan string
   catatan string
+  isFinished boolean
  */
 
 export const createOutput = async (tanggal, type, shift, nomor_so, stock_master_id, quantity) => {
@@ -50,7 +51,8 @@ export const createOutput = async (tanggal, type, shift, nomor_so, stock_master_
     nomor_so,
     stock_master_id,
     shift,
-    quantity: Number(quantity)
+    quantity: Number(quantity),
+    isFinished: false,
   };
   // // push to state
   Output_transaction.value.unshift(record);
@@ -227,4 +229,14 @@ export const getTotalStockTaken = async (id_stock_master) => {
 
   // will return 0 or > 0
   return { allTaken, allFinished}
+}
+
+export const getRecordIsFinishedFalse = async () => {
+  
+  // initiate db
+  const outputdb = await useIdb(store)
+  // get record by date
+  Output_transaction.value = await outputdb.getItemsByKeyValue("isFinished", false);
+  // 
+  return;
 }
