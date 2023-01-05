@@ -276,6 +276,8 @@ export const getOutputByStockMasterId = async (stock_master_id) => {
       const item = await getItemById(stockInfo.item_id)
       result.push({
         tanggal: ddmmyyyy(outStock.tanggal, '-'),
+        shift: outStock.shift,
+        type: "Stock Keluar",
         nama_item: item.nm_item,
         keterangan: outputInfo.nama_jurnal,
         tanggal_produksi: ddmmyyyy(stockInfo.product_created, '-'),

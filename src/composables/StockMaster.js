@@ -359,12 +359,16 @@ export const getStockMasterByItemId = async (item_id) => {
     // get incoming type info
     const type = await getJurnalProdukMasukById(incomingInfo.type)
     // push result
+    // get stock that has ben out
+    const allOutputFinished = await getTotalStockTaken(stock.id)
     result.push({
       tanggal: ddmmyyyy(incomingInfo.tanggal, "-"),
+      shift: incomingInfo.shift,
+      type: "Stock Masuk",
       nama_item: item.nm_item,
       keterangan: type.nama_jurnal,
       tanggal_produksi: ddmmyyyy(stock.product_created, '-'),
-      quantity: stock?.quantity,
+      quantity: stock?.quantity + allOutputFinished.allFinished,
     })
     // get output based on stock master id
     const allOutput = await getOutputByStockMasterId(stock.id)

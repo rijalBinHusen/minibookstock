@@ -1,14 +1,24 @@
 <template>
-
-    <div class="mt-10 flex">
-        <SelecItemsVue @pickedItem="itemId = $event" />
-        <div class="items-end flex ml-2">
+    <div> 
+        <div class="mt-10 flex">
+            <SelecItemsVue @pickedItem="itemId = $event" />
+            <div class="items-end flex ml-2">
+                <Button
+                small
+                primary
+                value="Export kartu stock"
+                type="button"
+                @trig="handleExport"
+                />
+            </div>
+        </div>
+        <div class="items-end flex mt-11">
             <Button
             small
             primary
-            value="Export kartu stock"
+            value="Export master stock"
             type="button"
-            @trig="handleExport"
+            @trig="handleMasterStock"
             />
         </div>
     </div>
@@ -23,6 +33,7 @@ import Button from './elements/Button.vue';
 import SelecItemsVue from './SelecItems.vue';
 // import stock card
 import { stockCard } from "../reports/StockCard"
+import { startExportMaster } from '../reports/StockMaster';
 // variable that contain item id
 const itemId = ref(null)
 
@@ -32,5 +43,9 @@ const handleExport = async () => {
     // export stock card
     await stockCard(itemId.value)
     // console.log(itemId.value)
+}
+
+const handleMasterStock = async () => {
+    await startExportMaster()
 }
 </script>
