@@ -201,9 +201,9 @@ export const getAvailableDateByItem = (item_id) => {
         id: stock?.id,
         product_created:
           "#" +
-          stock?.kd_produksi +
+          ddmmyyyy(stock?.product_created, "-") +
           " | " +
-          ddmmyyyy(stock?.product_created, "-"),
+          stock?.kd_produksi
       });
     }
   });
@@ -221,10 +221,24 @@ export const changeAvailableStock = async (id_stock, yourNumberPlusOrMinus) => {
     Number(findRec?.available) + Number(yourNumberPlusOrMinus)
       ? true
       : false;
-  // new item
-  const keyValueToUpdate = { available: Number(findRec?.available) + Number(yourNumberPlusOrMinus), isTaken };
-  // saveData()
-  await updateStockById(id_stock, keyValueToUpdate)
+  // set new Available, check is that >= 0
+  const available = Number(findRec?.available) + Number(yourNumberPlusOrMinus) >= 0 ? Number(findRec?.available) + Number(yourNumberPlusOrMinus) : false
+  // if > 0
+  if(available) {
+    // new item
+    const keyValueToUpdate = { available, isTaken };
+    // save to database
+    await updateStockById(id_stock, keyValueToUpdate)
+    // return true
+    return true;
+  } else {
+    // find item name
+    const item = await getItemById(findRec.item_id)
+    // show in alert message
+    alert(`Item ${item.nm_item} tidak dapat dimasukkan karena ketersediaan stock kurang dari permintaan`)
+    // false return
+    return false
+  }
 };
 
 export const markStockAsTaken = async (id) => {

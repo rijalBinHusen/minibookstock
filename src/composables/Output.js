@@ -55,16 +55,18 @@ export const createOutput = async (tanggal, type, shift, nomor_so, stock_master_
     quantity: Number(quantity),
     isFinished: false,
   };
-  // // push to state
-  Output_transaction.value.unshift(record);
-  // // update summary
-  await summaryRecord.updateSummary(nextId);
-  // // save tolocalstorage
-  // saveData();
-  await outputdb.setItem(nextId, record)
-  // change available master stock
-  await changeAvailableStock(stock_master_id, -Number(quantity))
-  return record;
+  // change available master stock, do something when available
+  const isAvailable = await changeAvailableStock(stock_master_id, -Number(quantity))
+  // // save to database if isAvailable true
+  if(isAvailable) {
+    await outputdb.setItem(nextId, record)
+    // push to state
+    Output_transaction.value.unshift(record);
+    // update summary
+    await summaryRecord.updateSummary(nextId);
+    // return the record
+    return record;
+  }
 };
 
 // export const gettingStartedRecord = () => {

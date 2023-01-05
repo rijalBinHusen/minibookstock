@@ -29,7 +29,7 @@
                 </label>
                 <div class="relative">
                 <input
-                    type="text"
+                    type="number"
                     placeholder="Quantity"
                     class="w-20 input input-sm input-primary"
                     @keyup="quantity = $event.target.value"
