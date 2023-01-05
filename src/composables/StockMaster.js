@@ -360,13 +360,14 @@ export const getStockMasterByItemId = async (item_id) => {
     const type = await getJurnalProdukMasukById(incomingInfo.type)
     // push result
     result.push({
-      tangal: ddmmyyyy(incomingInfo.tanggal, "-"),
+      tanggal: ddmmyyyy(incomingInfo.tanggal, "-"),
       nama_item: item.nm_item,
       keterangan: type.nama_jurnal,
+      tanggal_produksi: ddmmyyyy(stock.product_created, '-'),
       quantity: stock?.quantity,
     })
     // get output based on stock master id
-    const allOutput = await getOutputByStockMasterId()
+    const allOutput = await getOutputByStockMasterId(stock.id)
     // concat with result
     if(allOutput.length) {
       result = result.concat(allOutput)

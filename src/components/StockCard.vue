@@ -30,7 +30,7 @@ const handleExport = async () => {
     // launch the loader
     // const asdfwer =  await launchForm('Loader', false);
     // export stock card
-    // await stockCard(itemId.value)
-    console.log(itemId.value)
+    await stockCard(itemId.value)
+    // console.log(itemId.value)
 }
 </script>
