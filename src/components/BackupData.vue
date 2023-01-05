@@ -40,7 +40,7 @@ const handleBackup = async () => {
     // map all function to get all data in local storage
     const result = await Promise.all(list.map((get) => get()))
     // export all data as file
-    await startExport(result, full() + '.json')
+    await startExport(result, "Backup monitoring FIFO "+full() + '.json')
     // console.log(result)
     // close the loader
     closeModalOrDialog(false)

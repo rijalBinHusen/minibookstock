@@ -7,7 +7,7 @@ export async function summary(storeName) {
   const lastUpdated = await summaryDB.getItem(storeName)
   //   to update summary
   const updateSummary = async (lastId) => {
-    const record = { lastId, total: lastUpdated?.total ? lastUpdated?.total + 1 : 1}
+    const record = { id: storeName, lastId, total: lastUpdated?.total ? lastUpdated?.total + 1 : 1}
     await summaryDB.setItem(storeName, record)
     return;
   };
