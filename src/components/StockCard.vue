@@ -39,13 +39,21 @@ const itemId = ref(null)
 
 const handleExport = async () => {
     // launch the loader
+    launchForm('Loader', false)
+    // launch the loader
     // const asdfwer =  await launchForm('Loader', false);
     // export stock card
     await stockCard(itemId.value)
     // console.log(itemId.value)
+    // close the loader
+    closeModalOrDialog(false)
 }
 
 const handleMasterStock = async () => {
+    // launch the loader
+    launchForm('Loader', false)
     await startExportMaster()
+    // close the loader
+    closeModalOrDialog(false)
 }
 </script>
