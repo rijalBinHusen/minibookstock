@@ -12,6 +12,7 @@ import {
   faInfoCircle,
   faCloudUploadAlt,
   faTimesCircle,
+  faBox,
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(
@@ -22,7 +23,8 @@ library.add(
   faShoppingCart,
   faInfoCircle,
   faCloudUploadAlt,
-  faTimesCircle
+  faTimesCircle,
+  faBox
 );
 
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
