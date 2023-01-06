@@ -195,19 +195,27 @@ export const itemThatAvailable = async () => {
 export const getAvailableDateByItem = (item_id) => {
   const result = [];
   Stock_masters.value.forEach((stock) => {
+
     // if availabel and item_id == item_id
     if (stock?.item_id == item_id && stock?.available > 0) {
+      // product create as number
+      const product_created_as_number = typeof stock?.product_created === 'string' 
+                                          ? new Date(stock?.product_created).getTime()
+                                          : stock?.product_created
       result.push({
         id: stock?.id,
         product_created:
           "#" +
-          ddmmyyyy(stock?.product_created, "-") +
+          ddmmyyyy(product_created_as_number, "-") +
           " | " +
-          stock?.kd_produksi
+          stock?.kd_produksi,
+        origin_product_created: product_created_as_number,
       });
     }
   });
-  return result;
+  // sorting the result
+  return result.sort((a, b) =>  a['origin_product_created'] - b['origin_product_created'])
+  // return result;
 };
 
 export const changeAvailableStock = async (id_stock, yourNumberPlusOrMinus) => {
