@@ -8,8 +8,8 @@
                 </label>
                 <div class="relative">
                 <input
-                    :disabled="Boolean(isParentEditMode)"
-                    :type="Boolean(isParentEditMode) ? 'button' : 'text'"
+                    :disabled="isEditExistingMasterStock"
+                    :type="isEditExistingMasterStock ? 'button' : 'text'"
                     placeholder="Masukkan item"
                     class="w-64 input input-sm input-primary"
                     @change="handleItem"
@@ -34,6 +34,7 @@
                     class="w-20 input input-sm input-primary"
                     @keyup="quantity = $event.target.value"
                     :value="quantity"
+                    @change="quantity = $event.target.value"
                     />
                 </div>
             </div>
@@ -63,7 +64,7 @@
                 v-model="product_created"
                 input-format="yyyy-MM-dd"
                 @update:model-value="handleUpdateDate('created', $event)"
-                :disabled="Boolean(isParentEditMode)"
+                :disabled="isEditExistingMasterStock"
                 ></date-picker>
             </div>
             <!-- tanggal produksi -->
@@ -77,7 +78,7 @@
                 v-model="product_expired"
                 input-format="yyyy-MM-dd"
                 @update:model-value="handleUpdateDate('expired', $event)"
-                :disabled="Boolean(isParentEditMode)"
+                :disabled="isEditExistingMasterStock"
                 ></date-picker>
             </div>
             <div id="incoming_item_add" class="w-full text-right">
@@ -109,7 +110,7 @@ import Input from "./elements/Forms/Input.vue";
 import datePicker from "vue3-datepicker";
 import Button from "@/components/elements/Button.vue";
 import TableVue from "./elements/Table.vue";
-import { ref, onMounted, defineEmits, defineProps } from 'vue';
+import { ref, onMounted, defineEmits, defineProps, computed } from 'vue';
 import { gettingStartedRecord as getItem, Master_items, getItemIdByKdItem, getItemById } from "../composables/MasterItems";
 import { ymdTime } from "../utils/dateFormat"
 
@@ -118,6 +119,8 @@ const props = defineProps({
     stockChild: Array,
     currentStockEdit: Object,
 })
+
+const isEditExistingMasterStock = computed(() => Boolean(props.isParentEditMode) && isEditMode.value && isEditMode.value?.length > 5)
 
 // origin date
 const product_created = ref(new Date());
