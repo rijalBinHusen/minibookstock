@@ -46,9 +46,20 @@
             option
             v-slot:default="slotProps"
         >
-        
-          <Button
-              v-if="!slotProps.prop?.isFinished"
+        <!-- if output is finished -->
+        <span v-if="slotProps.prop?.isFinished">
+            <Button
+                primary
+                value="Batal"
+                type="button"
+                small
+                class="ml-2"
+                :datanya="slotProps.prop.id"
+                @trig="handleButton('cancel', $event)"
+            />
+        </span>
+        <span v-else>
+            <Button
               secondary
               value="hapus"
               type="button"
@@ -56,19 +67,18 @@
               class="ml-2"
               :datanya="slotProps.prop.id"
               @trig="handleButton('remove', $event)"
-              />
-        
-        <Button
-            v-if="!slotProps.prop?.isFinished"
-            accent
-            value="sudah muat"
-            type="button"
-            small
-            class="ml-2"
-            :datanya="slotProps.prop.id"
-            @trig="handleButton('finished', $event)"
             />
-
+        
+            <Button
+                accent
+                value="sudah muat"
+                type="button"
+                small
+                class="ml-2"
+                :datanya="slotProps.prop.id"
+                @trig="handleButton('finished', $event)"
+            />
+        </span>
         </datatable>
     </div>
 </template>
@@ -79,7 +89,7 @@ import Datatable from "../components/parts/Datatable.vue";
 import Button from "../components/elements/Button.vue";
 import { ref, onMounted } from "vue";
 import { launchFormAndsubscribeMutation, subscribeConfirmDialog } from "../composables/launchForm";
-import { getRecordIsFinishedFalse, outputTransactionMapped, removeOutputById, markAsFinished, dateRecordToShow, getRecordByDate } from "../composables/Output"
+import { getRecordIsFinishedFalse, outputTransactionMapped, removeOutputById, markAsFinished, dateRecordToShow, getRecordByDate, markAsUnFinished } from "../composables/Output"
 
 // what date to show record
 // dateRecordToShow
@@ -101,15 +111,22 @@ const handleButton = async (operation, document) => {
     else if (operation === 'finished') {
         res = await subscribeConfirmDialog('confirm', 'Apakah kendaraan selesai muat?')
     }
+    // if operation === finished
+    else if (operation === 'cancel') {
+        res = await subscribeConfirmDialog('confirm', 'Apakah output akan dibatalkan?')
+    }
     // if tunnel message send you true
     if(res) {
         // if operation remove record
         if(operation === 'remove') {
             // remove record from db
-            await removeOutputById(document)
+            await removeOutputById(document);
         } else if(operation === 'finished') {
             // mark as finished db
-           await  markAsFinished(document)
+           await  markAsFinished(document);
+        } else if (operation === 'cancel') {
+            // mark as un finished
+           await markAsUnFinished(document);
         }
         // re render record
         renderRecord()

@@ -289,3 +289,25 @@ export const getOutputByStockMasterId = async (stock_master_id) => {
   }
   return result;
 }
+
+
+export const markAsUnFinished = async (id) => {
+  // mark in state
+  Output_transaction.value = Output_transaction.value.map((doc) => {
+    if(doc?.id === id) {
+      // update the quantity
+      // changeAvailableStock(doc?.stock_master_id,)
+      // mark as finished
+      return { ...doc, isFinished: false}
+    } 
+    return doc
+  });
+  // get record
+  const findRec = await getOutputById(id)
+  // get stock master id
+  const masterId = findRec?.stock_master_id
+  // update quantity stock
+  await changeQuantityStock(masterId, Number(findRec?.quantity))
+  // mark in db output as finished
+  await updateOutputById(id, { isFinished: false })
+}
