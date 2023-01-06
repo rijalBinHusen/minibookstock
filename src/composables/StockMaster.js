@@ -221,10 +221,11 @@ export const changeAvailableStock = async (id_stock, yourNumberPlusOrMinus) => {
     Number(findRec?.available) + Number(yourNumberPlusOrMinus)
       ? true
       : false;
+
   // set new Available, check is that >= 0
   const available = Number(findRec?.available) + Number(yourNumberPlusOrMinus) >= 0 ? Number(findRec?.available) + Number(yourNumberPlusOrMinus) : false
   // if > 0
-  if(available) {
+  if(available !== false) {
     // new item
     const keyValueToUpdate = { available, isTaken };
     // save to database
