@@ -5,7 +5,7 @@ export const launchForm = (nameForm, idRecord) => {
   store.commit("form", { form: nameForm, document: idRecord });
   // we need to wait until the element rendered, then we call the id
   setTimeout(() => {
-    window.location.href = "#my-modal";
+    // window.location.href = "#my-modal";
   }, 100);
 };
 
@@ -32,7 +32,7 @@ export const subscribeConfirmDialog = async (type, messageToShow) => {
     // this to open dialog
     // we need to wait until the element rendered, then we call the id
     setTimeout(() => {
-      window.location.href = "#modal-confirm";
+      // window.location.href = "#modal-confirm";
     }, 100);
   });
   // jika oke kirim pesan
@@ -40,7 +40,7 @@ export const subscribeConfirmDialog = async (type, messageToShow) => {
     // un activated subscribe function
     unsubscribe();
     // close modal
-    window.location.href = "#";
+    // window.location.href = "#";
     // return message, either true or false
     return res;
   });
@@ -70,7 +70,7 @@ export const launchFormAndsubscribeMutation = async (
     // this to open dialog
     // we need to wait until the element rendered, then we call the id
     setTimeout(() => {
-      window.location.href = "#my-modal";
+      // window.location.href = "#my-modal";
     }, 100);
   });
   // jika oke kirim pesan
@@ -78,7 +78,7 @@ export const launchFormAndsubscribeMutation = async (
     // un activated subscribe function
     unsubscribe();
     // close modal
-    window.location.href = "#";
+    // window.location.href = "#";
     // return message, either true or false
     return res;
   });
@@ -98,7 +98,7 @@ export const closeModalOrDialog = (bool = false) => {
         store.commit("form", false);
         loaderMessageToShow.value = null;
         // close modal
-        window.location.href = "#";
+        // window.location.href = "#";
         // finish the promise
         resolve();
       },

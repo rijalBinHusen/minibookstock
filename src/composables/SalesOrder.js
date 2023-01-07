@@ -7,7 +7,7 @@ import { ref } from "vue";
 const store = "sales_orders";
 
 // state
-const sales_orders = ref([]);
+export const sales_orders = ref([]);
 
 export const createSalesOrder = async (tanggal_so, nomor_so, customer) => {
   const db = await useIdb(store);
@@ -16,7 +16,7 @@ export const createSalesOrder = async (tanggal_so, nomor_so, customer) => {
   // generate next id
   const nextId = summaryRecord?.lastUpdated
     ? generateId(summaryRecord?.lastUpdated?.lastId)
-    : generateId("SO_TR22030000");
+    : generateId("SO_22030000");
   // initiate new record
   const record = {
     created: new Date().getTime(),
@@ -84,8 +84,8 @@ export const addChildItemsOrder = async (idSO, itemOrderId) => {
   // push new itemOrderId
   record.childItemsOrder.push(itemOrderId);
   // update state
-  sales_orders.value = sales_orders.map((rec) => {
-    return rec?.id === id ? { ...rec, ...keyValueToUpdate } : rec;
+  sales_orders.value = sales_orders.value.map((rec) => {
+    return rec?.id === idSO ? record : rec;
   });
   // update in db
   await db.setItem(idSO, record);
@@ -101,14 +101,15 @@ export const getSalesOrderIdByNomorSO = async (nomor_so) => {
 };
 
 export const getSalesOrder = async () => {
-  if (sales_orders.value.length) {
-    // sales order === 0
+  if (!sales_orders.value.length) {
+    // sales order > 0
+    const db = await useIdb(store);
+    // get all sales order
+    const allSalesOrder = await db.getItems();
+    // state
+    sales_orders.value = allSalesOrder;
+    // return
     return;
   }
   // initiate idb
-  const db = await useIdb(store);
-  // get all sales order
-  const allSalesOrder = await db.getItems();
-  // return
-  return allSalesOrder;
 };

@@ -15,7 +15,7 @@
         <datatable
               :heads="['Tanggal SO', 'Nomor SO', 'Customer']"
               :keys="['tanggal_so', 'nomor_so', 'customer']"
-              :datanya="lists"
+              :datanya="sales_orders"
               keydata="id"
               no
               id="table-sales-order"
@@ -28,7 +28,7 @@
                 type="button"
                 small
                 class="ml-2"
-                :datanya="slotProps.prop.incoming_parent_id"
+                :datanya="slotProps.prop.id"
                 @trig="handleButton($event)"
               />
           </datatable>
@@ -42,14 +42,13 @@
   import { onMounted, ref } from "vue";
   import readExcel from "../utils/ReadExcel";
     import { getItemIdByKdItem } from "../composables/MasterItems";
-    import { getSalesOrderIdByNomorSO, createSalesOrder, addChildItemsOrder, getSalesOrder } from "../composables/SalesOrder"
+    import { getSalesOrderById, sales_orders ,getSalesOrderIdByNomorSO, createSalesOrder, addChildItemsOrder, getSalesOrder } from "../composables/SalesOrder"
     import { createItemOrder } from "../composables/SalesOrderItem"
 import ExcelDateToJSDate from "../utils/ExcelDateToJs";
 import { ddmmyyyy } from "../utils/dateFormat";
   
 //   const file picker
 const file_picker = ref()
-  let lists = ref([]);
 const SOInserted = [];
 const startImport = async () => {
     if(!file_picker.value.files[0]) {
@@ -109,14 +108,16 @@ const startImport = async () => {
 }
 
 const renderSalesOrder = async () => {
-    lists.value = await getSalesOrder()
+    await getSalesOrder()
     return
 }
 
   // to see details master
-//   const handleButton = (id) => {
-//     launchFormAndsubscribeMutation('IncomingForm', id, 'tunnelMessage')
-//   }
+  const handleButton = async (id) => {
+    // get sales order
+    const salesorder = await getSalesOrderById(id)
+   console.log(salesorder)
+  }
 
   onMounted(() => {
     renderSalesOrder()

@@ -35,7 +35,7 @@
 <script setup>
 
 import { ref } from 'vue';
-import { launchForm, closeModalOrDialog } from "../composables/launchForm"
+import { launchForm, closeModalOrDialog, loaderMessage } from "../composables/launchForm"
 import exportXLS from "../utils/ExportToXls"
 import readExcel from "../utils/ReadExcel"
 import { createStockAwal } from "../composables/StockMaster"
@@ -65,6 +65,8 @@ let infoRow = sheet["!ref"].split(":")
 let lengthRow = +infoRow[1].match(/\d+/)[0]
 // console.log(sheet)
 for(let i = 2; i <= lengthRow; i++) {
+    // sent message loader to show
+    loaderMessage(`Memasukkan stock awal ${i} dari ${lengthRow}`)
     const kode_item = sheet["A"+i] ? sheet["A"+i].v : false;
     const nama_item = sheet["B"+i] ? sheet["B"+i].v : false;
     const quantity = sheet["C"+i] ? sheet["C"+i].v : false;
