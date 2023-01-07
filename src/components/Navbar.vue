@@ -59,7 +59,7 @@ import { ref } from 'vue';
       ];
 
       const dropdownNavs = [
-        { name: "Setting", title: "Stock master", icon: "box" },
+        { name: "StockMaster", title: "Stock master", icon: "box" },
         { name: "Output", title: "Sales order", icon: "box" },
       ]
 

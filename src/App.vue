@@ -19,6 +19,7 @@ import Incoming from "./pages/Incoming.vue";
 import VehiclesVue from "./pages/Vehicles.vue";
 import ConfirmDialogVue from "./components/ConfirmDialog.vue";
 import Output from "./pages/Output.vue"
+import StockMaster from "./pages/StockMaster.vue";
 
 export default {
   name: "App",
@@ -45,6 +46,7 @@ export default {
     Vehicles: VehiclesVue,
     Confirm: ConfirmDialogVue,
     Output,
+    StockMaster,
   },
   mounted() {
     // subscribe mutation to know when modal or dialog trigger to activate it

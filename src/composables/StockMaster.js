@@ -138,13 +138,6 @@ export const updateStockById = async (id, keyValueToUpdate) => {
   return;
 };
 
-export const getStockWithoutParent = () => {
-  const stock = Stock_masters.value.filter(
-    (stock) => !stock?.icoming_parent_id
-  );
-  return stock;
-};
-
 export const documentsMapper = async (docs) => {
   let result = [];
   for (const doc of docs) {
@@ -172,8 +165,8 @@ export const setStockParent = async (idsOfStock, icoming_parent_id) => {
 };
 
 export const itemThatAvailable = async () => {
-  // get all item firsst
-  await gettingStartedRecord();
+  // get all item that available
+  await getStockThatAvailable()
   // get item that available not null
   let isItemTaken = [];
   // result of item
@@ -401,4 +394,39 @@ export const getStockMasterByItemId = async (item_id) => {
     }
   }
   return result
+}
+
+export const getStockThatAvailable = async () => {
+  // get stock that available from db
+  // initiate idb
+  const stockdb = await useIdb(store);
+  // stock that available
+  const stockAvailable = await stockdb.getItemsByKeyGreaterThan('quantity', 0)
+  // put to state
+  Stock_masters.value = stockAvailable;
+  // return it
+  return stockAvailable;
+}
+
+export const mapStockForStockMaster = async () => {
+  const result = []
+  // id: stock?.id,
+  // kd_item: item?.kd_item,
+  // nm_item: item?.nm_item,
+  // kd_produksi: stock?.kd_produksi,
+  // product_created: ddmmyyyy(stock?.product_created, '-'),
+  // quantity: stock?.quantity,
+  for (const stock of Stock_masters.value) {
+      const item = await getItemById(stock?.item_id);
+      result.push({
+        id: stock?.id,
+        kd_item: item?.kd_item,
+        nm_item: item?.nm_item,
+        kd_produksi: stock?.kd_produksi,
+        product_created: ddmmyyyy(stock?.product_created, '-'),
+        quantity: stock?.quantity,
+        incoming_parent_id: stock?.icoming_parent_id
+      });
+  }
+  return result;
 }
