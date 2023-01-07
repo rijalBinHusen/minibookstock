@@ -21,7 +21,6 @@ export const createSalesOrder = async (tanggal_so, nomor_so, customer) => {
     imported: time(),
     childItemsOrder: []
   };
-  console.log('create record sales order', record)
   // // update summary
   await summaryRecord.updateSummary(nextId);
   // save to indexeddb
@@ -71,7 +70,6 @@ export const removeSalesOrderById = async (id) => {
     const record = await db.getItem(idSO);
     // push new itemOrderId
     record.childItemsOrder.push(itemOrderId)
-    console.log('add child item sales order', record)
     // update in db
     await db.setItem(idSO, record);
   }
@@ -83,4 +81,14 @@ export const removeSalesOrderById = async (id) => {
     const isRecordExist = await db.findOneItemByKeyValue('nomor_so', nomor_so)
     // return result
     return isRecordExist?.id
+  }
+
+  export const getSalesOrder = async () => {
+    // initiate idb
+    const db = await useIdb(store);
+    // get all sales order
+    const allSalesOrder = await db.getItems()
+    // return
+    return allSalesOrder
+
   }

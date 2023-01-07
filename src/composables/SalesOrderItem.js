@@ -17,7 +17,6 @@ export const createItemOrder = async (item_id, order) => {
     item_id,
     order
   };
-  console.log('create item order', record)
   // // update summary
   await summaryRecord.updateSummary(nextId);
   // save to indexeddb

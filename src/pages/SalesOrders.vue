@@ -12,13 +12,13 @@
             />
         </div>
         <!-- databale -->
-        <!-- <datatable
-              :heads="['Kode item', 'Nama item', 'Kode produksi', 'tanggal produksi', 'quantity']"
-              :keys="['kd_item', 'nm_item', 'kd_produksi', 'product_created', 'quantity']"
+        <datatable
+              :heads="['Tanggal SO', 'Nomor SO', 'Customer']"
+              :keys="['tanggal_so', 'nomor_so', 'customer']"
               :datanya="lists"
               keydata="id"
               no
-              id="table-stock-master"
+              id="table-sales-order"
               option
               v-slot:default="slotProps"
           >  
@@ -31,7 +31,7 @@
                 :datanya="slotProps.prop.incoming_parent_id"
                 @trig="handleButton($event)"
               />
-          </datatable> -->
+          </datatable>
       </div>
   </template>
   
@@ -42,12 +42,12 @@
   import { onMounted, ref } from "vue";
   import readExcel from "../utils/ReadExcel";
 import { getItemIdByKdItem } from "../composables/MasterItems";
-import { getSalesOrderIdByNomorSO, createSalesOrder, addChildItemsOrder } from "../composables/SalesOrder"
+import { getSalesOrderIdByNomorSO, createSalesOrder, addChildItemsOrder, getSalesOrder } from "../composables/SalesOrder"
 import { createItemOrder } from "../composables/SalesOrderItem"
   
 //   const file picker
 const file_picker = ref()
-//   let lists = ref([]);
+  let lists = ref([]);
 
 const startImport = async () => {
     if(!file_picker.value.files[0]) {
@@ -102,9 +102,8 @@ const startImport = async () => {
 //     launchFormAndsubscribeMutation('IncomingForm', id, 'tunnelMessage')
 //   }
 
-//   onMounted( async () => {
-//     await getStockThatAvailable()
-//     lists.value = await mapStockForStockMaster()
-//   })
+  onMounted( async () => {
+      lists.value = await getSalesOrder()
+  })
   
   </script>
