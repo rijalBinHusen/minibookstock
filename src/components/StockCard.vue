@@ -69,7 +69,7 @@ import { stockCard } from "../reports/StockCard"
 // import date picker
 import datePicker from "vue3-datepicker";
 import { startExportMaster } from '../reports/StockMaster';
-import { launchForm, closeModalOrDialog } from "../composables/launchForm"
+import { launchForm, closeModalOrDialog, subscribeConfirmDialog } from "../composables/launchForm"
 // variable that contain item id
 const itemId = ref(null)
 // date start
@@ -78,15 +78,20 @@ const dateStart = ref(new Date())
 const dateEnd = ref(new Date())
 
 const handleExport = async () => {
-    // launch the loader
-    launchForm('Loader', false)
-    // launch the loader
-    // const asdfwer =  await launchForm('Loader', false);
-    // export stock card
-    await stockCard(itemId.value, dateStart.value.getTime(), dateEnd.value.getTime())
-    // console.log(itemId.value)
-    // close the loader
-    closeModalOrDialog(false)
+    // IF the form not null
+    if(itemId.value && dateStart.value && dateEnd.value) {
+        // launch the loader
+        launchForm('Loader', false)
+        // launch the loader
+        // const asdfwer =  await launchForm('Loader', false);
+        // export stock card
+        await stockCard(itemId.value, dateStart.value.getTime(), dateEnd.value.getTime())
+        // console.log(itemId.value)
+        // close the loader
+        closeModalOrDialog(false)
+    } else {
+        subscribeConfirmDialog('alert', 'Tidak boleh ada form yang kosong');
+    }
 }
 
 const handleMasterStock = async () => {

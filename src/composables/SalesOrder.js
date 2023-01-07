@@ -1,0 +1,86 @@
+import { useIdb } from "../utils/localforage"
+import { summary } from "../utils/summaryIdb"
+import { generateId } from "../utils/GeneratorId"
+import { time } from "../utils/dateFormat"
+
+const store = "sales_orders"
+
+export const createSalesOrder = async (tanggal_so, nomor_so, customer) => {
+  const db = await useIdb(store)
+    // get last id
+  const summaryRecord = await summary(store);
+  // generate next id
+  const nextId = summaryRecord?.lastUpdated ? generateId(summaryRecord?.lastUpdated?.lastId) : generateId("SO_TR22030000");
+  // initiate new record
+  const record = {
+    created: new Date().getTime(),
+    id: nextId,
+    tanggal_so,
+    nomor_so,
+    customer,
+    imported: time(),
+    childItemsOrder: []
+  };
+  console.log('create record sales order', record)
+  // // update summary
+  await summaryRecord.updateSummary(nextId);
+  // save to indexeddb
+  await db.setItem(nextId, record);
+  //  return next id
+  return nextId;
+}
+
+
+export const removeSalesOrderById = async (id) => {
+    // initiate idb
+    const db = await useIdb(store);
+    // remove from indexeddb
+    await db.removeItem(id);
+    // return true
+    return true;
+  };
+
+  export const getSalesOrderById = async (id) => {
+    // initiate idb
+    const db = await useIdb(store);
+    // find stock
+    const findSalesOrder = await db.getItem(id);
+    return findSalesOrder
+      ? findSalesOrder
+      : {
+            id: "Not found",
+            tanggal_so: "Not found",
+            nomor_so: "Not found",
+            customer: "Not found"
+        };
+  };
+  
+  export const updateSalesOrderById = async (id, keyValueToUpdate) => {
+    // initiate idb
+    const db = await useIdb(store);
+    // update in idb
+    await db.updateItem(id, keyValueToUpdate);
+    // saveData();
+    return true;
+  };
+  
+  export const addChildItemsOrder = async (idSO, itemOrderId) => {
+    // initiate idb
+    const db = await useIdb(store);
+    // get record first
+    const record = await db.getItem(idSO);
+    // push new itemOrderId
+    record.childItemsOrder.push(itemOrderId)
+    console.log('add child item sales order', record)
+    // update in db
+    await db.setItem(idSO, record);
+  }
+
+  export const getSalesOrderIdByNomorSO = async (nomor_so) => {
+    // initiate idb
+    const db = await useIdb(store);
+    // get db by nomor so
+    const isRecordExist = await db.findOneItemByKeyValue('nomor_so', nomor_so)
+    // return result
+    return isRecordExist?.id
+  }

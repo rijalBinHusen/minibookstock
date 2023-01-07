@@ -60,7 +60,7 @@ import { ref } from 'vue';
 
       const dropdownNavs = [
         { name: "StockMaster", title: "Stock master", icon: "box" },
-        { name: "Output", title: "Sales order", icon: "box" },
+        { name: "SalesOrders", title: "Sales orders", icon: "newspaper" },
       ]
 
       const navigate = (nav) => {
