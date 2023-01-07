@@ -17,7 +17,7 @@
                 type="button"
                 small
                 class="ml-2"
-                :datanya="slotProps.prop.id"
+                :datanya="slotProps.prop.incoming_parent_id"
                 @trig="handleButton($event)"
               />
           </datatable>
@@ -28,6 +28,7 @@
   import Button from "../components/elements/Button.vue";
   import Datatable from "../components/parts/Datatable.vue";
   import { getStockThatAvailable, mapStockForStockMaster } from "../composables/StockMaster"
+  import { launchFormAndsubscribeMutation } from "../composables/launchForm";
   import { onMounted, ref } from "vue";
   // id: stock?.id,
   // kd_item: item?.kd_item,
@@ -38,14 +39,13 @@
   let lists = ref([]);
   
   // to see details master
-  const handleButton = async (id) => {
-    console.log(id)
+  const handleButton = (id) => {
+    launchFormAndsubscribeMutation('IncomingForm', id, 'tunnelMessage')
   }
 
   onMounted( async () => {
     await getStockThatAvailable()
     lists.value = await mapStockForStockMaster()
-    console.log(lists.value)
   })
   
   </script>

@@ -64,6 +64,7 @@ import { mapIncomingTransactionWoutItem, dateRecordToShow, getRecordByDate } fro
 // function to launch form to add income product
 const handleButton = async (operation, document) => {
     // add incoming transaction, waiting for tunnel message that send in form
+    console.log(document)
     const res = await launchFormAndsubscribeMutation('IncomingForm', document, 'tunnelMessage')
     // if res true, it mean the add new record or update while false, itt close the modal without add record
     if(res) {
