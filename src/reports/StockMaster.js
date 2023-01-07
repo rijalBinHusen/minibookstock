@@ -15,6 +15,7 @@ export const startExportMaster = async () => {
             const item = await getItemById(stock?.item_id)
             // push to result
             result.push({
+                kode_item: item.kd_item,
                 nama_item: item.nm_item,
                 quantity: stock?.quantity,
                 tanggal_produksi: ddmmyyyy(stock?.product_created, '-')

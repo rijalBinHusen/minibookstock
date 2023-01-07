@@ -358,42 +358,12 @@ export const getStockByIdForIncomingForm = async (id) => {
 };
 
 export const getStockMasterByItemId = async (item_id) => {
-  // we will use jurnal produk masuk
-  const { getJurnalProdukMasukById } = useJurnalProdukMasuk()
   // initiate idb
   const stockdb = await useIdb(store);
-  // get item name
-  const item = await getItemById(item_id)
-  // vairable thatt will contain result
-  let result = []
   // get data from db based on item id
   const allStock = await stockdb.getItemsByKeyValue('item_id', item_id)
-  // loop all stock to map it
-  for( const stock of allStock) {
-    // get incoming information
-    const incomingInfo = await getIncomingById(stock?.icoming_parent_id);
-    // get incoming type info
-    const type = await getJurnalProdukMasukById(incomingInfo.type)
-    // push result
-    // get stock that has ben out
-    const allOutputFinished = await getTotalStockTaken(stock.id)
-    result.push({
-      tanggal: ddmmyyyy(incomingInfo.tanggal, "-"),
-      shift: incomingInfo.shift,
-      type: "Stock Masuk",
-      nama_item: item.nm_item,
-      keterangan: type.nama_jurnal,
-      tanggal_produksi: ddmmyyyy(stock.product_created, '-'),
-      quantity: stock?.quantity + allOutputFinished.allFinished,
-    })
-    // get output based on stock master id
-    const allOutput = await getOutputByStockMasterId(stock.id)
-    // concat with result
-    if(allOutput.length) {
-      result = result.concat(allOutput)
-    }
-  }
-  return result
+  // return all stock
+  return allStock;
 }
 
 export const getStockThatAvailable = async () => {

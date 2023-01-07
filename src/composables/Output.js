@@ -277,12 +277,15 @@ export const getOutputByStockMasterId = async (stock_master_id) => {
       // get item info
       const item = await getItemById(stockInfo.item_id)
       result.push({
+        unix_time: outStock.tanggal,
         tanggal: ddmmyyyy(outStock.tanggal, '-'),
+        nomor_dokumen: outStock.nomor_so,
         shift: outStock.shift,
-        type: "Stock Keluar",
+        mutasi: "Keluar",
+        kode_item: item.kd_item,
         nama_item: item.nm_item,
-        keterangan: outputInfo.nama_jurnal,
-        tanggal_produksi: ddmmyyyy(stockInfo.product_created, '-'),
+        type: outputInfo.nama_jurnal,
+        tanggal_produk: ddmmyyyy(stockInfo.product_created, '-'),
         quantity: outStock?.quantity
       })
     }
