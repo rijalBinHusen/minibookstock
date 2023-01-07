@@ -1,14 +1,12 @@
 <template>
 <div class="grid gap-10 text-center">
   <div class="lds-hourglass margin-auto justify-self-center"></div>
-  <p class="text-3xl">Mohon tunggu...</p>
+  <p class="text-3xl">{{ loaderMessageToShow || 'Mohon tunggu...' }}</p>
 </div>
 </template>
 
-<script>
-export default {
-  name: "LoaderForm",
-};
+<script setup>
+import { loaderMessageToShow } from "../../composables/launchForm"
 </script>
 
 <style scoped>

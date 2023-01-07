@@ -1,7 +1,7 @@
 <template>
     <div class="grid mx-2 gap-2">
         <div class="flex justify-end">
-            <input type="file" class="hidden" ref="file_picker" @change="startImport">
+            <input accept=".xls" type="file" class="hidden" ref="file_picker" @change="startImport">
             <Button
                 primary
                 value="Import sales order"
@@ -38,17 +38,19 @@
   <script setup>
   import Button from "../components/elements/Button.vue";
   import Datatable from "../components/parts/Datatable.vue";
-  import { launchForm, subscribeConfirmDialog, closeModalOrDialog } from "../composables/launchForm";
+  import { launchForm, subscribeConfirmDialog, closeModalOrDialog, loaderMessage } from "../composables/launchForm";
   import { onMounted, ref } from "vue";
   import readExcel from "../utils/ReadExcel";
-import { getItemIdByKdItem } from "../composables/MasterItems";
-import { getSalesOrderIdByNomorSO, createSalesOrder, addChildItemsOrder, getSalesOrder } from "../composables/SalesOrder"
-import { createItemOrder } from "../composables/SalesOrderItem"
+    import { getItemIdByKdItem } from "../composables/MasterItems";
+    import { getSalesOrderIdByNomorSO, createSalesOrder, addChildItemsOrder, getSalesOrder } from "../composables/SalesOrder"
+    import { createItemOrder } from "../composables/SalesOrderItem"
+import ExcelDateToJSDate from "../utils/ExcelDateToJs";
+import { ddmmyyyy } from "../utils/dateFormat";
   
 //   const file picker
 const file_picker = ref()
   let lists = ref([]);
-
+const SOInserted = [];
 const startImport = async () => {
     if(!file_picker.value.files[0]) {
         await subscribeConfirmDialog('alert', 'Mohon memilih file terlebih dahulu!')
@@ -69,7 +71,9 @@ const startImport = async () => {
     // get length of row, this will return 300
     let lengthRow = +infoRow[1].match(/\d+/)[0]
     // console.log(sheet)
-    for(let i = 2; i <= lengthRow; i++) {
+    for(let i = 1; i <= lengthRow; i++) {
+        // show message in loader
+        loaderMessage(`Memasukkan sales order, ${i} dari ${lengthRow} baris`)
         const tanggal_so = sheet["A"+i] ? sheet["A"+i].v : false;
         const nomor_so = sheet["C"+i] ? sheet["C"+i].v : false;
         const order = sheet["H"+i] ? sheet["H"+i].v : false;
@@ -83,27 +87,39 @@ const startImport = async () => {
             if(itemInfo?.id) {
                 // checking is sales order exists
                 let salesOrderId = await getSalesOrderIdByNomorSO(nomor_so)
+                // only import when sales order doesnt exists or sales order inserted
                 // if salesOrder doesnt exists
                 if(!salesOrderId) {
                     // renew sales order info variable
-                    salesOrderId = await createSalesOrder(tanggal_so, nomor_so, customer)
+                    const date = ExcelDateToJSDate(tanggal_so)
+                    salesOrderId = await createSalesOrder(ddmmyyyy(date, '-'), nomor_so, customer)
+                    SOInserted.push(nomor_so)
                 }
-                // create item order
-                const itemOrderId = await createItemOrder(itemInfo?.id, order)
-                // update sales order child items
-                await addChildItemsOrder(salesOrderId, itemOrderId)
+                if(!salesOrderId || SOInserted.includes(nomor_so)) {
+                    // create item order
+                    const itemOrderId = await createItemOrder(itemInfo?.id, order)
+                    // update sales order child items
+                    await addChildItemsOrder(salesOrderId, itemOrderId)
+                }
             }
         }
     }
+    await renderSalesOrder()
     closeModalOrDialog(true)
 }
+
+const renderSalesOrder = async () => {
+    lists.value = await getSalesOrder()
+    return
+}
+
   // to see details master
 //   const handleButton = (id) => {
 //     launchFormAndsubscribeMutation('IncomingForm', id, 'tunnelMessage')
 //   }
 
-  onMounted( async () => {
-      lists.value = await getSalesOrder()
+  onMounted(() => {
+    renderSalesOrder()
   })
   
   </script>

@@ -1,3 +1,4 @@
+import { ref } from "vue";
 import store from "../store/index";
 
 export const launchForm = (nameForm, idRecord) => {
@@ -85,19 +86,29 @@ export const launchFormAndsubscribeMutation = async (
 
 export const closeModalOrDialog = (bool = false) => {
   // read current form
-  const currentForm = store.state.form?.form
-  
+  const currentForm = store.state.form?.form;
+
   return new Promise((resolve) => {
-    setTimeout(() => {
-      // send message to tunnelMessage
-      store.commit("tunnelMessage", bool);
-      // set state modal empty
-      store.commit("confirmPayload", false);
-      store.commit("form", false);
-      // close modal
-      window.location.href = "#";
-      // finish the promise
-      resolve()
-    }, currentForm == 'Loader' ? 500 : 100)
-  })
+    setTimeout(
+      () => {
+        // send message to tunnelMessage
+        store.commit("tunnelMessage", bool);
+        // set state modal empty
+        store.commit("confirmPayload", false);
+        store.commit("form", false);
+        loaderMessageToShow.value = null;
+        // close modal
+        window.location.href = "#";
+        // finish the promise
+        resolve();
+      },
+      currentForm == "Loader" ? 500 : 100
+    );
+  });
 };
+
+export const loaderMessage = (message) => {
+  loaderMessageToShow.value = message;
+};
+
+export const loaderMessageToShow = ref(null);

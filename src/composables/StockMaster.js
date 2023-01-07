@@ -1,7 +1,12 @@
 import { summary } from "../utils/summaryIdb";
 import { ref } from "vue";
 // item function
-import { getItemById, getItemIdByKdItem, createItem, Master_items } from "./MasterItems";
+import {
+  getItemById,
+  getItemIdByKdItem,
+  createItem,
+  Master_items,
+} from "./MasterItems";
 // date formatter
 import { ddmmyyyy, ymdTime, getNextYearTime, time } from "../utils/dateFormat";
 // store name
@@ -74,12 +79,12 @@ export const createStock = async (
 export const gettingStartedRecord = async () => {
   // dapatkan last used
   // if (!Stock_masters.value.length) {
-    // initiate idb
-    const stockdb = await useIdb(store);
-    // get all items
-    const item = await stockdb.getItems();
-    // set state
-    Stock_masters.value = item ? item : [];
+  // initiate idb
+  const stockdb = await useIdb(store);
+  // get all items
+  const item = await stockdb.getItems();
+  // set state
+  Stock_masters.value = item ? item : [];
   // }
   // return;
 };
@@ -119,18 +124,20 @@ export const updateStockById = async (id, keyValueToUpdate) => {
   // initiate idb
   const stockdb = await useIdb(store);
   // detecting if keyvalue has own property quantity, change the available too
-  if(keyValueToUpdate.hasOwnProperty('quantity')) {
+  if (keyValueToUpdate.hasOwnProperty("quantity")) {
     // get all output
-    const getOutput = await getTotalStockTaken(id)
+    const getOutput = await getTotalStockTaken(id);
     // 1. Total Stock quantity = (quantity + total output isFinished=true )
     //  it means Now Quantity = quantity - total output isFinished=true
-    const quantity = Number(keyValueToUpdate['quantity']) - getOutput.allFinished
+    const quantity =
+      Number(keyValueToUpdate["quantity"]) - getOutput.allFinished;
     // 2. Total Stock available = (quantity + total output isFinished=true|false )
     // it means available = total quantity - total output isFinished=true|false
-    const available = Number(keyValueToUpdate['quantity']) - Number(getOutput.allTaken)
+    const available =
+      Number(keyValueToUpdate["quantity"]) - Number(getOutput.allTaken);
     // update with the available property
-    await stockdb.updateItem(id,  { ...keyValueToUpdate, quantity, available})
-    return
+    await stockdb.updateItem(id, { ...keyValueToUpdate, quantity, available });
+    return;
   }
   // update database
   await stockdb.updateItem(id, keyValueToUpdate);
@@ -166,7 +173,7 @@ export const setStockParent = async (idsOfStock, icoming_parent_id) => {
 
 export const itemThatAvailable = async () => {
   // get all item that available
-  await getStockThatAvailable()
+  await getStockThatAvailable();
   // get item that available not null
   let isItemTaken = [];
   // result of item
@@ -188,13 +195,13 @@ export const itemThatAvailable = async () => {
 export const getAvailableDateByItem = (item_id) => {
   const result = [];
   Stock_masters.value.forEach((stock) => {
-
     // if availabel and item_id == item_id
     if (stock?.item_id == item_id && stock?.available > 0) {
       // product create as number
-      const product_created_as_number = typeof stock?.product_created === 'string' 
-                                          ? new Date(stock?.product_created).getTime()
-                                          : stock?.product_created
+      const product_created_as_number =
+        typeof stock?.product_created === "string"
+          ? new Date(stock?.product_created).getTime()
+          : stock?.product_created;
       result.push({
         id: stock?.id,
         product_created:
@@ -207,7 +214,9 @@ export const getAvailableDateByItem = (item_id) => {
     }
   });
   // sorting the result
-  return result.sort((a, b) =>  a['origin_product_created'] - b['origin_product_created'])
+  return result.sort(
+    (a, b) => a["origin_product_created"] - b["origin_product_created"]
+  );
   // return result;
 };
 
@@ -224,22 +233,27 @@ export const changeAvailableStock = async (id_stock, yourNumberPlusOrMinus) => {
       : false;
 
   // set new Available, check is that >= 0
-  const available = Number(findRec?.available) + Number(yourNumberPlusOrMinus) >= 0 ? Number(findRec?.available) + Number(yourNumberPlusOrMinus) : false
+  const available =
+    Number(findRec?.available) + Number(yourNumberPlusOrMinus) >= 0
+      ? Number(findRec?.available) + Number(yourNumberPlusOrMinus)
+      : false;
   // if > 0
-  if(available !== false) {
+  if (available !== false) {
     // new item
     const keyValueToUpdate = { available, isTaken };
     // save to database
-    await updateStockById(id_stock, keyValueToUpdate)
+    await updateStockById(id_stock, keyValueToUpdate);
     // return true
     return true;
   } else {
     // find item name
-    const item = await getItemById(findRec.item_id)
+    const item = await getItemById(findRec.item_id);
     // show in alert message
-    alert(`Item ${item.nm_item} tidak dapat dimasukkan karena ketersediaan stock kurang dari permintaan`)
+    alert(
+      `Item ${item.nm_item} tidak dapat dimasukkan karena ketersediaan stock kurang dari permintaan`
+    );
     // false return
-    return false
+    return false;
   }
 };
 
@@ -279,7 +293,7 @@ export const createStockAwal = async (
     // create incoming record
     const incoming = await createIncoming(
       [stock.id],
-      "stock awal",
+      nama_item,
       ymdTime(),
       1,
       "stock awal",
@@ -304,7 +318,7 @@ export const createStockAwal = async (
     // create incoming record
     const incoming = await createIncoming(
       [stock.id],
-      "stock awal",
+      nama_item,
       ymdTime(),
       1,
       "stock awal",
@@ -318,9 +332,8 @@ export const createStockAwal = async (
 };
 
 export const getSTockByIdInState = (idStock) => {
-  return Stock_masters.value.find((rec) => rec?.id === idStock)
-}
-
+  return Stock_masters.value.find((rec) => rec?.id === idStock);
+};
 
 export const changeQuantityStock = async (id_stock, yourNumberPlusOrMinus) => {
   // initiate idb
@@ -328,27 +341,26 @@ export const changeQuantityStock = async (id_stock, yourNumberPlusOrMinus) => {
   // get the record
   const findRec = await stockdb.getItem(id_stock);
   // decrement or increment quantity
-  const quantity = findRec?.quantity + yourNumberPlusOrMinus
+  const quantity = findRec?.quantity + yourNumberPlusOrMinus;
   // available_end ate, if quantity 0 set to now, else next year
-  const keyValueToUpdate = { 
-    quantity, 
+  const keyValueToUpdate = {
+    quantity,
     available_end: quantity == 0 ? time() : getNextYearTime(),
   };
   // saveData()
-  await stockdb.updateItem(id_stock, keyValueToUpdate)
+  await stockdb.updateItem(id_stock, keyValueToUpdate);
   return;
 };
-
 
 export const getStockByIdForIncomingForm = async (id) => {
   // initiate idb
   const stockdb = await useIdb(store);
   // get all output
-  const allOutput = await getTotalStockTaken(id)
+  const allOutput = await getTotalStockTaken(id);
   // console.log(res[0]);
   const findStock = await stockdb.getItem(id);
   return findStock
-    ? { ...findStock, quantity: (findStock?.quantity + allOutput.allFinished)}
+    ? { ...findStock, quantity: findStock?.quantity + allOutput.allFinished }
     : {
         item_id: "Not found",
         kd_produksi: "Not found",
@@ -361,25 +373,25 @@ export const getStockMasterByItemId = async (item_id) => {
   // initiate idb
   const stockdb = await useIdb(store);
   // get data from db based on item id
-  const allStock = await stockdb.getItemsByKeyValue('item_id', item_id)
+  const allStock = await stockdb.getItemsByKeyValue("item_id", item_id);
   // return all stock
   return allStock;
-}
+};
 
 export const getStockThatAvailable = async () => {
   // get stock that available from db
   // initiate idb
   const stockdb = await useIdb(store);
   // stock that available
-  const stockAvailable = await stockdb.getItemsByKeyGreaterThan('quantity', 0)
+  const stockAvailable = await stockdb.getItemsByKeyGreaterThan("quantity", 0);
   // put to state
   Stock_masters.value = stockAvailable;
   // return it
   return stockAvailable;
-}
+};
 
 export const mapStockForStockMaster = async () => {
-  const result = []
+  const result = [];
   // id: stock?.id,
   // kd_item: item?.kd_item,
   // nm_item: item?.nm_item,
@@ -387,16 +399,16 @@ export const mapStockForStockMaster = async () => {
   // product_created: ddmmyyyy(stock?.product_created, '-'),
   // quantity: stock?.quantity,
   for (const stock of Stock_masters.value) {
-      const item = await getItemById(stock?.item_id);
-      result.push({
-        id: stock?.id,
-        kd_item: item?.kd_item,
-        nm_item: item?.nm_item,
-        kd_produksi: stock?.kd_produksi,
-        product_created: ddmmyyyy(stock?.product_created, '-'),
-        quantity: stock?.quantity,
-        incoming_parent_id: stock?.icoming_parent_id
-      });
+    const item = await getItemById(stock?.item_id);
+    result.push({
+      id: stock?.id,
+      kd_item: item?.kd_item,
+      nm_item: item?.nm_item,
+      kd_produksi: stock?.kd_produksi,
+      product_created: ddmmyyyy(stock?.product_created, "-"),
+      quantity: stock?.quantity,
+      incoming_parent_id: stock?.icoming_parent_id,
+    });
   }
   return result;
-}
+};
