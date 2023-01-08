@@ -122,3 +122,27 @@ export const getAllDataToBackup = async () => {
   // return the result
   return { store, data: allData ? allData : null };
 };
+
+export const removeChildItemsOrder = async (idSOrder, itemOrderId) => {
+  // get the record first
+  const record = await getSalesOrderById(idSOrder);
+  // new  childItemsOrder
+  const newChildItemsOrder = [];
+  // if the childItemsOrder contain item orderId, remove it
+  if (record.childItemsOrder.includes(itemOrderId)) {
+    newChildItemsOrder = record.childItemsOrder.filter(
+      (child) => child != itemOrderId
+    );
+  }
+  // if newChildItemsOrder.length, update the record
+  if (newChildItemsOrder.length) {
+    await updateSalesOrderById(idSOrder, {
+      childItemsOrder: newChildItemsOrder,
+    });
+  }
+  // else, childItemsOrder.length === 0, remove sales order
+  else {
+    await removeSalesOrderById(idSOrder);
+  }
+  return;
+};

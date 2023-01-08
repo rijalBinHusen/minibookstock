@@ -7,7 +7,11 @@ const store = "output_transaction";
 // generator id
 import { generateId } from "../utils/GeneratorId";
 // import set parent function for stock master
-import { getStockById, changeAvailableStock, changeQuantityStock } from "./StockMaster";
+import {
+  getStockById,
+  changeAvailableStock,
+  changeQuantityStock,
+} from "./StockMaster";
 // import item function
 import { getItemById } from "./MasterItems";
 // import idb
@@ -18,7 +22,7 @@ import { useJurnalProdukKeluar } from "./Setting_JurnalId";
 export const Output_transaction = ref([]);
 
 // what date to show
-export const dateRecordToShow = ref(new Date())
+export const dateRecordToShow = ref(new Date());
 
 /**
  * 
@@ -34,9 +38,17 @@ export const dateRecordToShow = ref(new Date())
   isFinished boolean
  */
 
-export const createOutput = async (tanggal, type, shift, nomor_so, stock_master_id, quantity) => {
+export const createOutput = async (
+  tanggal,
+  type,
+  shift,
+  nomor_so,
+  stock_master_id,
+  quantity,
+  customer
+) => {
   // initiate db
-  const outputdb = await useIdb(store)
+  const outputdb = await useIdb(store);
   // get last id
   const summaryRecord = await summary(store);
   // generate next id
@@ -54,12 +66,16 @@ export const createOutput = async (tanggal, type, shift, nomor_so, stock_master_
     shift,
     quantity: Number(quantity),
     isFinished: false,
+    customer,
   };
   // change available master stock, do something when available
-  const isAvailable = await changeAvailableStock(stock_master_id, -Number(quantity))
+  const isAvailable = await changeAvailableStock(
+    stock_master_id,
+    -Number(quantity)
+  );
   // // save to database if isAvailable true
-  if(isAvailable) {
-    await outputdb.setItem(nextId, record)
+  if (isAvailable) {
+    await outputdb.setItem(nextId, record);
     // push to state
     Output_transaction.value.unshift(record);
     // update summary
@@ -80,28 +96,27 @@ export const createOutput = async (tanggal, type, shift, nomor_so, stock_master_
 
 export const getRecordByDate = async () => {
   // initiate db
-  const outputdb = await useIdb(store)
+  const outputdb = await useIdb(store);
   // get record by date
   Output_transaction.value = await outputdb.getItemsByKeyValue(
     "tanggal",
     ymdTime(dateRecordToShow.value)
   );
-  // 
+  //
   return;
-}
+};
 
 export const removeOutputById = async (id) => {
   // initiate db
-  const outputdb = await useIdb(store)
+  const outputdb = await useIdb(store);
   // remove from statate
   Output_transaction.value = Output_transaction.value.filter((rec) => {
-        if(rec.id !== id) {
-            return rec
-        }
-        // change available stock
-        changeAvailableStock(rec?.stock_master_id, Number(rec?.quantity))
+    if (rec.id !== id) {
+      return rec;
     }
-  );
+    // change available stock
+    changeAvailableStock(rec?.stock_master_id, Number(rec?.quantity));
+  });
   // saveData();
   await outputdb.removeItem(id);
   return;
@@ -115,9 +130,9 @@ export const removeOutputById = async (id) => {
 
 export const getOutputById = async (id) => {
   // initiate db
-  const outputdb = await useIdb(store)
+  const outputdb = await useIdb(store);
   // console.log(res[0]);
-  const findStock = await outputdb.getItem(id)
+  const findStock = await outputdb.getItem(id);
   return findStock
     ? findStock
     : {
@@ -131,7 +146,7 @@ export const getOutputById = async (id) => {
 
 export const updateOutputById = async (id, keyValueToUpdate) => {
   // initiate db
-  const outputdb = await useIdb(store)
+  const outputdb = await useIdb(store);
   // update in state
   Output_transaction.value = Output_transaction.value.map((item) => {
     return item?.id == id ? { ...item, ...keyValueToUpdate } : item;
@@ -150,19 +165,18 @@ export const updateOutputById = async (id, keyValueToUpdate) => {
 // };
 
 export const outputTransactionMapped = async () => {
-  const result = []
+  const result = [];
   // if the state null
   if (!Output_transaction.value || !Output_transaction.value.length) {
     return result;
   }
   // Output_transaction.value.forEach((doc) => {
-  for(const doc of Output_transaction.value) {
-
+  for (const doc of Output_transaction.value) {
     // get master stock
-    const master = await getStockById(doc?.stock_master_id)
+    const master = await getStockById(doc?.stock_master_id);
     // get item
-    const item = await getItemById(master.item_id)
-    result.push ({
+    const item = await getItemById(master.item_id);
+    result.push({
       id: doc?.id,
       tanggal: ddmmyyyy(doc?.tanggal, "-"),
       shift: doc?.shift,
@@ -170,89 +184,97 @@ export const outputTransactionMapped = async () => {
       nm_item: item?.nm_item,
       product_created: ddmmyyyy(master.product_created, "-"),
       quantity: doc?.quantity,
-      isFinished: doc?.isFinished
-    })
+      isFinished: doc?.isFinished,
+    });
   }
   // }
   // );
-  return result
+  return result;
 };
 
 export const markAsFinished = async (id) => {
   // mark in state
   Output_transaction.value = Output_transaction.value.map((doc) => {
-    if(doc?.id === id) {
+    if (doc?.id === id) {
       // update the quantity
       // changeAvailableStock(doc?.stock_master_id,)
       // mark as finished
-      return { ...doc, isFinished: true}
-    } 
-    return doc
+      return { ...doc, isFinished: true };
+    }
+    return doc;
   });
   // get record
-  const findRec = await getOutputById(id)
+  const findRec = await getOutputById(id);
   // get stock master id
-  const masterId = findRec?.stock_master_id
+  const masterId = findRec?.stock_master_id;
   // update quantity stock
-  await changeQuantityStock(masterId, -Number(findRec?.quantity))
+  await changeQuantityStock(masterId, -Number(findRec?.quantity));
   // mark in db output as finished
-  await updateOutputById(id, { isFinished: true })
-}
+  await updateOutputById(id, { isFinished: true });
+};
 
 export const getAllDataToBackup = async () => {
   // initiate db
-  const outputdb = await useIdb(store)
+  const outputdb = await useIdb(store);
   // get all data
-  const allData = await outputdb.getItems(store)
+  const allData = await outputdb.getItems(store);
   // return the result
-  return { store, data: allData ? allData : null }
-}
+  return { store, data: allData ? allData : null };
+};
 
 export const getTotalStockTaken = async (id_stock_master) => {
   // initiate db
-  const outputdb = await useIdb(store)
+  const outputdb = await useIdb(store);
   // get all Stock master that taken
-  const allOutput = await outputdb.getItemsByKeyValue('stock_master_id', id_stock_master)
+  const allOutput = await outputdb.getItemsByKeyValue(
+    "stock_master_id",
+    id_stock_master
+  );
   // total all output
-  let allTaken = 0
+  let allTaken = 0;
   // total output that finished = true
   let allFinished = 0;
   // loop all output
-  if(allOutput && allOutput.length) {
-    for(const out of allOutput) {
+  if (allOutput && allOutput.length) {
+    for (const out of allOutput) {
       //  if finished true
-      if(out?.isFinished) {
+      if (out?.isFinished) {
         // increment is finished
-        allFinished = allFinished + Number(out?.quantity)
+        allFinished = allFinished + Number(out?.quantity);
       }
       // incremen all taken
-      allTaken = allTaken + Number(out?.quantity)
+      allTaken = allTaken + Number(out?.quantity);
     }
   }
 
   // will return 0 or > 0
-  return { allTaken, allFinished}
-}
+  return { allTaken, allFinished };
+};
 
 export const getRecordIsFinishedFalse = async () => {
-  
   // initiate db
-  const outputdb = await useIdb(store)
+  const outputdb = await useIdb(store);
   // get record by date
-  Output_transaction.value = await outputdb.getItemsByKeyValue("isFinished", false);
-  // 
+  Output_transaction.value = await outputdb.getItemsByKeyValue(
+    "isFinished",
+    false
+  );
+  //
   return;
-}
+};
 
 export const getOutputByStockMasterId = async (stock_master_id) => {
   // use jurnal output
-  const { getJurnalProdukKeluarById  } =  useJurnalProdukKeluar()
-  // variable that will contain result 
-  const result = []
+  const { getJurnalProdukKeluarById } = useJurnalProdukKeluar();
+  // variable that will contain result
+  const result = [];
   // initiate db
-  const outputdb = await useIdb(store)
+  const outputdb = await useIdb(store);
   // get record by date
-  const allOutput = await outputdb.getItemsByKeyValue('stock_master_id', stock_master_id);
+  const allOutput = await outputdb.getItemsByKeyValue(
+    "stock_master_id",
+    stock_master_id
+  );
   /**
    * 
    id string [pk]
@@ -269,48 +291,47 @@ export const getOutputByStockMasterId = async (stock_master_id) => {
   // loop all output for map it
   for (const outStock of allOutput) {
     // if record finished
-    if(outStock?.isFinished) {
+    if (outStock?.isFinished) {
       // get type jurnal
-      const outputInfo = await getJurnalProdukKeluarById(outStock?.type)
+      const outputInfo = await getJurnalProdukKeluarById(outStock?.type);
       // get stock master info to get item id
-      const stockInfo = await getStockById(outStock.stock_master_id)
+      const stockInfo = await getStockById(outStock.stock_master_id);
       // get item info
-      const item = await getItemById(stockInfo.item_id)
+      const item = await getItemById(stockInfo.item_id);
       result.push({
         unix_time: outStock.tanggal,
-        tanggal: ddmmyyyy(outStock.tanggal, '-'),
+        tanggal: ddmmyyyy(outStock.tanggal, "-"),
         nomor_dokumen: outStock.nomor_so,
         shift: outStock.shift,
         mutasi: "Keluar",
         kode_item: item.kd_item,
         nama_item: item.nm_item,
         type: outputInfo.nama_jurnal,
-        tanggal_produk: ddmmyyyy(stockInfo.product_created, '-'),
-        quantity: outStock?.quantity
-      })
+        tanggal_produk: ddmmyyyy(stockInfo.product_created, "-"),
+        quantity: outStock?.quantity,
+      });
     }
   }
   return result;
-}
-
+};
 
 export const markAsUnFinished = async (id) => {
   // mark in state
   Output_transaction.value = Output_transaction.value.map((doc) => {
-    if(doc?.id === id) {
+    if (doc?.id === id) {
       // update the quantity
       // changeAvailableStock(doc?.stock_master_id,)
       // mark as finished
-      return { ...doc, isFinished: false}
-    } 
-    return doc
+      return { ...doc, isFinished: false };
+    }
+    return doc;
   });
   // get record
-  const findRec = await getOutputById(id)
+  const findRec = await getOutputById(id);
   // get stock master id
-  const masterId = findRec?.stock_master_id
+  const masterId = findRec?.stock_master_id;
   // update quantity stock
-  await changeQuantityStock(masterId, Number(findRec?.quantity))
+  await changeQuantityStock(masterId, Number(findRec?.quantity));
   // mark in db output as finished
-  await updateOutputById(id, { isFinished: false })
-}
+  await updateOutputById(id, { isFinished: false });
+};

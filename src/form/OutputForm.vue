@@ -19,26 +19,6 @@
             ></date-picker>
           </div>
           <!-- end of date picker -->
-
-          <!-- Shift -->
-          <!-- <div class="form-control">
-            <label for="shift" class="label">
-              <span class="label-text">Shift</span>
-            </label>
-            <Select
-            @selectedd="shift = $event"
-              id="shift"
-                :options="[
-                    { shift: '1' },
-                    { shift: '2' },
-                    { shift: '3' },
-                ]"
-              value="shift"
-              text="shift"
-              size="primary small"
-              :inSelect="shift"
-            />
-          </div> -->
           <SelectShift @selected-shift="shift = $event" :shift="shift" />
           <!-- end of Shift -->
           <!-- Coming from -->
@@ -50,20 +30,12 @@
           <InputSalesOrder :nomor_so="nomor_so" @picked-sales-order="handleSOrder($event)" />
           <Input
             label="Customer"
-            @send="customer_name = $event"
+            @send="customer = $event"
             small
             placeholder="Nama customer"
             tipe="primary"
-            :value="customer_name"
+            :value="customer"
           />
-          <!-- <Input
-            label="Penerima"
-            small
-            @send="diterima = $event"
-            placeholder="Penerima"
-            tipe="primary"
-            :value="diterima"
-          /> -->
         </div>
 
         <!-- Item picker -->
@@ -105,8 +77,8 @@ import { getItemByIdInState, gettingStartedRecord as getItems } from "../composa
 import { ddmmyyyy } from "../utils/dateFormat";
 import { getSTockByIdInState, getAvailableDateByItem, getStockById } from "../composables/StockMaster";
 import { createOutput } from "../composables/Output"
-import { getSalesOrderById } from "../composables/SalesOrder"
-import { getItemOrderById } from "../composables/SalesOrderItem"
+import { getSalesOrderById, removeChildItemsOrder } from "../composables/SalesOrder"
+import { getItemOrderById, changeOrderValue } from "../composables/SalesOrderItem"
 
 // vuex
 const store = useStore()
@@ -119,7 +91,7 @@ const type = ref(null)
 // paper id record
 const nomor_so = ref(null)
 // customer name
-const customer_name = ref(null)
+const customer = ref(null)
 // master stock
 const stockChild = ref([])
 // current stock editing
@@ -143,10 +115,8 @@ const handleStock = (operation, e) => {
   //  data from child = { stock_master_id, quantity }
   if(e.stock_master_id) {
     if(operation == 'add') {
-      stockChild.value.push({
-        id: stockChild.value.length +1 + "",
-        ...e
-      })
+      const id = e?.id || stockChild.value.length +1 + ""
+      stockChild.value.push({ id, ...e })
     }  else {
       stockChild.value = stockChild.value.filter((rec) => rec?.id !== e)
     }
@@ -155,10 +125,24 @@ const handleStock = (operation, e) => {
 
 const handleSubmit = async () => {
   // stock child value = data from child = { stock_master_id, quantity }
-  if(date.value && shift.value && type.value && nomor_so.value && stockChild.value) {
+  if(date.value && shift.value && type.value && nomor_so.value && stockChild.value && customer.value) {
       // then insert incoming transction with child from insert all stock
       for (const stock of stockChild.value) {
-        await createOutput(date.value, type.value, shift.value, nomor_so.value, stock?.stock_master_id, stock?.quantity )
+        // create output record
+        const output = await createOutput(date.value, type.value, shift.value, nomor_so.value, stock?.stock_master_id, stock?.quantity, customer.value)
+        // change order quantity if it picked from item order, this will return (order - yournumber)
+        if(stock.id.length > 3) {
+          const orderQuantity = await changeOrderValue(stock.id, -stock.quantity)
+          // if order quantity === 0
+          // remove item order id from salesorder.childitem
+          if(orderQuantity === 0) {
+            for(const SOrder of salesOrderPicked.value) {
+              if(SOrder) {
+                await removeChildItemsOrder(SOrder, stock.id)
+              }
+            }
+          }
+        }        
       }
       
     closeModalOrDialog(true)
@@ -166,7 +150,8 @@ const handleSubmit = async () => {
     alert("Tidak boleh ada form yang kosong")
   }
   // empty the value
-      isEditMode.value = null
+  isEditMode.value = null
+  salesOrderPicked.value = []
 }
 
 // will contain id of record that we will update it
@@ -175,57 +160,61 @@ const isEditMode = ref(null)
 const isSalesOrder = computed(() => isEditMode.value ? isEditMode.value.slice(0, 2) === "SO" : null)
 
 
+// will contain condition is the output picking from salesOrder or not
+const salesOrderPicked = ref([])
 // handle SOrder
 const handleSOrder = async (salesOrderId) => {
-if(salesOrderId.length !== 11){
-  return;
-}
-// get sales order by id. this will return { id, nomor_so, tanggal_so, customer }
-const salesOrderDetails = await getSalesOrderById(salesOrderId)
-// put to nomor_so the form
-nomor_so.value = salesOrderDetails.nomor_so
-customer_name.value = salesOrderDetails.customer
-// if salesOrderDetails.childItemsOrder.length > 0
-if(salesOrderDetails.childItemsOrder.length > 0) {
-// get all item order by salesOrderDetails.childItemsOrder
-  for(const idItemOrder of salesOrderDetails.childItemsOrder) {
-  // get sales order item. this will return { id, item_id, order }
-  const itemOrder = await getItemOrderById(idItemOrder)
-  // get stock master by item id, this will return [{ id, product_created }, .....]
-  const dateStockMaster = await getAvailableDateByItem(itemOrder.item_id)
-  // get stockMasterById, this will return { item_id, product_created, quantity}
-  const stockMaster = await getStockById(dateStockMaster[0]?.id)
-  // compare quantity
-  // if quantity > order
-  // or datestockmaster only availbale 1
-  if(stockMaster.quantity >= itemOrder.order || dateStockMaster.length === 1) {
-      // put to item lists
-      // if the quantity stockMaster.quantity >= itemOrder.order alert it bro
-      if(stockMaster.quantity < itemOrder.order) {
-        const item = getItemByIdInState(itemOrder.item_id)
-        alert(`Permintaan item ${item.nm_item} sebanyak ${itemOrder.order} karton tidak cukup, stock hanya tersedia ${stockMaster.quantity} karton!`)
-        handleStock('add', { stock_master_id: stockMaster?.id, quantity: stockMaster.quantity })
+  if(salesOrderId.length !== 11){
+    return;
+  }
+  salesOrderPicked.value.push((salesOrderId))
+  // get sales order by id. this will return { id, nomor_so, tanggal_so, customer }
+  const salesOrderDetails = await getSalesOrderById(salesOrderId)
+  // put to nomor_so the form
+  nomor_so.value = salesOrderDetails.nomor_so
+  customer.value = salesOrderDetails.customer
+  // if salesOrderDetails.childItemsOrder.length > 0
+  if(salesOrderDetails.childItemsOrder.length > 0) {
+  // get all item order by salesOrderDetails.childItemsOrder
+    for(const idItemOrder of salesOrderDetails.childItemsOrder) {
+    // get sales order item. this will return { id, item_id, order }
+    const itemOrder = await getItemOrderById(idItemOrder)
+    // get stock master by item id, this will return [{ id, product_created }, .....]
+    const dateStockMaster = await getAvailableDateByItem(itemOrder.item_id)
+    // get stockMasterById, this will return { item_id, product_created, quantity}
+    const stockMaster = await getStockById(dateStockMaster[0]?.id)
+    // compare quantity
+    // if quantity > order
+    // or datestockmaster only availbale 1
+    if(stockMaster.quantity >= itemOrder.order || dateStockMaster.length === 1) {
+        // put to item lists
+        // if the quantity stockMaster.quantity >= itemOrder.order alert it bro
+        if(stockMaster.quantity < itemOrder.order) {
+          const item = getItemByIdInState(itemOrder.item_id)
+          alert(`Permintaan item ${item.nm_item} sebanyak ${itemOrder.order} karton tidak cukup, stock hanya tersedia ${stockMaster.quantity} karton!`)
+          handleStock('add', { id: itemOrder.id, stock_master_id: stockMaster?.id, quantity: stockMaster.quantity })
+        } else {
+          handleStock('add', { id: itemOrder.id, stock_master_id: stockMaster?.id, quantity: itemOrder.order })
+        }
       } else {
-        handleStock('add', { stock_master_id: stockMaster?.id, quantity: itemOrder.order })
+        // count the - quantity = sisa item order1
+        const quantity2 = itemOrder.order - stockMaster.quantity
+        // put the quantity stock1
+        handleStock('add', { id: itemOrder.id, stock_master_id: stockMaster?.id, quantity: stockMaster.quantity })
+        // search for quantity 2
+        // get stockMasterById, this will return { item_id, product_created, quantity}
+        const stockMaster2 = await getStockById(dateStockMaster[1]?.id)
+        // sisa item order2, if quantity3 >= 0 it means enough
+        const quantity3 = stockMaster2.quantity - quantity2
+        // put the quantity stock2
+        handleStock('add', { 
+                id: itemOrder.id,
+                stock_master_id: stockMaster2?.id, 
+                quantity: quantity3 >= 0 ? quantity2 : stockMaster2.quantity
+              })
       }
-    } else {
-      // count the - quantity = sisa item order1
-      const quantity2 = itemOrder.order - stockMaster.quantity
-      // put the quantity stock1
-      handleStock('add', { stock_master_id: stockMaster?.id, quantity: stockMaster.quantity })
-      // search for quantity 2
-      // get stockMasterById, this will return { item_id, product_created, quantity}
-      const stockMaster2 = await getStockById(dateStockMaster[1]?.id)
-      // sisa item order2, if quantity3 >= 0 it means enough
-      const quantity3 = stockMaster2.quantity - quantity2
-      // put the quantity stock2
-      handleStock('add', { 
-              stock_master_id: stockMaster2?.id, 
-              quantity: quantity3 >= 0 ? quantity2 : stockMaster2.quantity
-            })
     }
   }
-}
 }
 
 onMounted( async () => {

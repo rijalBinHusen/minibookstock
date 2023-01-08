@@ -67,3 +67,20 @@ export const getAllDataToBackup = async () => {
   // return the result
   return { store, data: allData ? allData : null };
 };
+
+export const changeOrderValue = async (id, yourMinusOrPlusNumber) => {
+  // get the record
+  const record = await getItemOrderById(id);
+  // decrement the order
+  const resultOrder = record.order + yourMinusOrPlusNumber;
+  // if order is 0
+  if (resultOrder < 1) {
+    // remove record
+    await removeItemOrderById(id);
+    return 0;
+  }
+  // else
+  await updateItemOrderById(id, { order: resultOrder });
+  // return result
+  return resultOrder;
+};

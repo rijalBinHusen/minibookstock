@@ -64,7 +64,6 @@
                 v-model="product_created"
                 input-format="yyyy-MM-dd"
                 @update:model-value="handleUpdateDate('created', $event)"
-                :disabled="isEditExistingMasterStock"
                 ></date-picker>
             </div>
             <!-- tanggal produksi -->
@@ -78,7 +77,6 @@
                 v-model="product_expired"
                 input-format="yyyy-MM-dd"
                 @update:model-value="handleUpdateDate('expired', $event)"
-                :disabled="isEditExistingMasterStock"
                 ></date-picker>
             </div>
             <div id="incoming_item_add" class="w-full text-right">

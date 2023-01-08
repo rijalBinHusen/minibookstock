@@ -25,7 +25,7 @@ const props = defineProps({
 })
 const currentShift = ref(null)
 
-const inSelect = computed(() => props.shift || currentShift.value)
+const inSelect = computed(() => props.shift + "" || currentShift.value)
 
 const options = [
                     { shift: '1' },
