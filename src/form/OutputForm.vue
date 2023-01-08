@@ -68,15 +68,15 @@
             tipe="primary"
             :value="nomor_so"
           />
-          <!-- <Input
-            label="Yang menyerahkan"
-            @send="diserahkan = $event"
-            small
-            placeholder="Yang menyerahkan"
-            tipe="primary"
-            :value="diserahkan"
-          />
           <Input
+            label="Customer"
+            @send="customer_name = $event"
+            small
+            placeholder="Nama customer"
+            tipe="primary"
+            :value="customer_name"
+          />
+          <!-- <Input
             label="Penerima"
             small
             @send="diterima = $event"
@@ -97,12 +97,12 @@
          <!-- End of Item picker -->
         
 
-        <div id="incoming_add_submit" class="w-full mt-4">
+        <div v-if="!isSalesOrder" id="incoming_add_submit" class="w-full mt-4">
           <Button type="button" 
-          @trig="handleSubmit" 
-          primary 
-          :value="isEditMode ? 'Update' : 'Submit'" 
-          small
+            @trig="handleSubmit" 
+            primary 
+            :value="isEditMode ? 'Update' : 'Submit'" 
+            small
           />
         </div>
       </div>
@@ -136,6 +136,8 @@ const shift = ref(1)
 const type = ref(null)
 // paper id record
 const nomor_so = ref(null)
+// customer name
+const customer_name = ref(null)
 // master stock
 const stockChild = ref([])
 // current stock editing
@@ -202,6 +204,7 @@ onMounted( async () => {
       const salesOrderDetails = await getSalesOrderById(isEditMode.value)
       // put to nomor_so the form
       nomor_so.value = salesOrderDetails.nomor_so
+      customer_name.value = salesOrderDetails.customer
       // if salesOrderDetails.childItemsOrder.length > 0
       if(salesOrderDetails.childItemsOrder.length > 0) {
         // get all item order by salesOrderDetails.childItemsOrder

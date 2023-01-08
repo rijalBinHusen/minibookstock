@@ -45,7 +45,7 @@
     import { getSalesOrderById, sales_orders ,getSalesOrderIdByNomorSO, createSalesOrder, addChildItemsOrder, getSalesOrder } from "../composables/SalesOrder"
     import { createItemOrder } from "../composables/SalesOrderItem"
 import ExcelDateToJSDate from "../utils/ExcelDateToJs";
-import { ddmmyyyy } from "../utils/dateFormat";
+import { ddmmyyyy, dayPlusOrMinus } from "../utils/dateFormat";
   
 //   const file picker
 const file_picker = ref()
@@ -70,6 +70,8 @@ const startImport = async () => {
     // get length of row, this will return 300
     let lengthRow = +infoRow[1].match(/\d+/)[0]
     // console.log(sheet)
+    // maximum day before to import
+    const maxDayBefore = dayPlusOrMinus(false, -14)
     for(let i = 1; i <= lengthRow; i++) {
         // show message in loader
         loaderMessage(`Memasukkan sales order, ${i} dari ${lengthRow} baris`)
@@ -78,8 +80,10 @@ const startImport = async () => {
         const order = sheet["H"+i] ? sheet["H"+i].v : false;
         const customer = sheet["M"+i] ? sheet["M"+i].v : false
         const kodeItem = sheet["N"+i] ? sheet["N"+i].v : false
-        // if order more than 0
-        if(order > 0 && nomor_so) {
+        // renew sales order info variable
+        const date = ExcelDateToJSDate(tanggal_so)
+        // if order more than 0 and date > 14 day before now
+        if(order > 0 && nomor_so && date.getTime() >= maxDayBefore) {
             // checking is item exists
             const itemInfo = await getItemIdByKdItem(kodeItem)
             // if item exists create sales order
@@ -89,8 +93,6 @@ const startImport = async () => {
                 // only import when sales order doesnt exists or sales order inserted
                 // if salesOrder doesnt exists
                 if(!salesOrderId) {
-                    // renew sales order info variable
-                    const date = ExcelDateToJSDate(tanggal_so)
                     salesOrderId = await createSalesOrder(ddmmyyyy(date, '-'), nomor_so, customer)
                     SOInserted.push(nomor_so)
                 }
