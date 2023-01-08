@@ -21,6 +21,8 @@ import { getAllDataToBackup as getBackupMasterItems } from '../composables/Maste
 import { getAllDataToBackup as getBackupOutput } from '../composables/Output'
 import { getAllDataToBackup as getBackupStockMaster } from '../composables/StockMaster'
 import { useJurnalProdukKeluar, useJurnalProdukMasuk } from '../composables/Setting_JurnalId'
+import { getAllDataToBackup as getBackupSalesOrder } from "../composables/SalesOrder"
+import { getAllDataToBackup as getBackupOrderItem } from "../composables/SalesOrderItem"
 import { summary } from "../utils/summaryIdb"
 import { launchForm, closeModalOrDialog } from "../composables/launchForm"
 // import function to export text to file and download it
@@ -36,7 +38,7 @@ const handleBackup = async () => {
     const { getAllDataToBackup: getBackupJurnalIncoming } = useJurnalProdukMasuk()
     const { getAllDataToBackup: getBackupSummary } = await summary()
     // the list of function that return data that we'are gonna backup
-    const list = [getBackupIncoming, getBackupMasterItems, getBackupOutput, getBackupStockMaster, getBackupJurnalIncoming, getBackupJurnalKeluar, getBackupSummary]
+    const list = [getBackupIncoming, getBackupMasterItems, getBackupOutput, getBackupStockMaster, getBackupJurnalIncoming, getBackupJurnalKeluar, getBackupSummary, getBackupSalesOrder, getBackupOrderItem]
     // map all function to get all data in local storage
     const result = await Promise.all(list.map((get) => get()))
     // export all data as file

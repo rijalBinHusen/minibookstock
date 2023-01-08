@@ -200,11 +200,13 @@ if(salesOrderDetails.childItemsOrder.length > 0) {
   // or datestockmaster only availbale 1
   if(stockMaster.quantity >= itemOrder.order || dateStockMaster.length === 1) {
       // put to item lists
-      handleStock('add', { stock_master_id: stockMaster?.id, quantity: itemOrder.order })
       // if the quantity stockMaster.quantity >= itemOrder.order alert it bro
       if(stockMaster.quantity < itemOrder.order) {
         const item = getItemByIdInState(itemOrder.item_id)
         alert(`Permintaan item ${item.nm_item} sebanyak ${itemOrder.order} karton tidak cukup, stock hanya tersedia ${stockMaster.quantity} karton!`)
+        handleStock('add', { stock_master_id: stockMaster?.id, quantity: stockMaster.quantity })
+      } else {
+        handleStock('add', { stock_master_id: stockMaster?.id, quantity: itemOrder.order })
       }
     } else {
       // count the - quantity = sisa item order1

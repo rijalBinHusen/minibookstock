@@ -113,3 +113,12 @@ export const getSalesOrder = async () => {
   }
   // initiate idb
 };
+
+export const getAllDataToBackup = async () => {
+  // initiate db
+  const outputdb = await useIdb(store);
+  // get all data
+  const allData = await outputdb.getItems();
+  // return the result
+  return { store, data: allData ? allData : null };
+};
