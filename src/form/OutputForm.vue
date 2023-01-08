@@ -21,7 +21,7 @@
           <!-- end of date picker -->
 
           <!-- Shift -->
-          <div class="form-control">
+          <!-- <div class="form-control">
             <label for="shift" class="label">
               <span class="label-text">Shift</span>
             </label>
@@ -38,24 +38,11 @@
               size="primary small"
               :inSelect="shift"
             />
-          </div>
+          </div> -->
+          <SelectShift @selected-shift="shift = $event" :shift="shift" />
           <!-- end of Shift -->
-
           <!-- Coming from -->
-          <div class="form-control">
-            <label for="type" class="label">
-              <span class="label-text">Type output</span>
-            </label>
-            <Select
-            @selectedd="type = $event"
-              id="type"
-              :options="Jurnal_produk_keluar"
-              value="id"
-              text="nama_jurnal"
-              size="primary small"
-              :inSelect="type"
-            />
-          </div>
+          <SelectTypeDocument jurnal="keluar" :typeJurnal="type" @selected-type="type = $event" />
           <!-- End of coming from -->
         </div>
 
@@ -116,8 +103,9 @@ import Select from "../components/elements/Forms/Select.vue";
 import Input from "../components/elements/Forms/Input.vue";
 import Button from "../components/elements/Button.vue";
 import PickItemToOutputVue from "../components/PickItemToOutput.vue";
+import SelectShift from "../components/parts/SelectShift.vue";
+import SelectTypeDocument from "../components/parts/SelectTypeDocument.vue";
 import { ref, onMounted, computed } from "vue";
-import { useJurnalProdukKeluar } from "../composables/Setting_JurnalId"
 import { closeModalOrDialog } from "../composables/launchForm"
 import { useStore } from "vuex";
 import { getItemByIdInState, gettingStartedRecord as getItems } from "../composables/MasterItems";
@@ -143,8 +131,6 @@ const stockChild = ref([])
 // current stock editing
 const currentStockEdit=ref(null)
 
-// use the composable jurnal produk masuk
-const { gettingJurnalProdukKeluarRecord, Jurnal_produk_keluar } = useJurnalProdukKeluar()
 
 const stockChildDetails = computed(() => stockChild.value.map((stock) => {
       const getStockMaster = getSTockByIdInState(stock?.stock_master_id)
@@ -193,7 +179,6 @@ const isEditMode = ref(null)
 const isSalesOrder = computed(() => isEditMode.value ? isEditMode.value.slice(0, 2) === "SO" : null)
 
 onMounted( async () => {
-  await gettingJurnalProdukKeluarRecord()
   await getItems()
   // checking is any document to edit in state
   isEditMode.value = store.state.form?.document

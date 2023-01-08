@@ -19,43 +19,11 @@
             ></date-picker>
           </div>
           <!-- end of date picker -->
-
           <!-- Shift -->
-          <div class="form-control">
-            <label for="shift" class="label">
-              <span class="label-text">Shift</span>
-            </label>
-            <Select
-            @selectedd="shift = $event"
-              id="shift"
-                :options="[
-                    { shift: '1' },
-                    { shift: '2' },
-                    { shift: '3' },
-                ]"
-              value="shift"
-              text="shift"
-              size="primary small"
-              :inSelect="shift"
-            />
-          </div>
+          <SelectShift @selected-shift="shift = $event" :shift="shift" />
           <!-- end of Shift -->
-
           <!-- Coming from -->
-          <div class="form-control">
-            <label for="type" class="label">
-              <span class="label-text">Asal produk</span>
-            </label>
-            <Select
-            @selectedd="type = $event"
-              id="type"
-              :options="Jurnal_produk_masuk"
-              value="id"
-              text="nama_jurnal"
-              size="primary small"
-              :inSelect="type"
-            />
-          </div>
+          <SelectTypeDocument jurnal="masuk" :typeJurnal="type" @selected-type="type = $event" />
           <!-- End of coming from -->
         </div>
 
@@ -119,7 +87,6 @@ import Input from "../components/elements/Forms/Input.vue";
 import Button from "../components/elements/Button.vue";
 import PickItemVue from "../components/PickItem.vue";
 import { ref, onMounted, computed } from "vue";
-import { useJurnalProdukMasuk } from "../composables/Setting_JurnalId"
 import { createIncoming, getIncomingById, updateIncomingById, removeIncomingById } from "../composables/Incoming"
 import { closeModalOrDialog } from "../composables/launchForm"
 import { useStore } from "vuex";
@@ -127,6 +94,8 @@ import { getItemByIdInState } from "../composables/MasterItems";
 import { ddmmyyyy, ymdTime } from "../utils/dateFormat";
 import { createStock, getStockById, updateStockById, removeStockById, getStockByIdForIncomingForm } from "../composables/StockMaster";
 import { getTotalStockTaken } from "../composables/Output"
+import SelectShift from "../components/parts/SelectShift.vue";
+import SelectTypeDocument from "../components/parts/SelectTypeDocument.vue";
 // vuex
 const store = useStore()
 // date record
@@ -145,9 +114,6 @@ const diterima = ref(null)
 const stockChild = ref([])
 // current stock editing
 const currentStockEdit=ref(null)
-
-// use the composable jurnal produk masuk
-const { gettingJurnalProdukMasukRecord, Jurnal_produk_masuk } = useJurnalProdukMasuk()
 
 // what todo whe update form
 const idStockToUpdate = ref([])
@@ -318,7 +284,6 @@ const isEditMode = ref(null)
 
 
 onMounted( async () => {
-  await gettingJurnalProdukMasukRecord()
   isEditMode.value = store.state.form?.document
   if(isEditMode.value) {
     // get record incoming
