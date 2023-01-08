@@ -102,7 +102,7 @@ export const getSalesOrderIdByNomorSO = async (nomor_so) => {
 
 export const getSalesOrder = async () => {
   if (!sales_orders.value.length) {
-    // sales order > 0
+    // sales order == 0
     const db = await useIdb(store);
     // get all sales order
     const allSalesOrder = await db.getItems();

@@ -47,14 +47,7 @@
         </div>
 
         <div id="incoming_paper" class="grid grid-cols-3 gap-4">
-          <Input
-            label="Nomor sales order"
-            @send="nomor_so = $event"
-            small
-            placeholder="Nomor sales order"
-            tipe="primary"
-            :value="nomor_so"
-          />
+          <InputSalesOrder :nomor_so="nomor_so" @picked-sales-order="handleSOrder($event)" />
           <Input
             label="Customer"
             @send="customer_name = $event"
@@ -99,12 +92,12 @@
 
 <script setup>
 import datePicker from "vue3-datepicker";
-import Select from "../components/elements/Forms/Select.vue";
 import Input from "../components/elements/Forms/Input.vue";
 import Button from "../components/elements/Button.vue";
 import PickItemToOutputVue from "../components/PickItemToOutput.vue";
 import SelectShift from "../components/parts/SelectShift.vue";
 import SelectTypeDocument from "../components/parts/SelectTypeDocument.vue";
+import InputSalesOrder from "../components/InputSalesOrder.vue";
 import { ref, onMounted, computed } from "vue";
 import { closeModalOrDialog } from "../composables/launchForm"
 import { useStore } from "vuex";
@@ -114,6 +107,7 @@ import { getSTockByIdInState, getAvailableDateByItem, getStockById } from "../co
 import { createOutput } from "../composables/Output"
 import { getSalesOrderById } from "../composables/SalesOrder"
 import { getItemOrderById } from "../composables/SalesOrderItem"
+
 // vuex
 const store = useStore()
 // date record
@@ -147,13 +141,15 @@ const stockChildDetails = computed(() => stockChild.value.map((stock) => {
 // to add new item form
 const handleStock = (operation, e) => {
   //  data from child = { stock_master_id, quantity }
-  if(operation == 'add') {
-    stockChild.value.push({
-      id: stockChild.value.length +1 + "",
-      ...e
-    })
-  }  else {
-    stockChild.value = stockChild.value.filter((rec) => rec?.id !== e)
+  if(e.stock_master_id) {
+    if(operation == 'add') {
+      stockChild.value.push({
+        id: stockChild.value.length +1 + "",
+        ...e
+      })
+    }  else {
+      stockChild.value = stockChild.value.filter((rec) => rec?.id !== e)
+    }
   }
 }
 
@@ -178,6 +174,58 @@ const isEditMode = ref(null)
 // checking is that sales order or not
 const isSalesOrder = computed(() => isEditMode.value ? isEditMode.value.slice(0, 2) === "SO" : null)
 
+
+// handle SOrder
+const handleSOrder = async (salesOrderId) => {
+if(salesOrderId.length !== 11){
+  return;
+}
+// get sales order by id. this will return { id, nomor_so, tanggal_so, customer }
+const salesOrderDetails = await getSalesOrderById(salesOrderId)
+// put to nomor_so the form
+nomor_so.value = salesOrderDetails.nomor_so
+customer_name.value = salesOrderDetails.customer
+// if salesOrderDetails.childItemsOrder.length > 0
+if(salesOrderDetails.childItemsOrder.length > 0) {
+// get all item order by salesOrderDetails.childItemsOrder
+  for(const idItemOrder of salesOrderDetails.childItemsOrder) {
+  // get sales order item. this will return { id, item_id, order }
+  const itemOrder = await getItemOrderById(idItemOrder)
+  // get stock master by item id, this will return [{ id, product_created }, .....]
+  const dateStockMaster = await getAvailableDateByItem(itemOrder.item_id)
+  // get stockMasterById, this will return { item_id, product_created, quantity}
+  const stockMaster = await getStockById(dateStockMaster[0]?.id)
+  // compare quantity
+  // if quantity > order
+  // or datestockmaster only availbale 1
+  if(stockMaster.quantity >= itemOrder.order || dateStockMaster.length === 1) {
+      // put to item lists
+      handleStock('add', { stock_master_id: stockMaster?.id, quantity: itemOrder.order })
+      // if the quantity stockMaster.quantity >= itemOrder.order alert it bro
+      if(stockMaster.quantity < itemOrder.order) {
+        const item = getItemByIdInState(itemOrder.item_id)
+        alert(`Permintaan item ${item.nm_item} sebanyak ${itemOrder.order} karton tidak cukup, stock hanya tersedia ${stockMaster.quantity} karton!`)
+      }
+    } else {
+      // count the - quantity = sisa item order1
+      const quantity2 = itemOrder.order - stockMaster.quantity
+      // put the quantity stock1
+      handleStock('add', { stock_master_id: stockMaster?.id, quantity: stockMaster.quantity })
+      // search for quantity 2
+      // get stockMasterById, this will return { item_id, product_created, quantity}
+      const stockMaster2 = await getStockById(dateStockMaster[1]?.id)
+      // sisa item order2, if quantity3 >= 0 it means enough
+      const quantity3 = stockMaster2.quantity - quantity2
+      // put the quantity stock2
+      handleStock('add', { 
+              stock_master_id: stockMaster2?.id, 
+              quantity: quantity3 >= 0 ? quantity2 : stockMaster2.quantity
+            })
+    }
+  }
+}
+}
+
 onMounted( async () => {
   await getItems()
   // checking is any document to edit in state
@@ -185,52 +233,7 @@ onMounted( async () => {
   if(isEditMode.value) {
     // if sales order
     if(isSalesOrder) {
-      // get sales order by id. this will return { id, nomor_so, tanggal_so, customer }
-      const salesOrderDetails = await getSalesOrderById(isEditMode.value)
-      // put to nomor_so the form
-      nomor_so.value = salesOrderDetails.nomor_so
-      customer_name.value = salesOrderDetails.customer
-      // if salesOrderDetails.childItemsOrder.length > 0
-      if(salesOrderDetails.childItemsOrder.length > 0) {
-        // get all item order by salesOrderDetails.childItemsOrder
-        for(const idItemOrder of salesOrderDetails.childItemsOrder) {
-          // get sales order item. this will return { id, item_id, order }
-          const itemOrder = await getItemOrderById(idItemOrder)
-          // get stock master by item id, this will return [{ id, product_created }, .....]
-          const dateStockMaster = await getAvailableDateByItem(itemOrder.item_id)
-          // get stockMasterById, this will return { item_id, product_created, quantity}
-          const stockMaster = await getStockById(dateStockMaster[0]?.id)
-          // compare quantity
-          // if quantity > order
-          if(stockMaster.quantity >= itemOrder.order) {
-            // put to item lists
-            handleStock('add', { stock_master_id: stockMaster?.id, quantity: itemOrder.order })
-          } else {
-            // count the - quantity = sisa item order1
-            const quantity2 = itemOrder.order - stockMaster.quantity
-            // put the quantity stock1
-            handleStock('add', { stock_master_id: stockMaster?.id, quantity: stockMaster.quantity })
-            // search for quantity 2
-            // get stockMasterById, this will return { item_id, product_created, quantity}
-            const stockMaster2 = await getStockById(dateStockMaster[1]?.id)
-            // sisa item order2, if quantity3 >= 0 it means enough
-            const quantity3 = stockMaster2.quantity - quantity2
-            // put the quantity stock2
-            handleStock('add', { 
-                    stock_master_id: stockMaster2?.id, 
-                    quantity: quantity3 >= 0 ? quantity2 : stockMaster2.quantity
-                  })
-          }
-          // else
-          // put to item lists
-          // record = {
-          //           stock_master_id: currentStockMaster.value, 
-          //           quantity: Number(quantity.value),
-          //       }
-        }
-
-      }
-      
+      handleSOrder(isEditMode.value)  
     }
   }
 })
