@@ -122,8 +122,10 @@ import { closeModalOrDialog } from "../composables/launchForm"
 import { useStore } from "vuex";
 import { getItemByIdInState, gettingStartedRecord as getItems } from "../composables/MasterItems";
 import { ddmmyyyy } from "../utils/dateFormat";
-import { getSTockByIdInState } from "../composables/StockMaster";
+import { getSTockByIdInState, getAvailableDateByItem, getStockById } from "../composables/StockMaster";
 import { createOutput } from "../composables/Output"
+import { getSalesOrderById } from "../composables/SalesOrder"
+import { getItemOrderById } from "../composables/SalesOrderItem"
 // vuex
 const store = useStore()
 // date record
@@ -185,11 +187,64 @@ const handleSubmit = async () => {
 
 // will contain id of record that we will update it
 const isEditMode = ref(null)
-
+// checking is that sales order or not
+const isSalesOrder = computed(() => isEditMode.value ? isEditMode.value.slice(0, 2) === "SO" : null)
 
 onMounted( async () => {
   await gettingJurnalProdukKeluarRecord()
   await getItems()
+  // checking is any document to edit in state
+  isEditMode.value = store.state.form?.document
+  if(isEditMode.value) {
+    // if sales order
+    if(isSalesOrder) {
+      // get sales order by id. this will return { id, nomor_so, tanggal_so, customer }
+      const salesOrderDetails = await getSalesOrderById(isEditMode.value)
+      // put to nomor_so the form
+      nomor_so.value = salesOrderDetails.nomor_so
+      // if salesOrderDetails.childItemsOrder.length > 0
+      if(salesOrderDetails.childItemsOrder.length > 0) {
+        // get all item order by salesOrderDetails.childItemsOrder
+        for(const idItemOrder of salesOrderDetails.childItemsOrder) {
+          // get sales order item. this will return { id, item_id, order }
+          const itemOrder = await getItemOrderById(idItemOrder)
+          // get stock master by item id, this will return [{ id, product_created }, .....]
+          const dateStockMaster = await getAvailableDateByItem(itemOrder.item_id)
+          // get stockMasterById, this will return { item_id, product_created, quantity}
+          const stockMaster = await getStockById(dateStockMaster[0]?.id)
+          // compare quantity
+          // if quantity > order
+          if(stockMaster.quantity >= itemOrder.order) {
+            // put to item lists
+            handleStock('add', { stock_master_id: stockMaster?.id, quantity: itemOrder.order })
+          } else {
+            // count the - quantity = sisa item order1
+            const quantity2 = itemOrder.order - stockMaster.quantity
+            // put the quantity stock1
+            handleStock('add', { stock_master_id: stockMaster?.id, quantity: stockMaster.quantity })
+            // search for quantity 2
+            // get stockMasterById, this will return { item_id, product_created, quantity}
+            const stockMaster2 = await getStockById(dateStockMaster[1]?.id)
+            // sisa item order2, if quantity3 >= 0 it means enough
+            const quantity3 = stockMaster2.quantity - quantity2
+            // put the quantity stock2
+            handleStock('add', { 
+                    stock_master_id: stockMaster2?.id, 
+                    quantity: quantity3 >= 0 ? quantity2 : stockMaster2.quantity
+                  })
+          }
+          // else
+          // put to item lists
+          // record = {
+          //           stock_master_id: currentStockMaster.value, 
+          //           quantity: Number(quantity.value),
+          //       }
+        }
+
+      }
+      
+    }
+  }
 })
 
 </script>

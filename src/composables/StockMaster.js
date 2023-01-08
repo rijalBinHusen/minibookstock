@@ -87,6 +87,7 @@ export const gettingStartedRecord = async () => {
   Stock_masters.value = item ? item : [];
   // }
   // return;
+  wasGetStockThatAvailable.value = false;
 };
 
 export const removeStockById = async (id) => {
@@ -192,7 +193,9 @@ export const itemThatAvailable = async () => {
   return result;
 };
 
-export const getAvailableDateByItem = (item_id) => {
+export const getAvailableDateByItem = async (item_id) => {
+  // get all item that available
+  await getStockThatAvailable();
   const result = [];
   Stock_masters.value.forEach((stock) => {
     // if availabel and item_id == item_id
@@ -378,7 +381,12 @@ export const getStockMasterByItemId = async (item_id) => {
   return allStock;
 };
 
+const wasGetStockThatAvailable = ref(false);
+
 export const getStockThatAvailable = async () => {
+  if (wasGetStockThatAvailable.value) {
+    return;
+  }
   // get stock that available from db
   // initiate idb
   const stockdb = await useIdb(store);
@@ -386,6 +394,8 @@ export const getStockThatAvailable = async () => {
   const stockAvailable = await stockdb.getItemsByKeyGreaterThan("quantity", 0);
   // put to state
   Stock_masters.value = stockAvailable;
+  // mark variable as true
+  wasGetStockThatAvailable.value = true;
   // return it
   return stockAvailable;
 };

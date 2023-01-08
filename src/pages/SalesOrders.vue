@@ -114,9 +114,15 @@ const renderSalesOrder = async () => {
 
   // to see details master
   const handleButton = async (id) => {
-    // get sales order
-    const salesorder = await getSalesOrderById(id)
-   console.log(salesorder)
+   /**
+    * Todo:
+    * Throw sales order id to state form
+    * launch output form
+    * show SO number, customer name, and item lists in output form
+    * only show, prevent user to edit it
+    */
+//   launch output form throw sales order into state from
+    launchForm('OutputForm', id)
   }
 
   onMounted(() => {

@@ -143,7 +143,7 @@ const handleItem = async (e) => {
         item.value = item_detail.value?.id
         // after item taken
         // get product created by it item that available to take
-        itemAvilabelDate.value = getAvailableDateByItem(item_detail.value?.id)
+        itemAvilabelDate.value = await getAvailableDateByItem(item_detail.value?.id)
     }
 }
 
