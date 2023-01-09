@@ -49,18 +49,18 @@ import { ref } from 'vue';
       const active = ref(null)
 
       const navs = [
-        { name: "MasterItem", title: "Master Item", icon: "layer-group" },
-        // { name: "Vehicles", title: "Kendaraan", icon: "truck-moving" },
+        { name: "Vehicles", title: "Kendaraan", icon: "truck-moving" },
         { name: "Incoming", title: "Produk masuk", icon: "dice-d6" },
         { name: "Output", title: "Produk keluar", icon: "shopping-cart" },
-        { name: "Setting", title: "Setting", icon: "cog" },
         // { name: "Importer", title: "Importer", icon: "file-upload" },
         // { name: "Exporter", title: "Exporter", icon: "file-download" },
       ];
-
+      
       const dropdownNavs = [
         { name: "StockMaster", title: "Stock master", icon: "box" },
         { name: "SalesOrders", title: "Sales orders", icon: "newspaper" },
+        { name: "MasterItem", title: "Master Item", icon: "layer-group" },
+        { name: "Setting", title: "Setting", icon: "cog" },
       ]
 
       const navigate = (nav) => {

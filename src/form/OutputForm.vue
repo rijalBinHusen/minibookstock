@@ -112,6 +112,9 @@ const stockChildDetails = computed(() => stockChild.value.map((stock) => {
 )
 // to add new item form
 const handleStock = (operation, e) => {
+  console.log('stock child value', stockChild.value)
+  console.log('operation', operation)
+  console.log('obj', e)
   //  data from child = { stock_master_id, quantity }
   if(operation == 'add') {
     const id = e?.id || stockChild.value.length +1 + ""
@@ -119,6 +122,7 @@ const handleStock = (operation, e) => {
   }  else {
     stockChild.value = stockChild.value.filter((rec) => rec?.id !== e)
   }
+  console.log('end result', stockChild.value)
 }
 
 const handleSubmit = async () => {
@@ -165,7 +169,6 @@ const handleSOrder = async (salesOrderId) => {
   if(salesOrderId.length < 9){
     return;
   }
-  salesOrderPicked.value.push((salesOrderId))
   // get sales order by id. this will return { id, nomor_so, tanggal_so, customer }
   const salesOrderDetails = await getSalesOrderById(salesOrderId)
   // put to nomor_so the form
@@ -177,6 +180,10 @@ const handleSOrder = async (salesOrderId) => {
     for(const idItemOrder of salesOrderDetails.childItemsOrder) {
     // get sales order item. this will return { id, item_id, order }
     const itemOrder = await getItemOrderById(idItemOrder)
+    // item order is null
+    if(!itemOrder) {
+      return;
+    }
     // get stock master by item id, this will return [{ id, product_created }, .....]
     const dateStockMaster = await getAvailableDateByItem(itemOrder.item_id)
     // get stockMasterById, this will return { item_id, product_created, quantity}
@@ -213,6 +220,8 @@ const handleSOrder = async (salesOrderId) => {
       }
     }
   }
+  // record sorder that picked
+  salesOrderPicked.value.push((salesOrderId))
 }
 
 onMounted( async () => {

@@ -7,7 +7,7 @@
             <input
                 type="text"
                 placeholder="Masukkan Sales order"
-                class="input input-sm input-primary"
+                :class="[ small ?  'input-sm' : '', 'input input-primary']"
                 list="sales_order"
                 @change="handleItem"
                 :value="nomor_so"
@@ -26,7 +26,8 @@ import { getSalesOrder, sales_orders } from "../composables/SalesOrder"
 const emit = defineEmits(['pickedSalesOrder'])
 
 const props = defineProps({
-    nomor_so: String
+    nomor_so: String,
+    small: Boolean,
 })
 
 const handleItem = (e) => {

@@ -20,13 +20,15 @@
               :value="noDO"
             />
               <!-- NO SO -->
-            <Input
+            <InputSalesOrder :nomor_so="nomor_so" @picked-sales-order="handleSOrder($event)" />
+            <!-- <InputSalesOrder /> -->
+            <!-- <Input
               label="Nomor SO"
               @send="noSO = $event"
               placeholder="Masukkan Nomor SO"
               tipe="primary"
               :value="noSO"
-            />
+            /> -->
         </div>
             
             <div id="incoming_items" class="grid grid-cols-3 gap-4 mb-2">
@@ -71,6 +73,7 @@
   import Input from "@/components//elements/Forms/Input.vue";
   import Button from "@/components//elements/Button.vue";
   import { ref, onMounted, computed, watch } from 'vue'
+  import InputSalesOrder from "../components/InputSalesOrder.vue";
   // import { createVehicle, getVehicleById, updateVehicleById } from "../composables/Vehicles";
   import { closeModalOrDialog } from "../composables/launchForm";
   import { useStore } from "vuex";
@@ -81,7 +84,7 @@
   // <!-- NO DO -->
   const noDO = ref(null);
   // <!-- NO SO -->
-  const noSO = ref(null)
+  const nomor_so = ref(null)
   // <!-- REGISTER -->
   const register = ref(null)
   // <!-- PLAT NOMOR -->
@@ -136,7 +139,7 @@
   // disable enable watcher
   const enableWatcher = ref(false)
   // watch the value changed
-  watch([noDO, noSO, register, platNomor, customer], (newVal) => {
+  watch([noDO, nomor_so, register, platNomor, customer], (newVal) => {
     if(enableWatcher.value) {
       // noDO
       if(newVal[0] !== originalRecord.value?.nomor_do) {

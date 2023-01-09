@@ -85,7 +85,7 @@ import { launchForm, subscribeConfirmDialog } from '../composables/launchForm'
 const tanggal = ref(new Date())
 
 const handleAdd = () => {
-    launchForm('Vehicles', false)
+    launchForm('VehiclesForm', false)
 }
 
 const handleButton = async (operation, id) => {
@@ -96,7 +96,7 @@ const handleButton = async (operation, id) => {
             // await removeVehicle(id)
         }
     } else if(operation == 'edit') {
-        launchForm('Vehicles', id)
+        launchForm('VehiclesForm', id)
     } else {
 
     }
@@ -104,7 +104,7 @@ const handleButton = async (operation, id) => {
 }
 
 onMounted(() => {
-    gettingStartedRecord()
+    // gettingStartedRecord()
 })
 
 

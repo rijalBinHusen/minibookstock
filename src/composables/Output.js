@@ -77,7 +77,7 @@ export const createOutput = async (
   if (isAvailable) {
     await outputdb.setItem(nextId, record);
     // map record
-    const recordMapped = await outputTransactionMapped(record)
+    const recordMapped = await outputTransactionMapped(record);
     // push to state
     Output_transaction.value.unshift(recordMapped);
     // update summary
@@ -98,7 +98,7 @@ export const createOutput = async (
 
 export const getRecordByDate = async () => {
   // empty the state
-  Output_transaction.value = []
+  Output_transaction.value = [];
   // initiate db
   const outputdb = await useIdb(store);
   // get record by date
@@ -107,11 +107,11 @@ export const getRecordByDate = async () => {
     ymdTime(dateRecordToShow.value)
   );
   // map allRecord
-  if(records) {
-    for(const rec of records) {
+  if (records) {
+    for (const rec of records) {
       // map record
-      const recordMapped = await outputTransactionMapped(rec)
-      Output_transaction.value.unshift(recordMapped)
+      const recordMapped = await outputTransactionMapped(rec);
+      Output_transaction.value.unshift(recordMapped);
     }
   }
   //
@@ -126,9 +126,11 @@ export const removeOutputById = async (id) => {
     if (rec.id !== id) {
       return rec;
     }
-    // change available stock
-    changeAvailableStock(rec?.stock_master_id, Number(rec?.quantity));
   });
+  // get record first
+  const record = await outputdb.getItem(id);
+  // change available stock
+  await changeAvailableStock(record?.stock_master_id, Number(record?.quantity));
   // saveData();
   await outputdb.removeItem(id);
   return;
@@ -162,9 +164,9 @@ export const updateOutputById = async (id, keyValueToUpdate) => {
   // update in db
   outputdb.updateItem(id, keyValueToUpdate);
   // get record in db
-  const newRec = await outputdb.getItem(id)
+  const newRec = await outputdb.getItem(id);
   // map new Rec
-  const newRecMapped = await outputTransactionMapped(newRec)
+  const newRecMapped = await outputTransactionMapped(newRec);
   // update in state
   Output_transaction.value = Output_transaction.value.map((item) => {
     return item?.id == id ? newRecMapped : item;
@@ -188,21 +190,21 @@ export const outputTransactionMapped = async (doc) => {
   }
   // Output_transaction.value.forEach((doc) => {
   // for (const doc of Output_transaction.value) {
-    // get master stock
-    const master = await getStockById(doc?.stock_master_id);
-    // get item
-    const item = await getItemById(master.item_id);
-    // return mapped record
-    return {
-      id: doc?.id,
-      tanggal: ddmmyyyy(doc?.tanggal, "-"),
-      shift: doc?.shift,
-      nomor_so: doc?.nomor_so,
-      nm_item: item?.nm_item,
-      product_created: ddmmyyyy(master.product_created, "-"),
-      quantity: doc?.quantity,
-      isFinished: doc?.isFinished,
-    };
+  // get master stock
+  const master = await getStockById(doc?.stock_master_id);
+  // get item
+  const item = await getItemById(master.item_id);
+  // return mapped record
+  return {
+    id: doc?.id,
+    tanggal: ddmmyyyy(doc?.tanggal, "-"),
+    shift: doc?.shift,
+    nomor_so: doc?.nomor_so,
+    nm_item: item?.nm_item,
+    product_created: ddmmyyyy(master.product_created, "-"),
+    quantity: doc?.quantity,
+    isFinished: doc?.isFinished,
+  };
   // }
   // }
   // );
@@ -269,21 +271,18 @@ export const getTotalStockTaken = async (id_stock_master) => {
 
 export const getRecordIsFinishedFalse = async () => {
   // empty the state
-  Output_transaction.value = []
+  Output_transaction.value = [];
   // initiate db
   const outputdb = await useIdb(store);
   // get record by date
-  const records = await outputdb.getItemsByKeyValue(
-    "isFinished",
-    false
-  );
+  const records = await outputdb.getItemsByKeyValue("isFinished", false);
 
   // map allRecord
-  if(records) {
-    for(const rec of records) {
+  if (records) {
+    for (const rec of records) {
       // map record
-      const recordMapped = await outputTransactionMapped(rec)
-      Output_transaction.value.unshift(recordMapped)
+      const recordMapped = await outputTransactionMapped(rec);
+      Output_transaction.value.unshift(recordMapped);
     }
   }
   //
