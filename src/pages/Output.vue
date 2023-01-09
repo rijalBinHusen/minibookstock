@@ -2,8 +2,8 @@
     <div class="grid mx-2 gap-2">
         <span class="flex items-center justify-center">
             <span class="text-3xl">Output</span>
-            <date-picker 
-                class="ml-2 bg-base-200 p-2 rounded" 
+            <date-picker
+                class="ml-2 bg-base-200 p-2 rounded"
                 v-model="dateRecordToShow"
             >
             </date-picker>
@@ -14,7 +14,7 @@
                 type="button"
                 small
                 class="ml-2"
-                @trig="handlePeriode"
+                @trig="getRecordByDate"
             />
             <!-- add new output record -->
             <Button
@@ -32,14 +32,14 @@
                 type="button"
                 small
                 class="ml-2"
-                @trig="handleUnfinished"
+                @trig="getRecordIsFinishedFalse"
             />
 
         </span>
         <datatable
             :heads="['tanggal', 'shift', 'Nomor so', 'nama item', 'tanggal produksi', 'quantity']"
             :keys="['tanggal', 'shift', 'nomor_so', 'nm_item', 'product_created', 'quantity']"
-            :datanya="lists"
+            :datanya="Output_transaction"
             keydata="id"
             no
             id="table-output"
@@ -68,7 +68,7 @@
               :datanya="slotProps.prop.id"
               @trig="handleButton('remove', $event)"
             />
-        
+
             <Button
                 accent
                 value="sudah muat"
@@ -87,9 +87,8 @@
 import datePicker from "vue3-datepicker";
 import Datatable from "../components/parts/Datatable.vue";
 import Button from "../components/elements/Button.vue";
-import { ref, onMounted } from "vue";
 import { launchFormAndsubscribeMutation, subscribeConfirmDialog } from "../composables/launchForm";
-import { getRecordIsFinishedFalse, outputTransactionMapped, removeOutputById, markAsFinished, dateRecordToShow, getRecordByDate, markAsUnFinished } from "../composables/Output"
+import { getRecordIsFinishedFalse, Output_transaction, removeOutputById, markAsFinished, dateRecordToShow, getRecordByDate, markAsUnFinished } from "../composables/Output"
 
 // what date to show record
 // dateRecordToShow
@@ -129,35 +128,8 @@ const handleButton = async (operation, document) => {
            await markAsUnFinished(document);
         }
         // re render record
-        renderRecord()
+        // renderRecord()
     }
 }
-
-const lists = ref([])
-
-const handlePeriode = async () => {
-    await getRecordByDate()
-    renderRecord()
-}
-
-const handleUnfinished = async () => {
-    await getRecordIsFinishedFalse()
-    renderRecord()
-}
-
-const renderRecord = () => {
-    lists.value = []
-    // get record
-    // getIncomingRecord()
-    // map record
-    setTimeout( async () => {
-        lists.value = await outputTransactionMapped()
-    }, 500)
-}
-
-onMounted(async () => {
-    renderRecord()
-})
-
 
 </script>

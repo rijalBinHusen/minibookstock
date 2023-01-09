@@ -39,21 +39,21 @@
         </div>
 
         <!-- Item picker -->
-         <PickItemToOutputVue 
-            :isParentEditMode="isEditMode" 
-            :stockChild="stockChildDetails" 
+         <PickItemToOutputVue
+            :isParentEditMode="isEditMode"
+            :stockChild="stockChildDetails"
             @addStock="handleStock('add', $event)"
             @removeStock="handleStock('remove', $event)"
             :currentStockEdit="currentStockEdit"
           />
          <!-- End of Item picker -->
-        
+
 
         <div v-if="!isSalesOrder" id="incoming_add_submit" class="w-full mt-4">
-          <Button type="button" 
-            @trig="handleSubmit" 
-            primary 
-            :value="isEditMode ? 'Update' : 'Submit'" 
+          <Button type="button"
+            @trig="handleSubmit"
+            primary
+            :value="isEditMode ? 'Update' : 'Submit'"
             small
           />
         </div>
@@ -113,13 +113,11 @@ const stockChildDetails = computed(() => stockChild.value.map((stock) => {
 // to add new item form
 const handleStock = (operation, e) => {
   //  data from child = { stock_master_id, quantity }
-  if(e.stock_master_id) {
-    if(operation == 'add') {
-      const id = e?.id || stockChild.value.length +1 + ""
-      stockChild.value.push({ id, ...e })
-    }  else {
-      stockChild.value = stockChild.value.filter((rec) => rec?.id !== e)
-    }
+  if(operation == 'add') {
+    const id = e?.id || stockChild.value.length +1 + ""
+    stockChild.value.push({ id, ...e })
+  }  else {
+    stockChild.value = stockChild.value.filter((rec) => rec?.id !== e)
   }
 }
 
@@ -142,9 +140,9 @@ const handleSubmit = async () => {
               }
             }
           }
-        }        
+        }
       }
-      
+
     closeModalOrDialog(true)
   } else {
     alert("Tidak boleh ada form yang kosong")
@@ -164,7 +162,7 @@ const isSalesOrder = computed(() => isEditMode.value ? isEditMode.value.slice(0,
 const salesOrderPicked = ref([])
 // handle SOrder
 const handleSOrder = async (salesOrderId) => {
-  if(salesOrderId.length !== 11){
+  if(salesOrderId.length < 9){
     return;
   }
   salesOrderPicked.value.push((salesOrderId))
@@ -207,9 +205,9 @@ const handleSOrder = async (salesOrderId) => {
         // sisa item order2, if quantity3 >= 0 it means enough
         const quantity3 = stockMaster2.quantity - quantity2
         // put the quantity stock2
-        handleStock('add', { 
+        handleStock('add', {
                 id: itemOrder.id,
-                stock_master_id: stockMaster2?.id, 
+                stock_master_id: stockMaster2?.id,
                 quantity: quantity3 >= 0 ? quantity2 : stockMaster2.quantity
               })
       }
@@ -224,7 +222,7 @@ onMounted( async () => {
   if(isEditMode.value) {
     // if sales order
     if(isSalesOrder) {
-      handleSOrder(isEditMode.value)  
+      handleSOrder(isEditMode.value)
     }
   }
 })

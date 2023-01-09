@@ -69,7 +69,7 @@ export const updateSalesOrderById = async (id, keyValueToUpdate) => {
   // update in idb
   await db.updateItem(id, keyValueToUpdate);
   // update state
-  sales_orders.value = sales_orders.map((rec) => {
+  sales_orders.value = sales_orders.value.map((rec) => {
     return rec?.id === id ? { ...rec, ...keyValueToUpdate } : rec;
   });
   // saveData();
@@ -127,7 +127,7 @@ export const removeChildItemsOrder = async (idSOrder, itemOrderId) => {
   // get the record first
   const record = await getSalesOrderById(idSOrder);
   // new  childItemsOrder
-  const newChildItemsOrder = [];
+  let newChildItemsOrder = [];
   // if the childItemsOrder contain item orderId, remove it
   if (record.childItemsOrder.includes(itemOrderId)) {
     newChildItemsOrder = record.childItemsOrder.filter(

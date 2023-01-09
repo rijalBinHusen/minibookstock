@@ -25,7 +25,7 @@ export const Output_transaction = ref([]);
 export const dateRecordToShow = ref(new Date());
 
 /**
- * 
+ *
   id string [pk]
   stock_master_ids string
   paper_id string
@@ -76,8 +76,10 @@ export const createOutput = async (
   // // save to database if isAvailable true
   if (isAvailable) {
     await outputdb.setItem(nextId, record);
+    // map record
+    const recordMapped = await outputTransactionMapped(record)
     // push to state
-    Output_transaction.value.unshift(record);
+    Output_transaction.value.unshift(recordMapped);
     // update summary
     await summaryRecord.updateSummary(nextId);
     // return the record
@@ -95,13 +97,23 @@ export const createOutput = async (
 // };
 
 export const getRecordByDate = async () => {
+  // empty the state
+  Output_transaction.value = []
   // initiate db
   const outputdb = await useIdb(store);
   // get record by date
-  Output_transaction.value = await outputdb.getItemsByKeyValue(
+  const records = await outputdb.getItemsByKeyValue(
     "tanggal",
     ymdTime(dateRecordToShow.value)
   );
+  // map allRecord
+  if(records) {
+    for(const rec of records) {
+      // map record
+      const recordMapped = await outputTransactionMapped(rec)
+      Output_transaction.value.unshift(recordMapped)
+    }
+  }
   //
   return;
 };
@@ -147,12 +159,16 @@ export const getOutputById = async (id) => {
 export const updateOutputById = async (id, keyValueToUpdate) => {
   // initiate db
   const outputdb = await useIdb(store);
-  // update in state
-  Output_transaction.value = Output_transaction.value.map((item) => {
-    return item?.id == id ? { ...item, ...keyValueToUpdate } : item;
-  });
   // update in db
   outputdb.updateItem(id, keyValueToUpdate);
+  // get record in db
+  const newRec = await outputdb.getItem(id)
+  // map new Rec
+  const newRecMapped = await outputTransactionMapped(newRec)
+  // update in state
+  Output_transaction.value = Output_transaction.value.map((item) => {
+    return item?.id == id ? newRecMapped : item;
+  });
   return;
 };
 
@@ -164,19 +180,20 @@ export const updateOutputById = async (id, keyValueToUpdate) => {
 //   return stock;
 // };
 
-export const outputTransactionMapped = async () => {
-  const result = [];
-  // if the state null
-  if (!Output_transaction.value || !Output_transaction.value.length) {
+export const outputTransactionMapped = async (doc) => {
+  // const result = [];
+  // // if the state null
+  if (!doc) {
     return result;
   }
   // Output_transaction.value.forEach((doc) => {
-  for (const doc of Output_transaction.value) {
+  // for (const doc of Output_transaction.value) {
     // get master stock
     const master = await getStockById(doc?.stock_master_id);
     // get item
     const item = await getItemById(master.item_id);
-    result.push({
+    // return mapped record
+    return {
       id: doc?.id,
       tanggal: ddmmyyyy(doc?.tanggal, "-"),
       shift: doc?.shift,
@@ -185,11 +202,10 @@ export const outputTransactionMapped = async () => {
       product_created: ddmmyyyy(master.product_created, "-"),
       quantity: doc?.quantity,
       isFinished: doc?.isFinished,
-    });
-  }
+    };
+  // }
   // }
   // );
-  return result;
 };
 
 export const markAsFinished = async (id) => {
@@ -252,13 +268,24 @@ export const getTotalStockTaken = async (id_stock_master) => {
 };
 
 export const getRecordIsFinishedFalse = async () => {
+  // empty the state
+  Output_transaction.value = []
   // initiate db
   const outputdb = await useIdb(store);
   // get record by date
-  Output_transaction.value = await outputdb.getItemsByKeyValue(
+  const records = await outputdb.getItemsByKeyValue(
     "isFinished",
     false
   );
+
+  // map allRecord
+  if(records) {
+    for(const rec of records) {
+      // map record
+      const recordMapped = await outputTransactionMapped(rec)
+      Output_transaction.value.unshift(recordMapped)
+    }
+  }
   //
   return;
 };
@@ -276,7 +303,7 @@ export const getOutputByStockMasterId = async (stock_master_id) => {
     stock_master_id
   );
   /**
-   * 
+   *
    id string [pk]
    stock_master_ids string
    paper_id string
