@@ -3,8 +3,8 @@
         <!-- databale -->
         <datatable
               :heads="['Kode item', 'Nama item', 'Kode produksi', 'tanggal produksi', 'quantity']"
-              :keys="['kd_item', 'nm_item', 'kd_produksi', 'product_created', 'quantity']"
-              :datanya="lists"
+              :keys="['kd_item', 'item_name', 'kd_produksi', 'product_created_format', 'quantity']"
+              :datanya="Stock_masters"
               keydata="id"
               no
               id="table-stock-master"
@@ -27,7 +27,7 @@
   <script setup>
   import Button from "../components/elements/Button.vue";
   import Datatable from "../components/parts/Datatable.vue";
-  import { getStockThatAvailable, mapStockForStockMaster } from "../composables/StockMaster"
+  import { getStockThatAvailable, Stock_masters } from "../composables/StockMaster"
   import { launchFormAndsubscribeMutation } from "../composables/launchForm";
   import { onMounted, ref } from "vue";
   // id: stock?.id,
@@ -36,7 +36,6 @@
   // kd_produksi: stock?.kd_produksi,
   // product_created: ddmmyyyy(stock?.product_created, '-'),
   // quantity: stock?.quantity,
-  let lists = ref([]);
   
   // to see details master
   const handleButton = (id) => {
@@ -45,7 +44,6 @@
 
   onMounted( async () => {
     await getStockThatAvailable()
-    lists.value = await mapStockForStockMaster()
   })
   
   </script>

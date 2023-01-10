@@ -150,9 +150,6 @@ const hadleStockMaster = async (id_stock_master) => {
 }
 
 const handleSubmit = async () => {
-    console.log('current stock master', currentStockMaster.value)
-    console.log('quantity props', props?.currentStockEdit?.quantity)
-    console.log('quantity available', quantityAvailableStockMaster.value)
     // condition
     const condition = computed(() => {
         if(isEditMode.value) {

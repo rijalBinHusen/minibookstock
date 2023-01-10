@@ -64,12 +64,12 @@ export const createStock = async (
     available: Number(quantity),
     available_start: ymdTime(),
   };
+  // map record
+  const recordMaped = await documentsMapper(record);
   // // push to state
-  Stock_masters.value.unshift(record);
+  Stock_masters.value.unshift(recordMaped);
   // // update summary
   await summaryRecord.updateSummary(nextId);
-  // // save tolocalstorage
-  // saveData();
   // save to indexeddb
   await stockdb.setItem(nextId, record);
 
@@ -77,14 +77,19 @@ export const createStock = async (
 };
 
 export const gettingStartedRecord = async () => {
-  // dapatkan last used
-  // if (!Stock_masters.value.length) {
+  // empty state
+  Stock_masters.value = [];
   // initiate idb
   const stockdb = await useIdb(store);
   // get all items
-  const item = await stockdb.getItems();
+  const stocks = await stockdb.getItems();
   // set state
-  Stock_masters.value = item ? item : [];
+  for (const stock of stocks) {
+    // map stock
+    const stockMapped = await documentsMapper(stock);
+    // push to state
+    Stock_masters.value.unshift(stockMapped);
+  }
   // }
   // return;
   wasGetStockThatAvailable.value = false;
@@ -142,32 +147,30 @@ export const updateStockById = async (id, keyValueToUpdate) => {
   }
   // update database
   await stockdb.updateItem(id, keyValueToUpdate);
+  // get new record
+  const newRec = await stockdb.getItem(id);
+  // map new rec
+  const newRecMapped = await documentsMapper(newRec);
+  // update state
+  Stock_masters.value = Stock_masters.value.map((rec) =>
+    rec?.id === id ? newRecMapped : rec
+  );
   //saveData();
   return;
 };
 
-export const documentsMapper = async (docs) => {
-  let result = [];
-  for (const doc of docs) {
-    result.push({
-      id: doc?.id,
-      quantity: doc?.quantity,
-      item: await getItemById(doc?.item_id)?.nm_item,
-      product_created: ddmmyyyy(doc?.product_created, "-"),
-    });
-  }
-
-  return result;
+export const documentsMapper = async (doc) => {
+  // get item
+  const item = await getItemById(doc?.item_id);
+  return {
+    ...doc,
+    item_name: item?.nm_item,
+    kd_item: item?.kd_item,
+    product_created_format: ddmmyyyy(doc?.product_created, "-"),
+  };
 };
 
 export const setStockParent = async (idsOfStock, icoming_parent_id) => {
-  // updaate state
-  Stock_masters.value = Stock_masters.value.map((stock) => {
-    if (idsOfStock.includes(stock?.id)) {
-      return { ...stock, icoming_parent_id };
-    }
-    return stock;
-  });
   // update in db
   await updateStockById(idsOfStock, { icoming_parent_id });
 };
@@ -350,8 +353,8 @@ export const changeQuantityStock = async (id_stock, yourNumberPlusOrMinus) => {
     quantity,
     available_end: quantity == 0 ? time() : getNextYearTime(),
   };
-  // saveData()
-  await stockdb.updateItem(id_stock, keyValueToUpdate);
+  // update stock
+  await updateStockById(id_stock, keyValueToUpdate);
   return;
 };
 
@@ -392,8 +395,12 @@ export const getStockThatAvailable = async () => {
   const stockdb = await useIdb(store);
   // stock that available
   const stockAvailable = await stockdb.getItemsByKeyGreaterThan("quantity", 0);
-  // put to state
-  Stock_masters.value = stockAvailable;
+  for (const stock of stockAvailable) {
+    // map stock
+    const stockMapped = await documentsMapper(stock);
+    // push to state
+    Stock_masters.value.unshift(stockMapped);
+  }
   // mark variable as true
   wasGetStockThatAvailable.value = true;
   // return it
