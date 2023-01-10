@@ -27,7 +27,7 @@
         </div>
 
         <div id="incoming_paper" class="grid grid-cols-3 gap-4">
-          <InputSalesOrder :nomor_so="nomor_so" @picked-sales-order="handleSOrder($event)" />
+          <InputSalesOrder small :nomor_so="nomor_so" @picked-sales-order="handleSOrder($event)" />
           <Input
             label="Customer"
             @send="customer = $event"
@@ -76,7 +76,7 @@ import { useStore } from "vuex";
 import { getItemByIdInState, gettingStartedRecord as getItems } from "../composables/MasterItems";
 import { ddmmyyyy } from "../utils/dateFormat";
 import { getSTockByIdInState, getAvailableDateByItem, getStockById } from "../composables/StockMaster";
-import { createOutput } from "../composables/Output"
+import { createOutput, getOutputById } from "../composables/Output"
 import { getSalesOrderById, removeChildItemsOrder } from "../composables/SalesOrder"
 import { getItemOrderById, changeOrderValue } from "../composables/SalesOrderItem"
 
@@ -112,9 +112,6 @@ const stockChildDetails = computed(() => stockChild.value.map((stock) => {
 )
 // to add new item form
 const handleStock = (operation, e) => {
-  console.log('stock child value', stockChild.value)
-  console.log('operation', operation)
-  console.log('obj', e)
   //  data from child = { stock_master_id, quantity }
   if(operation == 'add') {
     const id = e?.id || stockChild.value.length +1 + ""
@@ -122,35 +119,34 @@ const handleStock = (operation, e) => {
   }  else {
     stockChild.value = stockChild.value.filter((rec) => rec?.id !== e)
   }
-  console.log('end result', stockChild.value)
 }
 
 const handleSubmit = async () => {
+  if(!date.value || !shift.value || !type.value || !nomor_so.value || !stockChild.value || !customer.value) {
+    alert("Tidak boleh ada form yang kosong")
+    return;
+  }
   // stock child value = data from child = { stock_master_id, quantity }
-  if(date.value && shift.value && type.value && nomor_so.value && stockChild.value && customer.value) {
-      // then insert incoming transction with child from insert all stock
-      for (const stock of stockChild.value) {
-        // create output record
-        const output = await createOutput(date.value, type.value, shift.value, nomor_so.value, stock?.stock_master_id, stock?.quantity, customer.value)
-        // change order quantity if it picked from item order, this will return (order - yournumber)
-        if(stock.id.length > 3) {
-          const orderQuantity = await changeOrderValue(stock.id, -stock.quantity)
-          // if order quantity === 0
-          // remove item order id from salesorder.childitem
-          if(orderQuantity === 0) {
-            for(const SOrder of salesOrderPicked.value) {
-              if(SOrder) {
-                await removeChildItemsOrder(SOrder, stock.id)
-              }
-            }
+  // then insert incoming transction with child from insert all stock
+  for (const stock of stockChild.value) {
+    // create output record
+    const output = await createOutput(date.value, type.value, shift.value, nomor_so.value, stock?.stock_master_id, stock?.quantity, customer.value)
+    // change order quantity if it picked from item order, this will return (order - yournumber)
+    if(stock.id.length > 3) {
+      const orderQuantity = await changeOrderValue(stock.id, -stock.quantity)
+      // if order quantity === 0
+      // remove item order id from salesorder.childitem
+      if(orderQuantity === 0) {
+        for(const SOrder of salesOrderPicked.value) {
+          if(SOrder) {
+            await removeChildItemsOrder(SOrder, stock.id)
           }
         }
       }
-
-    closeModalOrDialog(true)
-  } else {
-    alert("Tidak boleh ada form yang kosong")
+    }
   }
+
+  closeModalOrDialog(true)
   // empty the value
   isEditMode.value = null
   salesOrderPicked.value = []
@@ -230,8 +226,25 @@ onMounted( async () => {
   isEditMode.value = store.state.form?.document
   if(isEditMode.value) {
     // if sales order
-    if(isSalesOrder) {
+    if(isSalesOrder.value) {
       handleSOrder(isEditMode.value)
+    }
+    // else, edit output
+    else {
+      // get output details
+      const output = await getOutputById(isEditMode.value)
+      // add to stock child
+      handleStock('add', {
+        id: output.id,
+        stock_master_id: output.stock_master_id,
+        quantity: output.quantity,
+      })
+      // set variable
+      date.value = new Date(output.tanggal)
+      shift.value = Number(output.shift)
+      type.value = output.type
+      nomor_so.value = output.nomor_so
+      customer.value = output?.customer
     }
   }
 })

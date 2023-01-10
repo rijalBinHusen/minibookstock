@@ -36,7 +36,7 @@ const currentSelect = ref(null)
 
 const options = computed(() => props.jurnal === 'keluar' ? Jurnal_produk_keluar.value : Jurnal_produk_masuk.value)
 
-const inSelect = computed(() => props.type || currentSelect.value)
+const inSelect = computed(() => props.typeJurnal || currentSelect.value)
 
 const handleSelect = (type) => {
     // change state

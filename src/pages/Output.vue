@@ -70,6 +70,16 @@
             />
 
             <Button
+                primary
+                value="Edit"
+                type="button"
+                small
+                class="ml-2"
+                :datanya="slotProps.prop.id"
+                @trig="handleButton('edit', $event)"
+            />
+
+            <Button
                 accent
                 value="sudah muat"
                 type="button"
@@ -99,22 +109,20 @@ const handleButton = async (operation, document) => {
     // if operation === remove
     let res = null;
     // add incoming transaction, waiting for tunnel message that send in form
-    if(operation === 'add') {
+    if(['add', 'edit'].includes(operation)) {
         res = await launchFormAndsubscribeMutation('OutputForm', document, 'tunnelMessage')
     }
-    // if res true, it mean the add new record or update while false, itt close the modal without add record
-    else if(operation === 'remove') {
-        res = await subscribeConfirmDialog('confirm', 'Apakah anda yakin akan mengahapusnya?')
-    }
-    // if operation === finished
-    else if (operation === 'finished') {
-        res = await subscribeConfirmDialog('confirm', 'Apakah kendaraan selesai muat?')
-    }
-    // if operation === finished
-    else if (operation === 'cancel') {
-        res = await subscribeConfirmDialog('confirm', 'Apakah output akan dibatalkan?')
+    else if(['remove', 'finished', 'cancel'].includes(operation)) {
+        // delete message
+        let message = () => {
+          if(operation == 'remove') { return 'Apakah anda yakin akan mengahapusnya?' }
+          else if(operation == 'finished') { return 'Apakah kendaraan selesai muat?'  }
+          else return 'Apakah output akan dibatalkan?'
+        }
+        res = await subscribeConfirmDialog('confirm', message())
     }
     // if tunnel message send you true
+    // if res true, it mean the add new record or update while false, itt close the modal without add record
     if(res) {
         // if operation remove record
         if(operation === 'remove') {
@@ -127,8 +135,6 @@ const handleButton = async (operation, document) => {
             // mark as un finished
            await markAsUnFinished(document);
         }
-        // re render record
-        // renderRecord()
     }
 }
 

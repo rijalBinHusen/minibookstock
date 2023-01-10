@@ -50,7 +50,7 @@ import { ref } from 'vue';
 
       const navs = [
         { name: "Incoming", title: "Produk masuk", icon: "dice-d6" },
-        { name: "Vehicles", title: "Kendaraan", icon: "truck-moving" },
+        // { name: "Vehicles", title: "Kendaraan", icon: "truck-moving" },
         { name: "Output", title: "Produk keluar", icon: "shopping-cart" },
         // { name: "Importer", title: "Importer", icon: "file-upload" },
         // { name: "Exporter", title: "Exporter", icon: "file-download" },

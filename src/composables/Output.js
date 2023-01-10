@@ -162,7 +162,7 @@ export const updateOutputById = async (id, keyValueToUpdate) => {
   // initiate db
   const outputdb = await useIdb(store);
   // update in db
-  outputdb.updateItem(id, keyValueToUpdate);
+  await outputdb.updateItem(id, keyValueToUpdate);
   // get record in db
   const newRec = await outputdb.getItem(id);
   // map new Rec
