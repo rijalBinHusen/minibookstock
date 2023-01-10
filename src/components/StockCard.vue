@@ -5,7 +5,7 @@
                 Export kartu stock:
             </h3>
             <div class="flex">
-                <SelecItemsVue @pickedItem="itemId = $event" />
+                <SelecItemsVue small @pickedItem="itemId = $event" />
                 <!-- date picker -->
                 <div class="form-control ml-2">
                     <label for="date-picker" class="label">

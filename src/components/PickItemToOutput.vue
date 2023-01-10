@@ -53,6 +53,7 @@
                     class="w-32 input input-sm input-primary"
                     @keyup="quantity = $event.target.value"
                     :value="quantity"
+                    @change="quantity = $event.target.value"
                     />
                 </div>
             </div>
@@ -149,23 +150,41 @@ const hadleStockMaster = async (id_stock_master) => {
 }
 
 const handleSubmit = async () => {
-    const condition = currentStockMaster.value && Number(quantity.value) <= Number(quantityAvailableStockMaster.value)
-    if(condition) {
-        const record = {
-                stock_master_id: currentStockMaster.value,
-                quantity: Number(quantity.value),
-            }
+    console.log('current stock master', currentStockMaster.value)
+    console.log('quantity props', props?.currentStockEdit?.quantity)
+    console.log('quantity available', quantityAvailableStockMaster.value)
+    // condition
+    const condition = computed(() => {
         if(isEditMode.value) {
-            emit('updateStock', { id: isEditMode.value, value: record})
-        }  else {
-            emit('addStock', record)
+            // current master && quantity.value <= (origin quantity + available)
+            return currentStockMaster.value && Number(quantity.value) <= (Number(props?.currentStockEdit?.quantity) + Number(quantityAvailableStockMaster.value))
         }
-            // reset the form after submit
-        resetForm()
-        isEditMode.value = null
-    } else {
+        // current master && quantity must be <= quantity available
+        return currentStockMaster.value && Number(quantity.value) <= Number(quantityAvailableStockMaster.value)
+    })
+    // if condition false
+    if(!condition.value) {
         alert("Tidak boleh ada form yang kosong, dan quantity tidak melebihi maximal")
+        return;
     }
+    // variable new record
+    const record = {
+            stock_master_id: currentStockMaster.value,
+            quantity: Number(quantity.value),
+        }
+    // is edit mode
+    if(isEditMode.value) {
+        // send event to parent
+        emit('updateStock', { id: isEditMode.value, value: record})
+    }  
+    // create stock
+    else {
+        // send event to parent
+        emit('addStock', record)
+    }
+    // reset the form after submit
+    resetForm()
+    isEditMode.value = null
 }
 
 const resetForm = () => {

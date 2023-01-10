@@ -361,3 +361,17 @@ export const markAsUnFinished = async (id) => {
   // mark in db output as finished
   await updateOutputById(id, { isFinished: false });
 };
+
+export const changeQuantityOutput = async (id, yourNumberNewQuantity) => {
+  // get the original output
+  const origin = await getOutputById(id);
+  // compare to new current output (that we're gonna update it)
+  // origin - new number | 1000 - 5000 = -4000 (available -4000)
+  // origin - new number | 1000 - 500 = +500 (available +500)
+  const differentQuantity = origin?.quantity - yourNumberNewQuantity;
+  // update output
+  await updateOutputById(id, { quantity: yourNumberNewQuantity });
+  // change available stock
+  await changeAvailableStock(origin.stock_master_id, differentQuantity);
+  return;
+};

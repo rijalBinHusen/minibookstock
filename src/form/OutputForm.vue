@@ -78,7 +78,7 @@ import { useStore } from "vuex";
 import { getItemByIdInState, gettingStartedRecord as getItems } from "../composables/MasterItems";
 import { ddmmyyyy } from "../utils/dateFormat";
 import { getSTockByIdInState, getAvailableDateByItem, getStockById } from "../composables/StockMaster";
-import { createOutput, getOutputById } from "../composables/Output"
+import { createOutput, getOutputById, updateOutputById, changeQuantityOutput } from "../composables/Output"
 import { getSalesOrderById, removeChildItemsOrder } from "../composables/SalesOrder"
 import { getItemOrderById, changeOrderValue } from "../composables/SalesOrderItem"
 
@@ -98,6 +98,8 @@ const customer = ref(null)
 const stockChild = ref([])
 // current stock editing
 const currentStockEdit=ref(null)
+// stock to update while editing form
+const stockToUpdate = ref([])
 
 
 const stockChildDetails = computed(() => stockChild.value.map((stock) => {
@@ -122,6 +124,10 @@ const handleStock = (operation, e) => {
     currentStockEdit.value = stockChild.value.find((rec) => rec?.id == e)
   }  else if(operation == 'update') {
     stockChild.value = stockChild.value.map((stock) => stock?.id == e.id ? { id: e.id, ...e.value} : stock)
+    // if isedit mode, push to stock to uupdate
+    if(isEditMode.value) {
+      stockToUpdate.value.push(e.id)
+    }
   }
   else {
     stockChild.value = stockChild.value.filter((rec) => rec?.id !== e)
@@ -133,11 +139,28 @@ const handleSubmit = async () => {
     alert("Tidak boleh ada form yang kosong")
     return;
   }
+
+  if(isEditMode.value) {
+    // update record
+    await handleUpdateOutput()
+  } 
+  // create new output
+  else {
+    await handleCreateOutput()
+  }
+
+  closeModalOrDialog(true)
+  // empty the value
+  isEditMode.value = null
+  salesOrderPicked.value = []
+}
+
+const handleCreateOutput = async () => {
   // stock child value = data from child = { stock_master_id, quantity }
   // then insert incoming transction with child from insert all stock
   for (const stock of stockChild.value) {
     // create output record
-    const output = await createOutput(date.value, type.value, shift.value, nomor_so.value, stock?.stock_master_id, stock?.quantity, customer.value)
+    await createOutput(date.value, type.value, shift.value, nomor_so.value, stock?.stock_master_id, stock?.quantity, customer.value)
     // change order quantity if it picked from item order, this will return (order - yournumber)
     if(stock.id.length > 3) {
       const orderQuantity = await changeOrderValue(stock.id, -stock.quantity)
@@ -152,11 +175,29 @@ const handleSubmit = async () => {
       }
     }
   }
+  return;
+}
 
-  closeModalOrDialog(true)
-  // empty the value
-  isEditMode.value = null
-  salesOrderPicked.value = []
+const handleUpdateOutput = async () => {
+  // stock child value = data from child = { id,  stock_master_id, quantity }
+  // looping all child stock as stock
+  for(const stock of stockChild.value) {
+    // is stockToOuput.value.includes(stock)
+    if(stockToUpdate.value.includes(stock.id)) {
+      const newRec = {
+        date: date.value, 
+        type: type.value, 
+        shift: shift.value, 
+        nomor_so: nomor_so.value, 
+        customer: customer.value
+      }
+      // update output
+      await updateOutputById(isEditMode.value, newRec)
+      // update quantity
+      await changeQuantityOutput(isEditMode.value, stock?.quantity)
+    }
+  }
+  // finished
 }
 
 // will contain id of record that we will update it
