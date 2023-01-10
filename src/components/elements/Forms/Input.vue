@@ -12,6 +12,7 @@
         :value="value"
         @keypress.enter="$emit('trig')"
         :ref="ref"
+        :disabled="disabled"
       />
       <button
         v-if="button"
@@ -25,6 +26,16 @@
 </template>
 
 <script>
+
+/**
+ * <Input
+              label="Plat nomor"
+              @send="platNomor = $event"
+              placeholder="Masukkan plat nomor"
+              tipe="primary"
+              :value="platNomor"
+              />
+ */
 export default {
   name: "Input",
   props: {
@@ -39,6 +50,7 @@ export default {
     button: String,
     value: String,
     ref: String,
+    disabled: Boolean,
   },
   emits: ["send", "trig"],
   methods: {
@@ -49,7 +61,6 @@ export default {
   computed: {
     formTipe() {
       let className = ["input"];
-
       if (this.button) className.push("w-full pr-16 input");
       if (this.small) className.push("input-sm");
       if (this.tipe.includes("primary")) className.push("input-primary");

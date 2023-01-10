@@ -2,7 +2,7 @@
       <div
         id="incoming_add_form"
         class="grid rounded justify-items-center m-auto px-2 py-20 bg-base-200"
-      >  
+      >
       <!-- NO DO -->
       <!-- NO SO -->
       <!-- REGISTER -->
@@ -29,35 +29,38 @@
               tipe="primary"
               :value="noSO"
             /> -->
-        </div>
-            
-            <div id="incoming_items" class="grid grid-cols-3 gap-4 mb-2">
+            </div>
+
+            <div id="incoming_items" class="flex justify-self-start  gap-4 mb-2">
               <!-- PLAT NOMOR -->
-            <Input
-              label="Plat nomor"
-              @send="platNomor = $event"
-              placeholder="Masukkan plat nomor"
-              tipe="primary"
-              :value="platNomor"
+              <Input
+                label="Plat nomor"
+                @send="platNomor = $event"
+                placeholder="Masukkan plat nomor"
+                tipe="primary"
+                :value="platNomor"
+                />
+              <!-- CUSTOMER -->
+              <Input
+                label="Customer"
+                @send="customer = $event"
+                placeholder="Nama Customer"
+                tipe="primary"
+                :value="customer"
               />
-                <!-- CUSTOMER -->  
-            <Input
-              label="Customer"
-              @send="customer = $event"
-              placeholder="Nama Customer"
-              tipe="primary"
-              :value="customer"
-            />
               <!-- REGISTER -->
-            <Input
-              label="Register"
-              @send="register = $event"
-              placeholder="Register"
-              :value="register"
-              tipe="primary"
-            />
+              <Input
+                label="Register"
+                @send="register = $event"
+                placeholder="Register"
+                :value="register"
+                tipe="primary"
+              />
           </div>
-  
+
+          <!-- Stock master -->
+          <PickStockMaster />
+
           <div id="incoming_add_submit" class="w-full mt-4">
             <Button type="button" @trig="handleSubmit" small primary :value="isEditMode ? 'Update' : 'Submit'" />
             <span class="text-red-400 ml-6">
@@ -68,7 +71,7 @@
       </form>
       </div>
   </template>
-  
+
   <script setup>
   import Input from "@/components//elements/Forms/Input.vue";
   import Button from "@/components//elements/Button.vue";
@@ -77,7 +80,12 @@
   // import { createVehicle, getVehicleById, updateVehicleById } from "../composables/Vehicles";
   import { closeModalOrDialog } from "../composables/launchForm";
   import { useStore } from "vuex";
-  
+  import { getSalesOrderById } from "../composables/SalesOrder"
+  import { getItemOrderById } from "../composables/SalesOrderItem"
+  import { getStockById } from "../composables/StockMaster"
+  import { getItemById } from "../composables/MasterItems"
+  import PickStockMaster from "../components/PickStockMaster.vue";
+
   const store = useStore()
 
   const warn = ref(null)
@@ -93,7 +101,7 @@
   const customer = ref(null)
 
   const handleSubmit = async () => {
-    
+
     if(noDO.value && noSO.value && register.value && platNomor.value && customer.value) {
       // update vehicle
       if(isEditMode.value) {
@@ -163,5 +171,68 @@
       }
     }
   })
+
+
+// will contain condition is the output picking from salesOrder or not
+// const salesOrderPicked = ref([])
+// // handle SOrder
+// const handleSOrder = async (salesOrderId) => {
+//   if(salesOrderId.length < 9){
+//     return;
+//   }
+//   // get sales order by id. this will return { id, nomor_so, tanggal_so, customer }
+//   const salesOrderDetails = await getSalesOrderById(salesOrderId)
+//   // put to nomor_so the form
+//   nomor_so.value = salesOrderDetails.nomor_so
+//   customer.value = salesOrderDetails.customer
+//   // if salesOrderDetails.childItemsOrder.length > 0
+//   if(salesOrderDetails.childItemsOrder.length > 0) {
+//   // get all item order by salesOrderDetails.childItemsOrder
+//     for(const idItemOrder of salesOrderDetails.childItemsOrder) {
+//     // get sales order item. this will return { id, item_id, order }
+//     const itemOrder = await getItemOrderById(idItemOrder)
+//     // item order is null
+//     if(!itemOrder) {
+//       return;
+//     }
+//     // get stock master by item id, this will return [{ id, product_created }, .....]
+//     const dateStockMaster = await getAvailableDateByItem(itemOrder.item_id)
+//     // get stockMasterById, this will return { item_id, product_created, quantity}
+//     const stockMaster = await getStockById(dateStockMaster[0]?.id)
+//     // compare quantity
+//     // if quantity > order
+//     // or datestockmaster only availbale 1
+//     if(stockMaster.quantity >= itemOrder.order || dateStockMaster.length === 1) {
+//         // put to item lists
+//         // if the quantity stockMaster.quantity >= itemOrder.order alert it bro
+//         if(stockMaster.quantity < itemOrder.order) {
+//           const item = await getItemById(itemOrder.item_id)
+//           alert(`Permintaan item ${item.nm_item} sebanyak ${itemOrder.order} karton tidak cukup, stock hanya tersedia ${stockMaster.quantity} karton!`)
+//           handleStock('add', { id: itemOrder.id, stock_master_id: stockMaster?.id, quantity: stockMaster.quantity })
+//         } else {
+//           handleStock('add', { id: itemOrder.id, stock_master_id: stockMaster?.id, quantity: itemOrder.order })
+//         }
+//       } else {
+//         // count the - quantity = sisa item order1
+//         const quantity2 = itemOrder.order - stockMaster.quantity
+//         // put the quantity stock1
+//         handleStock('add', { id: itemOrder.id, stock_master_id: stockMaster?.id, quantity: stockMaster.quantity })
+//         // search for quantity 2
+//         // get stockMasterById, this will return { item_id, product_created, quantity}
+//         const stockMaster2 = await getStockById(dateStockMaster[1]?.id)
+//         // sisa item order2, if quantity3 >= 0 it means enough
+//         const quantity3 = stockMaster2.quantity - quantity2
+//         // put the quantity stock2
+//         handleStock('add', {
+//                 id: itemOrder.id,
+//                 stock_master_id: stockMaster2?.id,
+//                 quantity: quantity3 >= 0 ? quantity2 : stockMaster2.quantity
+//               })
+//       }
+//     }
+//   }
+//   // record sorder that picked
+//   salesOrderPicked.value.push((salesOrderId))
+// }
+
   </script>
-  

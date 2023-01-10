@@ -7,9 +7,10 @@
             <input
                 type="text"
                 placeholder="Masukkan item"
-                class="w-64 input input-sm input-primary"
+                :class="[ small ? 'input-sm' : '', 'input input-primary']"
                 @change="handleItem"
                 list="item"
+                :value="kd_item"
             />
             <datalist id="item">
                 <option @select="handleItem" v-for="item in Master_items" :key="item.id" :value="item.kd_item + '* ' +item.nm_item" />
@@ -19,10 +20,17 @@
 </template>
 
 <script setup>
+/**
+ * <SelectItems :kd_item="your kode item" @pickedItem="yourFunctionHere" />
+ */
 import { defineEmits, onMounted } from 'vue';
 import { gettingStartedRecord as getItems, Master_items, getItemIdByKdItem } from "../composables/MasterItems"
 
 const emit = defineEmits(['pickedItem'])
+const props = defineProps({
+  kd_item: String,
+  small: Boolean
+})
 
 let timeoutHandleItem = null
 const handleItem = (e) => {

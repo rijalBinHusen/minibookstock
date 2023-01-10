@@ -1,6 +1,6 @@
 <template>
-    <div class="mt-10"> 
-        <div> 
+    <div class="mt-10">
+        <div>
             <h3 class="text-xl">
                 Export kartu stock:
             </h3>
@@ -63,7 +63,7 @@
 import { ref } from 'vue';
 import Button from './elements/Button.vue';
 // import item input
-import SelecItemsVue from './SelecItems.vue';
+import SelecItemsVue from './SelectItems.vue';
 // import stock card
 import { stockCard } from "../reports/StockCard"
 // import date picker
