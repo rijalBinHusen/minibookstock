@@ -3,10 +3,11 @@
     :id="id"
     :class="selectTipe"
     @change="$emit('selectedd', $event.target.value)"
+    :disabled="disabled"
   >
     <option value=""></option>
-    <option 
-        v-for="op in options" :key="op" 
+    <option
+        v-for="op in options" :key="op"
         :value="op[value]"
         :selected="op[value] === inSelect"
     >
@@ -17,13 +18,13 @@
 
 <script>
 /* Example how to use it
-  <Select 
+  <Select
     value="the value that would emit when the text selected"
     text="the text that would show as select option"
     id="yourSelectId"
     class="your additional class"
     options="[
-          { id: 'database', title: 'Import database'}, 
+          { id: 'database', title: 'Import database'},
           { id: 'salesOrder', title: 'Import outstanding SO'}"
     ]
     size="small"
@@ -48,6 +49,7 @@ export default {
       type: String,
     },
     inSelect: String | Number,
+    disabled: Boolean,
   },
   emits: ["selectedd"],
   computed: {

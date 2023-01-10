@@ -44,6 +44,8 @@
             :stockChild="stockChildDetails"
             @addStock="handleStock('add', $event)"
             @removeStock="handleStock('remove', $event)"
+            @editStock="handleStock('edit', $event)"
+            @updateStock="handleStock('update', $event)"
             :currentStockEdit="currentStockEdit"
           />
          <!-- End of Item picker -->
@@ -116,7 +118,12 @@ const handleStock = (operation, e) => {
   if(operation == 'add') {
     const id = e?.id || stockChild.value.length +1 + ""
     stockChild.value.push({ id, ...e })
-  }  else {
+  } else if (operation == 'edit') {
+    currentStockEdit.value = stockChild.value.find((rec) => rec?.id == e)
+  }  else if(operation == 'update') {
+    stockChild.value = stockChild.value.map((stock) => stock?.id == e.id ? { id: e.id, ...e.value} : stock)
+  }
+  else {
     stockChild.value = stockChild.value.filter((rec) => rec?.id !== e)
   }
 }

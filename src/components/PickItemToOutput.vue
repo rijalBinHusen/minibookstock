@@ -14,6 +14,7 @@
                     @change="handleItem"
                     v-model="itemModel"
                     list="item"
+                    :disabled="isParentEditMode"
                 />
                 <datalist id="item">
                     <option @select="handleItem(item.item_id)" v-for="item in itemAvailable" :key="item.item_id" :value="item.kd_item + '* '+item.nm_item" />
@@ -35,6 +36,8 @@
                     size="small"
                     class="w-32"
                     @selectedd="hadleStockMaster($event)"
+                    :inSelect="currentStockMaster"
+                    :disabled="Boolean(isParentEditMode)"
                 />
                 </div>
             </div>
@@ -53,50 +56,34 @@
                     />
                 </div>
             </div>
-            <!-- tanggal produksi -->
-            <!-- <div class="form-control">
-                <label for="date-picker" class="label">
-                <span class="label-text">Tanggal produksi</span>
-                </label>
-                <date-picker
-                id="date-picker"
-                class="input input-outline input-primary input-sm w-28"
-                v-model="product_created"
-                input-format="yyyy-MM-dd"
-                @update:model-value="handleUpdateDate('created', $event)"
-                ></date-picker>
-            </div> -->
-            <!-- tanggal produksi -->
-            <!-- <div class="form-control">
-                <label for="date-picker" class="label">
-                <span class="label-text">Tanggal expired</span>
-                </label>
-                <date-picker
-                id="date-picker"
-                class="input input-outline input-primary input-sm w-28"
-                v-model="product_expired"
-                input-format="yyyy-MM-dd"
-                @update:model-value="handleUpdateDate('expired', $event)"
-                ></date-picker>
-            </div> -->
             <div id="incoming_item_add" class="w-full text-right">
-            <Button 
-                type="button" 
-                primary 
-                :value="isEditMode ? 'Update' : 'Add item'" 
-                @trig="handleSubmit" 
+              <Button
+                v-if="isEditMode"
+                type="button"
+                secondary
+                value="Cancel"
+                @trig="resetForm"
                 small />
+              <Button
+                type="button"
+                primary
+                :value="isEditMode ? 'Update' : 'Add item'"
+                @trig="handleSubmit"
+                small
+                class="ml-2"
+              />
             </div>
         </div>
-        
+
         <TableVue
             style="overflow: auto; max-height: 300px"
             keyData="id"
             :contents="stockChild"
-            :options="['delete']"
+            :options="[ Boolean(isParentEditMode) ? 'edit' : 'delete']"
             :thead="['Item', 'quantity', 'tanggal produksi']"
             :tbody="['item', 'quantity', 'product_created']"
             @deleteRec="handleBtnTable('hapus', $event)"
+            @edit="handleBtnTable('edit', $event)"
         />
     </div>
 </template>
@@ -106,8 +93,8 @@
 import Input from "./elements/Forms/Input.vue";
 import Button from "@/components/elements/Button.vue";
 import TableVue from "./elements/Table.vue";
-import { ref, defineEmits, defineProps, computed, onMounted } from 'vue';
-import { getItemIdByKdItem } from "../composables/MasterItems";
+import { ref, defineEmits, defineProps, computed, onMounted, watch } from 'vue';
+import { getItemIdByKdItem, getItemById } from "../composables/MasterItems";
 import { itemThatAvailable, getAvailableDateByItem, getStockById, gettingStartedRecord as getMasterStocks } from "../composables/StockMaster"
 import Select from "./elements/Forms/Select.vue";
 
@@ -145,6 +132,7 @@ const handleItem = async (e) => {
         // get product created by it item that available to take
         itemAvilabelDate.value = await getAvailableDateByItem(item_detail.value?.id)
     }
+    return;
 }
 
 const hadleStockMaster = async (id_stock_master) => {
@@ -154,7 +142,9 @@ const hadleStockMaster = async (id_stock_master) => {
     const stockMaster = await getStockById(id_stock_master)
     // get the quantity
     // show the maximum quantity
-    quantityAvailableStockMaster.value = stockMaster.available
+    if(stockMaster?.available) {
+      quantityAvailableStockMaster.value = stockMaster.available
+    }
     // console.log(stockMaster)
 }
 
@@ -162,20 +152,20 @@ const handleSubmit = async () => {
     const condition = currentStockMaster.value && Number(quantity.value) <= Number(quantityAvailableStockMaster.value)
     if(condition) {
         const record = {
-                stock_master_id: currentStockMaster.value, 
+                stock_master_id: currentStockMaster.value,
                 quantity: Number(quantity.value),
             }
         if(isEditMode.value) {
             emit('updateStock', { id: isEditMode.value, value: record})
         }  else {
             emit('addStock', record)
-        }   
+        }
             // reset the form after submit
         resetForm()
+        isEditMode.value = null
     } else {
         alert("Tidak boleh ada form yang kosong, dan quantity tidak melebihi maximal")
     }
-    isEditMode.value = null
 }
 
 const resetForm = () => {
@@ -184,17 +174,60 @@ const resetForm = () => {
         item.value = ""
         itemModel.value = ""
         quantity.value = ""
-        itemAvilabelDate.value = ""
+        itemAvilabelDate.value = []
+        // to empty currentStockEdit in parent
+        emit('editStock', false)
+        // set the stock master
+        currentStockMaster.value = null
+        // show the maximum quantity
+        quantityAvailableStockMaster.value = null
+        // editmode
+        isEditMode.value = null
     }, 300)
 }
 
 // // btn table handle
 const handleBtnTable = (operation, id) => {
+  if(operation === 'remove') {
     const confirm = window.confirm("Apakah anda yakin akan menghapus item tersebut")
-    if(confirm) {
+      if(confirm) {
         emit('removeStock', id)
+      }
+    } else {
+      emit('editStock', id)
     }
 }
+
+watch([props], async () => {
+  if(props?.currentStockEdit?.id) {
+    // get stock master
+    const stockMaster = await getStockById(props?.currentStockEdit?.stock_master_id)
+    // if stock availbale < 1 = return it
+    if(!stockMaster?.available) {
+      alert('Tidak dapat di edit, ketersediaan stock sudah habis')
+      return
+    }
+      // get item
+      const itemDetails = await getItemById(stockMaster['item_id'])
+      // set quantity
+      // console.log(props?.currentStockEdit)
+      quantity.value = props?.currentStockEdit?.quantity
+      // set item modedl
+      itemModel.value = itemDetails.kd_item + "* " + itemDetails.nm_item
+      // set item id
+      item.value = itemDetails.id
+      // waiting item to input text
+      await handleItem({target: { value: itemModel.value }})
+      // set stock master using this way
+      quantityAvailableStockMaster.value = props?.currentStockEdit?.quantity
+      hadleStockMaster(stockMaster.id)
+      // set editmode
+      isEditMode.value = props?.currentStockEdit?.id
+    }
+})
+
+// jika quantity master tidak tersedia
+// jika
 
 onMounted( async () => {
     await getMasterStocks()
