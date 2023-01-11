@@ -227,7 +227,6 @@ export const changeAvailableStock = async (id_stock, yourNumberPlusOrMinus) => {
     Number(findRec?.available) + Number(yourNumberPlusOrMinus) >= 0
       ? Number(findRec?.available) + Number(yourNumberPlusOrMinus)
       : false;
-  console.log('change quantity master, your number', yourNumberPlusOrMinus)
   // if > 0
   if (available !== false) {
     // new item
@@ -235,7 +234,6 @@ export const changeAvailableStock = async (id_stock, yourNumberPlusOrMinus) => {
     // save to database
     await updateStockById(id_stock, keyValueToUpdate);
     // return true
-    console.log('new rec', keyValueToUpdate)
     return true;
   } else {
     // find item name

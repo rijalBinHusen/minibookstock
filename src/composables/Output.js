@@ -369,9 +369,6 @@ export const changeQuantityOutput = async (id, yourNumberNewQuantity) => {
   // origin - new number | 1000 - 5000 = -4000 (available -4000)
   // origin - new number | 1000 - 500 = +500 (available +500)
   const differentQuantity = Number(origin?.quantity) - Number(yourNumberNewQuantity);
-  console.log('change quantity output', id);
-  console.log('new quantity', yourNumberNewQuantity)
-  console.log('different quantity', differentQuantity)
   // update output
   await updateOutputById(id, { quantity: yourNumberNewQuantity });
   // change available stock

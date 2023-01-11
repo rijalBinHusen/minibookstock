@@ -51,7 +51,7 @@
          <!-- End of Item picker -->
 
 
-        <div v-if="!isSalesOrder" id="incoming_add_submit" class="w-full mt-4">
+        <div v-if="!isSalesOrder && !currentStockEdit" id="incoming_add_submit" class="w-full mt-4">
           <Button type="button"
             @trig="handleSubmit"
             primary
@@ -131,6 +131,7 @@ const handleStock = (operation, e) => {
     if(isEditMode.value) {
       stockToUpdate.value.push(e.id)
     }
+    currentStockEdit.value = null
   }
   else {
     stockChild.value = stockChild.value.filter((rec) => rec?.id !== e)
