@@ -105,6 +105,7 @@ const stockToUpdate = ref([])
 const stockChildDetails = ref([])
 
 const stockChildMap = async () => {
+  console.log('child value', stockChild.value)
   stockChildDetails.value = []
   for(const stock of stockChild.value) {
     const getStockMaster = await getStockById(stock?.stock_master_id)
@@ -208,19 +209,25 @@ const handleUpdateOutput = async () => {
 // will contain id of record that we will update it
 const isEditMode = ref(null)
 // checking is that sales order or not
-const isSalesOrder = computed(() => isEditMode.value ? isEditMode.value.slice(0, 2) === "SO" : null)
+const isSalesOrder = computed(() => isEditMode.value ? !isNaN(isEditMode.value.slice(-8)) : null)
 
 
 // will contain condition is the output picking from salesOrder or not
 const salesOrderPicked = ref([])
 // handle SOrder
 const handleSOrder = async (salesOrderId) => {
-  if(salesOrderId.length < 9){
-    nomor_so.value = salesOrderId
+  // get last 8 character, and it must be number
+  const isContainSalesOrderNumber = salesOrderId.slice(-8)
+  nomor_so.value = salesOrderId
+  if(isNaN(isContainSalesOrderNumber)){
     return;
   }
   // get sales order by id. this will return { id, nomor_so, tanggal_so, customer }
   const salesOrderDetails = await getSalesOrderById(salesOrderId)
+  // if sales order not found
+  if(!salesOrderDetails) {
+    return;
+  }
   // put to nomor_so the form
   nomor_so.value = salesOrderDetails.nomor_so
   customer.value = salesOrderDetails.customer
@@ -230,12 +237,14 @@ const handleSOrder = async (salesOrderId) => {
     for(const idItemOrder of salesOrderDetails.childItemsOrder) {
     // get sales order item. this will return { id, item_id, order }
     const itemOrder = await getItemOrderById(idItemOrder)
+    console.log('item order', itemOrder)
     // item order is null
-    if(!itemOrder) {
+    if(!itemOrder?.id) {
       return;
     }
     // get stock master by item id, this will return [{ id, product_created }, .....]
     const dateStockMaster = await getAvailableDateByItem(itemOrder.item_id)
+    console.log('date stockMaster', dateStockMaster)
     // get stockMasterById, this will return { item_id, product_created, quantity}
     const stockMaster = await getStockById(dateStockMaster[0]?.id)
     // compare quantity

@@ -374,7 +374,10 @@ export const getStockThatAvailable = async () => {
   if (wasGetStockThatAvailable.value) {
     return;
   }
-  Stock_masters.value = []
+  // mark variable as true
+  wasGetStockThatAvailable.value = true;
+  // empty state
+  Stock_masters.value = [];
   // get stock that available from db
   // initiate idb
   const stockdb = await useIdb(store);
@@ -386,8 +389,6 @@ export const getStockThatAvailable = async () => {
     // push to state
     Stock_masters.value.unshift(stockMapped);
   }
-  // mark variable as true
-  wasGetStockThatAvailable.value = true;
   // return it
   return stockAvailable;
 };
@@ -417,18 +418,16 @@ export const mapStockForStockMaster = async () => {
 
 export const updateQuantity = async (id, yourNumberPlusOrMinus) => {
   // detecting if keyvalue has own property quantity, change the available too
-    // get all output
-    const getOutput = await getTotalStockTaken(id);
-    // 1. Total Stock quantity = (quantity + total output isFinished=true )
-    //  it means Now Quantity = quantity - total output isFinished=true
-    const quantity =
-      Number(yourNumberPlusOrMinus) - getOutput.allFinished;
-    // 2. Total Stock available = (quantity + total output isFinished=true|false )
-    // it means available = total quantity - total output isFinished=true|false
-    const available =
-      Number(yourNumberPlusOrMinus) - Number(getOutput.allTaken);
-    // update with the available property
-    await updateStockById(id, { quantity, available });
-    // return
-    return;
-}
+  // get all output
+  const getOutput = await getTotalStockTaken(id);
+  // 1. Total Stock quantity = (quantity + total output isFinished=true )
+  //  it means Now Quantity = quantity - total output isFinished=true
+  const quantity = Number(yourNumberPlusOrMinus) - getOutput.allFinished;
+  // 2. Total Stock available = (quantity + total output isFinished=true|false )
+  // it means available = total quantity - total output isFinished=true|false
+  const available = Number(yourNumberPlusOrMinus) - Number(getOutput.allTaken);
+  // update with the available property
+  await updateStockById(id, { quantity, available });
+  // return
+  return;
+};
