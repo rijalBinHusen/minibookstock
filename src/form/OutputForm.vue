@@ -105,7 +105,6 @@ const stockToUpdate = ref([])
 const stockChildDetails = ref([])
 
 const stockChildMap = async () => {
-  console.log('child value', stockChild.value)
   stockChildDetails.value = []
   for(const stock of stockChild.value) {
     const getStockMaster = await getStockById(stock?.stock_master_id)
@@ -141,7 +140,6 @@ const handleStock = (operation, e) => {
 
 const handleSubmit = async () => {
   if(!date.value || !shift.value || !type.value || !nomor_so.value || !stockChild.value || !customer.value) {
-    console.log(!date.value, !shift.value , !type.value , !nomor_so.value , !stockChild.value , !customer.value)
     alert("Tidak boleh ada form yang kosong")
     return;
   }
@@ -237,14 +235,15 @@ const handleSOrder = async (salesOrderId) => {
     for(const idItemOrder of salesOrderDetails.childItemsOrder) {
     // get sales order item. this will return { id, item_id, order }
     const itemOrder = await getItemOrderById(idItemOrder)
-    console.log('item order', itemOrder)
     // item order is null
     if(!itemOrder?.id) {
       return;
     }
     // get stock master by item id, this will return [{ id, product_created }, .....]
     const dateStockMaster = await getAvailableDateByItem(itemOrder.item_id)
-    console.log('date stockMaster', dateStockMaster)
+    if(!dateStockMaster.length) {
+      return;
+    }
     // get stockMasterById, this will return { item_id, product_created, quantity}
     const stockMaster = await getStockById(dateStockMaster[0]?.id)
     // compare quantity
@@ -284,8 +283,14 @@ const handleSOrder = async (salesOrderId) => {
 }
 
 // watch stock child, and render every it change
+const watcherCallFunction = ref(null)
 watch([stockChild], () => {
-  stockChildMap()
+  // reset time out
+  clearTimeout(watcherCallFunction.value)
+  // set new timeout
+  watcherCallFunction.value = setTimeout(() => {
+    stockChildMap()
+  }, 300) 
 }, { deep: true })
 
 onMounted( async () => {
