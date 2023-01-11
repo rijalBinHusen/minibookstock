@@ -55,9 +55,9 @@
         </div>
 
         <!-- Item picker -->
-         <PickItemVue 
-            :isParentEditMode="isEditMode" 
-            :stockChild="stockChildDetails" 
+         <PickItemVue
+            :isParentEditMode="isEditMode"
+            :stockChild="stockChildDetails"
             @addStock="handleStock('add', $event)"
             @updateStock="handleStock('update', $event)"
             @editStock="handleStock('edit', $event)"
@@ -65,14 +65,14 @@
             :currentStockEdit="currentStockEdit"
           />
          <!-- End of Item picker -->
-        
 
-        <div id="incoming_add_submit" class="w-full mt-4">
-          <Button type="button" 
-          @trig="handleSubmit" 
-          primary 
-          :value="isEditMode ? 'Update' : 'Submit'" 
-          small
+
+        <div v-if="!currentStockEdit" id="incoming_add_submit" class="w-full mt-4">
+          <Button type="button"
+            @trig="handleSubmit"
+            primary
+            :value="isEditMode ? 'Update' : 'Submit'"
+            small
           />
         </div>
       </div>
@@ -92,7 +92,7 @@ import { closeModalOrDialog } from "../composables/launchForm"
 import { useStore } from "vuex";
 import { getItemByIdInState } from "../composables/MasterItems";
 import { ddmmyyyy, ymdTime } from "../utils/dateFormat";
-import { createStock, getStockById, updateStockById, removeStockById, getStockByIdForIncomingForm } from "../composables/StockMaster";
+import { createStock, getStockById, updateStockById, removeStockById, getStockByIdForIncomingForm, setStockParent, updateQuantity } from "../composables/StockMaster";
 import { getTotalStockTaken } from "../composables/Output"
 import SelectShift from "../components/parts/SelectShift.vue";
 import SelectTypeDocument from "../components/parts/SelectTypeDocument.vue";
@@ -146,12 +146,12 @@ const handleStock = async (operation, e) => {
     if(isEditMode.value) {
       idStockToCreate.value.push(stockChild.value.length +1 + "")
     }
-  } 
+  }
   // edit stock
   else if(operation == 'edit') {
     // set current stock edit
     currentStockEdit.value = stockChild.value.find((rec) => rec?.id == e)
-  } 
+  }
   // update stock
   else if(operation == 'update') {
     // total quantity taken
@@ -198,33 +198,72 @@ const handleStock = async (operation, e) => {
 }
 
 const handleSubmit = async () => {
-  if(date.value && shift.value && type.value && paper_id.value && diserahkan.value && diterima.value && stockChild.value) {
+    // there is form is empty
+    if(!date.value || !shift.value || !type.value || !paper_id.value || !diserahkan.value || !diterima.value || !stockChild.value) {
+      alert("Tidak boleh ada form yang kosong")
+      return;
+    }
     // update record
     if(isEditMode.value) {
-      // create stock or update stock
-      const insertedStock = []
+      // call function
+      await handleUpdateIncoming()
+    } else {
+      // call create function
+      await handleCreateIncoming()
+    }
+    // close modal and send tunnel message true, it mean we are add new record or update a record
+    closeModalOrDialog(true)
+
+    // empty the value
+    isEditMode.value = null
+}
+
+const handleCreateIncoming = async () => {
+  // create incoming transaction
+  // first insert all stock
+  const eachIdStock = []
+    for (const stock of stockChild.value) {
+      // item: item.value,
+      // kd_produksi: kd_produksi.value,
+      // tanggal: ymdTime(product_created.value),
+      // quantity: quantity.value
+      const insertStock = await createStock(stock?.item_id, stock?.kd_produksi, stock?.product_created, stock?.quantity)
+      eachIdStock.push(insertStock.id)
+    }
+  // then insert incoming transction with child from insert all stock
+  await createIncoming(eachIdStock, paper_id.value, date.value, Number(shift.value), diterima.value, type.value, diserahkan.value, null)
+}
+
+const handleUpdateIncoming = async () => {
+  // create stock or update stock
+  const insertedStock = []
       for (const stock of stockChild.value) {
-        // item: item.value, 
-        // kd_produksi: kd_produksi.value, 
-        // tanggal: ymdTime(product_created.value), 
+        // item: item.value,
+        // kd_produksi: kd_produksi.value,
+        // tanggal: ymdTime(product_created.value),
         // quantity: quantity.value
         // because we cant detect stock to create, we are using this way
         if(stock?.id && stock?.id.length < 4) {
+          // insert to database
           const insertStock = await createStock(stock?.item_id, stock?.kd_produksi, stock?.product_created, stock?.quantity)
+          // push it
           insertedStock.push(insertStock.id)
-        } 
+          // set incoming stock parent
+          await setStockParent(insertStock.id, isEditMode.value)
+        }
         // stock to udpate
         else if (idStockToUpdate.value.includes(stock?.id)) {
           // update stock
           await updateStockById(stock?.id, {
             id: stock?.id,
-            item_id: stock?.item_id, 
-            kd_produksi: stock?.kd_produksi, 
-            product_created: stock?.product_created, 
-            quantity: Number(stock?.quantity)
+            item_id: stock?.item_id,
+            kd_produksi: stock?.kd_produksi,
+            product_created: stock?.product_created
           })
           // the update stock push too
           insertedStock.push(stock?.id)
+          // update quantity master
+          await updateQuantity(stock?.id, stock?.quantity)
         } else {
           // stocok would stay
           insertedStock.push(stock?.id)
@@ -239,7 +278,7 @@ const handleSubmit = async () => {
         stock_master_ids: insertedStock,
         paper_id: paper_id.value,
         tanggal: ymdTime(date.value),
-        shift: shift.value,
+        shift: Number(shift.value),
         diterima: diterima.value,
         type: type.value,
         diserahkan: diserahkan.value
@@ -248,35 +287,11 @@ const handleSubmit = async () => {
       if(insertedStock.length) {
         // update in db
         await updateIncomingById(isEditMode.value, record)
-      } else {
-        // remove incoming record from db
+      }
+      // remove incoming record from db
+      else {
         await removeIncomingById(isEditMode.value)
       }
-    } else {
-      // create incoming transaction
-      // first insert all stock
-      const insertedStock = await new Promise( async (resolve) => {
-        const eachIdStock = []
-        for (const stock of stockChild.value) {
-          // item: item.value, 
-          // kd_produksi: kd_produksi.value, 
-          // tanggal: ymdTime(product_created.value), 
-          // quantity: quantity.value
-          const insertStock = await createStock(stock?.item_id, stock?.kd_produksi, stock?.product_created, stock?.quantity)
-          eachIdStock.push(insertStock.id)
-        }
-        resolve(eachIdStock)
-      })
-      // then insert incoming transction with child from insert all stock
-      await createIncoming(insertedStock, paper_id.value, date.value, shift.value, diterima.value, type.value, diserahkan.value, null)
-    }
-    // close modal and send tunnel message true, it mean we are add new record or update a record
-    closeModalOrDialog(true)
-  } else {
-    alert("Tidak boleh ada form yang kosong")
-  }
-  // empty the value
-      isEditMode.value = null
 }
 
 // will contain id of record that we will update it
@@ -288,7 +303,7 @@ onMounted( async () => {
   if(isEditMode.value) {
     // get record incoming
     const record = await getIncomingById(isEditMode.value)
-    // set record master stock 
+    // set record master stock
     const childStocks = Object.values(record?.stock_master_ids)
     // stock_master_ids,
     for(const rec of childStocks) {
@@ -300,7 +315,7 @@ onMounted( async () => {
     // set date value
     date.value = new Date(record?.tanggal)
     // set shift value
-    shift.value = record?.shift
+    shift.value = Number(record?.shift)
     // set diterima value
     diterima.value = record?.diterima
     // set type value

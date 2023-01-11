@@ -144,23 +144,16 @@ const hadleStockMaster = async (id_stock_master) => {
     // get the quantity
     // show the maximum quantity
     if(stockMaster?.available) {
-      quantityAvailableStockMaster.value = stockMaster.available
+      quantityAvailableStockMaster.value = quantityAvailableStockMaster.value + stockMaster.available
     }
     // console.log(stockMaster)
 }
 
 const handleSubmit = async () => {
     // condition
-    const condition = computed(() => {
-        if(isEditMode.value) {
-            // current master && quantity.value <= (origin quantity + available)
-            return currentStockMaster.value && Number(quantity.value) <= (Number(props?.currentStockEdit?.quantity) + Number(quantityAvailableStockMaster.value))
-        }
-        // current master && quantity must be <= quantity available
-        return currentStockMaster.value && Number(quantity.value) <= Number(quantityAvailableStockMaster.value)
-    })
+    const condition = currentStockMaster.value && Number(quantity.value) <= Number(quantityAvailableStockMaster.value)
     // if condition false
-    if(!condition.value) {
+    if(!condition) {
         alert("Tidak boleh ada form yang kosong, dan quantity tidak melebihi maximal")
         return;
     }
@@ -173,7 +166,7 @@ const handleSubmit = async () => {
     if(isEditMode.value) {
         // send event to parent
         emit('updateStock', { id: isEditMode.value, value: record})
-    }  
+    }
     // create stock
     else {
         // send event to parent
@@ -218,11 +211,6 @@ watch([props], async () => {
   if(props?.currentStockEdit?.id) {
     // get stock master
     const stockMaster = await getStockById(props?.currentStockEdit?.stock_master_id)
-    // if stock availbale < 1 = return it
-    if(!stockMaster?.available) {
-      alert('Tidak dapat di edit, ketersediaan stock sudah habis')
-      return
-    }
       // get item
       const itemDetails = await getItemById(stockMaster['item_id'])
       // set quantity

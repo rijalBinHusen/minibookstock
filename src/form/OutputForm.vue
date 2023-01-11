@@ -72,12 +72,12 @@ import PickItemToOutputVue from "../components/PickItemToOutput.vue";
 import SelectShift from "../components/parts/SelectShift.vue";
 import SelectTypeDocument from "../components/parts/SelectTypeDocument.vue";
 import InputSalesOrder from "../components/InputSalesOrder.vue";
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 import { closeModalOrDialog } from "../composables/launchForm"
 import { useStore } from "vuex";
-import { getItemByIdInState, gettingStartedRecord as getItems } from "../composables/MasterItems";
+import { getItemById, gettingStartedRecord as getItems } from "../composables/MasterItems";
 import { ddmmyyyy } from "../utils/dateFormat";
-import { getSTockByIdInState, getAvailableDateByItem, getStockById } from "../composables/StockMaster";
+import { getAvailableDateByItem, getStockById } from "../composables/StockMaster";
 import { createOutput, getOutputById, updateOutputById, changeQuantityOutput } from "../composables/Output"
 import { getSalesOrderById, removeChildItemsOrder } from "../composables/SalesOrder"
 import { getItemOrderById, changeOrderValue } from "../composables/SalesOrderItem"
@@ -102,18 +102,21 @@ const currentStockEdit=ref(null)
 const stockToUpdate = ref([])
 
 
-const stockChildDetails = computed(() => stockChild.value.map((stock) => {
-      const getStockMaster = getSTockByIdInState(stock?.stock_master_id)
-      const getItem = getItemByIdInState(getStockMaster?.item_id)
-      return {
-        id: stock?.id,
-        item: getItem.nm_item,
-        quantity: stock?.quantity,
-        product_created: ddmmyyyy(getStockMaster.product_created, "-")
-      }
-    }
-  )
-)
+const stockChildDetails = ref([])
+
+const stockChildMap = async () => {
+  stockChildDetails.value = []
+  for(const stock of stockChild.value) {
+    const getStockMaster = await getStockById(stock?.stock_master_id)
+    const getItem = await getItemById(getStockMaster?.item_id)
+    stockChildDetails.value.push({
+      id: stock?.id,
+      item: getItem.nm_item,
+      quantity: stock?.quantity,
+      product_created: ddmmyyyy(getStockMaster.product_created, "-")
+    })
+  }
+}
 // to add new item form
 const handleStock = (operation, e) => {
   //  data from child = { stock_master_id, quantity }
@@ -136,6 +139,7 @@ const handleStock = (operation, e) => {
 
 const handleSubmit = async () => {
   if(!date.value || !shift.value || !type.value || !nomor_so.value || !stockChild.value || !customer.value) {
+    console.log(!date.value, !shift.value , !type.value , !nomor_so.value , !stockChild.value , !customer.value)
     alert("Tidak boleh ada form yang kosong")
     return;
   }
@@ -143,7 +147,7 @@ const handleSubmit = async () => {
   if(isEditMode.value) {
     // update record
     await handleUpdateOutput()
-  } 
+  }
   // create new output
   else {
     await handleCreateOutput()
@@ -185,10 +189,10 @@ const handleUpdateOutput = async () => {
     // is stockToOuput.value.includes(stock)
     if(stockToUpdate.value.includes(stock.id)) {
       const newRec = {
-        date: date.value, 
-        type: type.value, 
-        shift: shift.value, 
-        nomor_so: nomor_so.value, 
+        date: date.value,
+        type: type.value,
+        shift: shift.value,
+        nomor_so: nomor_so.value,
         customer: customer.value
       }
       // update output
@@ -211,6 +215,7 @@ const salesOrderPicked = ref([])
 // handle SOrder
 const handleSOrder = async (salesOrderId) => {
   if(salesOrderId.length < 9){
+    nomor_so.value = salesOrderId
     return;
   }
   // get sales order by id. this will return { id, nomor_so, tanggal_so, customer }
@@ -267,6 +272,11 @@ const handleSOrder = async (salesOrderId) => {
   // record sorder that picked
   salesOrderPicked.value.push((salesOrderId))
 }
+
+// watch stock child, and render every it change
+watch([stockChild], () => {
+  stockChildMap()
+}, { deep: true })
 
 onMounted( async () => {
   await getItems()

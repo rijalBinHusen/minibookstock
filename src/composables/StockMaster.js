@@ -26,7 +26,7 @@ import { useJurnalProdukMasuk } from "./Setting_JurnalId";
 export const Stock_masters = ref([]);
 /**
  * \
- * 
+ *
   created datetime
   id string
   item_id string
@@ -129,22 +129,6 @@ export const getStockById = async (id) => {
 export const updateStockById = async (id, keyValueToUpdate) => {
   // initiate idb
   const stockdb = await useIdb(store);
-  // detecting if keyvalue has own property quantity, change the available too
-  if (keyValueToUpdate.hasOwnProperty("quantity")) {
-    // get all output
-    const getOutput = await getTotalStockTaken(id);
-    // 1. Total Stock quantity = (quantity + total output isFinished=true )
-    //  it means Now Quantity = quantity - total output isFinished=true
-    const quantity =
-      Number(keyValueToUpdate["quantity"]) - getOutput.allFinished;
-    // 2. Total Stock available = (quantity + total output isFinished=true|false )
-    // it means available = total quantity - total output isFinished=true|false
-    const available =
-      Number(keyValueToUpdate["quantity"]) - Number(getOutput.allTaken);
-    // update with the available property
-    await stockdb.updateItem(id, { ...keyValueToUpdate, quantity, available });
-    return;
-  }
   // update database
   await stockdb.updateItem(id, keyValueToUpdate);
   // get new record
@@ -243,6 +227,7 @@ export const changeAvailableStock = async (id_stock, yourNumberPlusOrMinus) => {
     Number(findRec?.available) + Number(yourNumberPlusOrMinus) >= 0
       ? Number(findRec?.available) + Number(yourNumberPlusOrMinus)
       : false;
+  console.log('change quantity master, your number', yourNumberPlusOrMinus)
   // if > 0
   if (available !== false) {
     // new item
@@ -250,6 +235,7 @@ export const changeAvailableStock = async (id_stock, yourNumberPlusOrMinus) => {
     // save to database
     await updateStockById(id_stock, keyValueToUpdate);
     // return true
+    console.log('new rec', keyValueToUpdate)
     return true;
   } else {
     // find item name
@@ -390,6 +376,7 @@ export const getStockThatAvailable = async () => {
   if (wasGetStockThatAvailable.value) {
     return;
   }
+  Stock_masters.value = []
   // get stock that available from db
   // initiate idb
   const stockdb = await useIdb(store);
@@ -429,3 +416,21 @@ export const mapStockForStockMaster = async () => {
   }
   return result;
 };
+
+export const updateQuantity = async (id, yourNumberPlusOrMinus) => {
+  // detecting if keyvalue has own property quantity, change the available too
+    // get all output
+    const getOutput = await getTotalStockTaken(id);
+    // 1. Total Stock quantity = (quantity + total output isFinished=true )
+    //  it means Now Quantity = quantity - total output isFinished=true
+    const quantity =
+      Number(yourNumberPlusOrMinus) - getOutput.allFinished;
+    // 2. Total Stock available = (quantity + total output isFinished=true|false )
+    // it means available = total quantity - total output isFinished=true|false
+    const available =
+      Number(yourNumberPlusOrMinus) - Number(getOutput.allTaken);
+    // update with the available property
+    await updateStockById(id, { quantity, available });
+    // return
+    return;
+}
