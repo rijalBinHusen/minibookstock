@@ -11,6 +11,7 @@
                 list="sales_order"
                 @change="handleItem"
                 :value="nomor_so"
+                :disabled="disabled"
                 />
             <datalist id="sales_order">
                 <option v-for="order in sales_orders" :key="order.id" :value="order.nomor_so + ' | ' +order.customer+ '*'+ order.id + '* '+ order.nomor_so" />
@@ -28,6 +29,7 @@ const emit = defineEmits(['pickedSalesOrder'])
 const props = defineProps({
     nomor_so: String,
     small: Boolean,
+    disabled: Boolean,
 })
 
 const handleItem = (e) => {

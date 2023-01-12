@@ -158,8 +158,10 @@ export const setStockParent = async (idsOfStock, icoming_parent_id) => {
 };
 
 export const itemThatAvailable = async () => {
+  console.log('before get', Stock_masters.value.length)
   // get all item that available
   await getStockThatAvailable();
+  console.log('after get', Stock_masters.value.length)
   // get item that available not null
   let isItemTaken = [];
   // result of item

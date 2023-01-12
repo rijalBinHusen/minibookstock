@@ -83,7 +83,7 @@
             :options="[ Boolean(isParentEditMode) ? 'edit' : 'delete']"
             :thead="['Item', 'quantity', 'tanggal produksi']"
             :tbody="['item', 'quantity', 'product_created']"
-            @deleteRec="handleBtnTable('hapus', $event)"
+            @deleteRec="handleBtnTable('remove', $event)"
             @edit="handleBtnTable('edit', $event)"
         />
     </div>
@@ -144,7 +144,11 @@ const hadleStockMaster = async (id_stock_master) => {
     // get the quantity
     // show the maximum quantity
     if(stockMaster?.available) {
-      quantityAvailableStockMaster.value = quantityAvailableStockMaster.value + stockMaster.available
+      if(props.isParentEditMode) {
+        quantityAvailableStockMaster.value = quantityAvailableStockMaster.value + stockMaster.available
+      } else {
+        quantityAvailableStockMaster.value =  stockMaster.available
+      }
     }
     // console.log(stockMaster)
 }

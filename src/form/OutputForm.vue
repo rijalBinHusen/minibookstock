@@ -27,7 +27,7 @@
         </div>
 
         <div id="incoming_paper" class="grid grid-cols-3 gap-4">
-          <InputSalesOrder small :nomor_so="nomor_so" @picked-sales-order="handleSOrder($event)" />
+          <InputSalesOrder :disabled="Boolean(isSalesOrder|| isEditMode)" small :nomor_so="nomor_so" @picked-sales-order="handleSOrder($event)" />
           <Input
             label="Customer"
             @send="customer = $event"
@@ -134,6 +134,8 @@ const handleStock = (operation, e) => {
     currentStockEdit.value = null
   }
   else {
+    console.log('stock child',stockChild.value)
+    console.log('it to remove', e)
     stockChild.value = stockChild.value.filter((rec) => rec?.id !== e)
   }
 }
@@ -216,7 +218,7 @@ const salesOrderPicked = ref([])
 const handleSOrder = async (salesOrderId) => {
   // get last 8 character, and it must be number
   nomor_so.value = salesOrderId
-  if(!(salesOrderId.slice(0, 3) == "SO_") || isEditMode.value){
+  if(!(salesOrderId.slice(0, 3) == "SO_")){
     return;
   }
   // yang memanggil fungsi ini
@@ -273,7 +275,7 @@ const handleSOrder = async (salesOrderId) => {
         const quantity3 = stockMaster2.quantity - quantity2
         // put the quantity stock2
         handleStock('add', {
-                id: itemOrder.id,
+                id: itemOrder.id + 1,
                 stock_master_id: stockMaster2?.id,
                 quantity: quantity3 >= 0 ? quantity2 : stockMaster2.quantity
               })
