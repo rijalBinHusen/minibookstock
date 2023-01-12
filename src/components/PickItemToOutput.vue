@@ -96,7 +96,7 @@ import Button from "@/components/elements/Button.vue";
 import TableVue from "./elements/Table.vue";
 import { ref, defineEmits, defineProps, computed, onMounted, watch } from 'vue';
 import { getItemIdByKdItem, getItemById } from "../composables/MasterItems";
-import { itemThatAvailable, getAvailableDateByItem, getStockById, gettingStartedRecord as getMasterStocks } from "../composables/StockMaster"
+import { itemThatAvailable, getAvailableDateByItem, getStockById, getStockThatAvailable } from "../composables/StockMaster"
 import Select from "./elements/Forms/Select.vue";
 
 const props = defineProps({
@@ -234,7 +234,7 @@ watch([props], async () => {
 // jika
 
 onMounted( async () => {
-    await getMasterStocks()
+    await getStockThatAvailable()
     itemAvailable.value = await itemThatAvailable()
 })
 

@@ -1,5 +1,5 @@
 import { getItemById } from "../composables/MasterItems"
-import { gettingStartedRecord, Stock_masters } from "../composables/StockMaster"
+import { getStockThatAvailable, Stock_masters } from "../composables/StockMaster"
 import ExportToXls from "../utils/ExportToXls"
 import { ddmmyyyy, full } from "../utils/dateFormat"
 
@@ -7,7 +7,7 @@ export const startExportMaster = async () => {
     // variable that willl contain result
     const result = []
     // get all stock
-    await gettingStartedRecord()
+    await getStockThatAvailable()
     // get all stock that quantity > 0
     for(const stock of Stock_masters.value) {
         if(Number(stock?.quantity) > 0) {

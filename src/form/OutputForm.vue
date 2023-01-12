@@ -253,7 +253,7 @@ const handleSOrder = async (salesOrderId) => {
         // put to item lists
         // if the quantity stockMaster.quantity >= itemOrder.order alert it bro
         if(stockMaster.quantity < itemOrder.order) {
-          const item = getItemByIdInState(itemOrder.item_id)
+          const item = await getItemById(itemOrder.item_id)
           alert(`Permintaan item ${item.nm_item} sebanyak ${itemOrder.order} karton tidak cukup, stock hanya tersedia ${stockMaster.quantity} karton!`)
           handleStock('add', { id: itemOrder.id, stock_master_id: stockMaster?.id, quantity: stockMaster.quantity })
         } else {
@@ -290,7 +290,7 @@ watch([stockChild], () => {
   // set new timeout
   watcherCallFunction.value = setTimeout(() => {
     stockChildMap()
-  }, 300) 
+  }, 300)
 }, { deep: true })
 
 onMounted( async () => {

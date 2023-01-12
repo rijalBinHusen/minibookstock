@@ -56,7 +56,6 @@ export const getSalesOrderById = async (id) => {
   return findSalesOrder
     ? findSalesOrder
     : {
-        id: "Not found",
         tanggal_so: "Not found",
         nomor_so: "Not found",
         customer: "Not found",
@@ -126,6 +125,10 @@ export const getAllDataToBackup = async () => {
 export const removeChildItemsOrder = async (idSOrder, itemOrderId) => {
   // get the record first
   const record = await getSalesOrderById(idSOrder);
+  // if record not found
+  if(!record?.id) {
+    return;
+  }
   // new  childItemsOrder
   let newChildItemsOrder = [];
   // if the childItemsOrder contain item orderId, remove it

@@ -76,24 +76,24 @@ export const createStock = async (
   return record;
 };
 
-export const gettingStartedRecord = async () => {
-  // empty state
-  Stock_masters.value = [];
-  // initiate idb
-  const stockdb = await useIdb(store);
-  // get all items
-  const stocks = await stockdb.getItems();
-  // set state
-  for (const stock of stocks) {
-    // map stock
-    const stockMapped = await documentsMapper(stock);
-    // push to state
-    Stock_masters.value.unshift(stockMapped);
-  }
-  // }
-  // return;
-  wasGetStockThatAvailable.value = false;
-};
+// export const gettingStartedRecord = async () => {
+//   // empty state
+//   Stock_masters.value = [];
+//   // initiate idb
+//   const stockdb = await useIdb(store);
+//   // get all items
+//   const stocks = await stockdb.getItems();
+//   // set state
+//   for (const stock of stocks) {
+//     // map stock
+//     const stockMapped = await documentsMapper(stock);
+//     // push to state
+//     Stock_masters.value.unshift(stockMapped);
+//   }
+//   // }
+//   // return;
+//   wasGetStockThatAvailable.value = false;
+// };
 
 export const removeStockById = async (id) => {
   // initiate idb
@@ -114,7 +114,7 @@ export const removeStockById = async (id) => {
 export const getStockById = async (id) => {
   // initiate idb
   const stockdb = await useIdb(store);
-  // console.log(res[0]);
+  //
   const findStock = await stockdb.getItem(id);
   return findStock
     ? findStock
@@ -181,10 +181,8 @@ export const itemThatAvailable = async () => {
 };
 
 export const getAvailableDateByItem = async (item_id) => {
-  console.log("stockmaster before get", Stock_masters.value);
   // get all item that available
   await getStockThatAvailable();
-  console.log("stockmaster after get", Stock_masters.value);
   const result = [];
   Stock_masters.value.forEach((stock) => {
     // if availabel and item_id == item_id
@@ -349,7 +347,7 @@ export const getStockByIdForIncomingForm = async (id) => {
   const stockdb = await useIdb(store);
   // get all output
   const allOutput = await getTotalStockTaken(id);
-  // console.log(res[0]);
+  // find stock
   const findStock = await stockdb.getItem(id);
   return findStock
     ? { ...findStock, quantity: findStock?.quantity + allOutput.allFinished }
@@ -373,6 +371,7 @@ export const getStockMasterByItemId = async (item_id) => {
 const wasGetStockThatAvailable = ref(false);
 
 export const getStockThatAvailable = async () => {
+  //
   if (wasGetStockThatAvailable.value && Stock_masters.value.length) {
     return;
   }
@@ -391,8 +390,7 @@ export const getStockThatAvailable = async () => {
     // push to state
     Stock_masters.value.unshift(stockMapped);
   }
-  console.log("get item thata available, state contain", Stock_masters.value);
-  // return it
+  // return
   return;
 };
 
