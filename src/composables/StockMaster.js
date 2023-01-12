@@ -1,13 +1,15 @@
 import { summary } from "../utils/summaryIdb";
 import { ref } from "vue";
 // item function
-import {
-  getItemById,
-  getItemIdByKdItem,
-  createItem,
-} from "./MasterItems";
+import { getItemById, getItemIdByKdItem, createItem } from "./MasterItems";
 // date formatter
-import { ddmmyyyy, ymdTime, getNextYearTime, time, dayPlusOrMinus } from "../utils/dateFormat";
+import {
+  ddmmyyyy,
+  ymdTime,
+  getNextYearTime,
+  time,
+  dayPlusOrMinus,
+} from "../utils/dateFormat";
 // store name
 const store = "stock_master";
 // generator id
@@ -158,10 +160,8 @@ export const setStockParent = async (idsOfStock, icoming_parent_id) => {
 };
 
 export const itemThatAvailable = async () => {
-  console.log('before get', Stock_masters.value.length)
   // get all item that available
   await getStockThatAvailable();
-  console.log('after get', Stock_masters.value.length)
   // get item that available not null
   let isItemTaken = [];
   // result of item
@@ -437,10 +437,59 @@ export const getSlowMovingItems = async () => {
   // get all item that available
   await getStockThatAvailable();
   // 14 day before
-  const day14Before = dayPlusOrMinus(false, -14)
+  const day14Before = dayPlusOrMinus(false, -14);
   // filter
-  const result = Stock_masters.value.filter((stock) => time(stock?.product_created) <= day14Before);
+  const result = Stock_masters.value.filter(
+    (stock) => time(stock?.product_created) <= day14Before
+  );
   // sorting the result
-  return result
+  return result;
   // return result;
+};
+
+export const getStockToOutput = async () => {
+  const listsStock = await stockdb.getItemsByKeyGreaterThan("quantity", 0);
+  // get all stock
+  // item that available
+  async function itemThatAvailable() {
+    let isItemTaken = [];
+    // result of item
+    let result = [];
+    for (const stock of listsStock) {
+      if (stock?.available > 0 && !isItemTaken.includes(stock?.item_id)) {
+        const item = await getItemById(stock?.item_id);
+        isItemTaken.push(stock?.item_id);
+        result.push({
+          item_id: stock?.item_id,
+          kd_item: item?.kd_item,
+          nm_item: item?.nm_item,
+        });
+      }
+    }
+  }
+  // get date by item
+  async function dateAvailableByItem(item_id) {
+    const result = [];
+    listsStock.forEach((stock) => {
+      // if availabel and item_id == item_id
+      if (stock?.item_id == item_id && stock?.available > 0) {
+        // product create as number
+        const product_created_as_number =
+          typeof stock?.product_created === "string"
+            ? new Date(stock?.product_created).getTime()
+            : stock?.product_created;
+        result.push({
+          id: stock?.id,
+          product_created:
+            "#" +
+            ddmmyyyy(product_created_as_number, "-") +
+            " | " +
+            stock?.kd_produksi,
+          origin_product_created: product_created_as_number,
+        });
+      }
+    });
+  }
+
+  return { itemThatAvailable, dateAvailableByItem };
 };

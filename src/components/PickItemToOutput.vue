@@ -96,7 +96,7 @@ import Button from "@/components/elements/Button.vue";
 import TableVue from "./elements/Table.vue";
 import { ref, defineEmits, defineProps, computed, onMounted, watch } from 'vue';
 import { getItemIdByKdItem, getItemById } from "../composables/MasterItems";
-import { itemThatAvailable, getAvailableDateByItem, getStockById, getStockThatAvailable } from "../composables/StockMaster"
+import { getStockById, getStockToOutput } from "../composables/StockMaster"
 import Select from "./elements/Forms/Select.vue";
 
 const props = defineProps({
@@ -104,11 +104,15 @@ const props = defineProps({
     stockChild: Array,
     currentStockEdit: Object,
 })
+
+// initiate stock to output
+const stock = async () => await getStockToOutput()
+// emit
 const emit = defineEmits(['addStock', 'removeStock', 'editStock', 'updateStock'])
 // will contain id of record that on edit
 const isEditMode = ref(null)
 // item llist that available
-const itemAvailable = ref([])
+const itemAvailable = stock
 
 // item mode
 const itemModel = ref(null)
@@ -238,8 +242,7 @@ watch([props], async () => {
 // jika
 
 onMounted( async () => {
-    await getStockThatAvailable()
-    itemAvailable.value = await itemThatAvailable()
+    stock.value = await getStockToOutput()
 })
 
 </script>
