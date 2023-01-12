@@ -5,22 +5,20 @@ import {
   getItemById,
   getItemIdByKdItem,
   createItem,
-  Master_items,
 } from "./MasterItems";
 // date formatter
-import { ddmmyyyy, ymdTime, getNextYearTime, time } from "../utils/dateFormat";
+import { ddmmyyyy, ymdTime, getNextYearTime, time, dayPlusOrMinus } from "../utils/dateFormat";
 // store name
 const store = "stock_master";
 // generator id
 import { generateId } from "../utils/GeneratorId";
 // incoming function
-import { createIncoming, getIncomingById } from "./Incoming";
+import { createIncoming } from "./Incoming";
 // conver excel date to javascript date
 import excelToJSDate from "../utils/ExcelDateToJs";
 // import local forage
 import { useIdb } from "../utils/localforage";
-import { getOutputByStockMasterId, getTotalStockTaken } from "./Output";
-import { useJurnalProdukMasuk } from "./Setting_JurnalId";
+import { getTotalStockTaken } from "./Output";
 
 // the state
 export const Stock_masters = ref([]);
@@ -431,4 +429,16 @@ export const updateQuantity = async (id, yourNumberPlusOrMinus) => {
   await updateStockById(id, { quantity, available });
   // return
   return;
+};
+
+export const getSlowMovingItems = async () => {
+  // get all item that available
+  await getStockThatAvailable();
+  // 14 day before
+  const day14Before = dayPlusOrMinus(false, -14)
+  // filter
+  const result = Stock_masters.value.filter((stock) => time(stock?.product_created) <= day14Before);
+  // sorting the result
+  return result
+  // return result;
 };

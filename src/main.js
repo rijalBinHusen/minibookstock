@@ -15,6 +15,7 @@ import {
   faBox,
   faNewspaper,
   faListOl,
+  faTape,
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(
@@ -28,7 +29,8 @@ library.add(
   faTimesCircle,
   faBox,
   faNewspaper,
-  faListOl
+  faListOl,
+  faTape
 );
 
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";

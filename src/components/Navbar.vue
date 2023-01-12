@@ -59,6 +59,7 @@ import { ref } from 'vue';
         { name: "StockMaster", title: "Stock master", icon: "box" },
         { name: "SalesOrders", title: "Sales orders", icon: "newspaper" },
         { name: "StockCard", title: "Kartu stock", icon: "list-ol" },
+        { name: "SlowMoving", title: "Slow moving", icon: "tape" },
         { name: "MasterItem", title: "Master Item", icon: "layer-group" },
         { name: "Setting", title: "Setting", icon: "cog" },
       ]
