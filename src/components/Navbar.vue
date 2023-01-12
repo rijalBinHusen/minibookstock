@@ -52,13 +52,13 @@ import { ref } from 'vue';
         { name: "Incoming", title: "Produk masuk", icon: "dice-d6" },
         // { name: "Vehicles", title: "Kendaraan", icon: "truck-moving" },
         { name: "Output", title: "Produk keluar", icon: "shopping-cart" },
-        // { name: "Importer", title: "Importer", icon: "file-upload" },
         // { name: "Exporter", title: "Exporter", icon: "file-download" },
       ];
 
       const dropdownNavs = [
         { name: "StockMaster", title: "Stock master", icon: "box" },
         { name: "SalesOrders", title: "Sales orders", icon: "newspaper" },
+        { name: "StockCard", title: "Kartu stock", icon: "list-ol" },
         { name: "MasterItem", title: "Master Item", icon: "layer-group" },
         { name: "Setting", title: "Setting", icon: "cog" },
       ]

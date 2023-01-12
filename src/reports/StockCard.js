@@ -47,5 +47,5 @@ export const stockCard = async (item_id, tanggal_start, tanggal_finished) => {
     // sort result
     const sortFilterResult = filterTempResult.sort((a, b) =>  a['unix_time'] - b['unix_time'])
     // export as excel
-    ExportToXls(sortFilterResult, `Kartu stock ${itemInfo.nm_item}`)
+    ExportToXls(sortFilterResult, `Kartu stock ${itemInfo.nm_item} ${ddmmyyyy(tanggal_start, '-',)} sampai dengan ${ddmmyyyy(tanggal_finished, '-',)}`)
 }

@@ -1,5 +1,15 @@
 <template>
     <div class="grid mx-2 gap-2">
+        <div class="flex justify-end">
+            <Button
+                primary
+                value="Export to Excel"
+                type="button"
+                small
+                class="w-52 "
+                @trig="handleMasterStock"
+            />
+        </div>
         <!-- databale -->
         <datatable
               :heads="['Kode item', 'Nama item', 'Kode produksi', 'tanggal produksi', 'quantity sekarang']"
@@ -28,8 +38,9 @@
   import Button from "../components/elements/Button.vue";
   import Datatable from "../components/parts/Datatable.vue";
   import { getStockThatAvailable, Stock_masters } from "../composables/StockMaster"
-  import { launchFormAndsubscribeMutation } from "../composables/launchForm";
-  import { onMounted, ref } from "vue";
+  import { launchFormAndsubscribeMutation, launchForm, closeModalOrDialog } from "../composables/launchForm";
+  import { onMounted, } from "vue";
+  import { startExportMaster } from '../reports/StockMaster';
   // id: stock?.id,
   // kd_item: item?.kd_item,
   // nm_item: item?.nm_item,
@@ -41,6 +52,17 @@
   const handleButton = (id) => {
     launchFormAndsubscribeMutation('IncomingForm', id, 'tunnelMessage')
   }
+
+
+
+const handleMasterStock = async () => {
+    // launch the loader
+    launchForm('Loader', false)
+    // waiting for process
+    await startExportMaster()
+    // close the loader
+    closeModalOrDialog(false)
+}
 
   onMounted( async () => {
     await getStockThatAvailable()

@@ -216,9 +216,12 @@ const salesOrderPicked = ref([])
 const handleSOrder = async (salesOrderId) => {
   // get last 8 character, and it must be number
   nomor_so.value = salesOrderId
-  if(!(salesOrderId.slice(0, 3) == "SO_")){
+  if(!(salesOrderId.slice(0, 3) == "SO_") || isEditMode.value){
     return;
   }
+  // yang memanggil fungsi ini
+  // ketika menambahkan output baru
+  // ketika melihat sales order
   // get sales order by id. this will return { id, nomor_so, tanggal_so, customer }
   const salesOrderDetails = await getSalesOrderById(salesOrderId)
   // if sales order not found

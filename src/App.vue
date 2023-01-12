@@ -21,6 +21,7 @@ import ConfirmDialogVue from "./components/ConfirmDialog.vue";
 import Output from "./pages/Output.vue"
 import StockMaster from "./pages/StockMaster.vue";
 import SalesOrders from "./pages/SalesOrders.vue";
+import StockCard from "./components/StockCard.vue";
 
 export default {
   name: "App",
@@ -48,7 +49,8 @@ export default {
     Confirm: ConfirmDialogVue,
     Output,
     StockMaster,
-    SalesOrders
+    SalesOrders,
+    StockCard
   },
   mounted() {
     // subscribe mutation to know when modal or dialog trigger to activate it

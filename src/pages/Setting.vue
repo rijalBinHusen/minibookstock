@@ -4,7 +4,7 @@
     <JurnalId />
     <div class="bg-base-200 w-6/12 p-2">
       <p class="text-3xl text-center">{{ label || 'Export atau Import data' }}</p>
-      <Select 
+      <Select
         value="id"
         text="title"
         id="data_to_import"
@@ -13,7 +13,7 @@
         class="w-56 mt-10"
         @selectedd="selectedDataType = $event"
       />
-    
+
     <component :is="components[selectedDataType]"></component>
     <!-- Crud the list location id that would be import to database -->
     <!-- <div class="mt-4">
@@ -32,7 +32,7 @@
         <label>Daftar location ID: </label>
         <div class="w-full">
           <span class="mx-1" v-for="location in locationsId" key="location">
-            {{ location }} 
+            {{ location }}
             <span @click="handleLocationID(location)" class="btn  btn-xs btn-error">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-4 h-4 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </span>
@@ -42,7 +42,7 @@
     </div> -->
 
     <!-- End of Crud the list location id that would be import to database -->
-      <!-- <Input 
+      <!-- <Input
         v-if="labelImport"
         type="file"
         tipe="primary"
@@ -58,24 +58,18 @@
 
 <script setup>
 import JurnalId from "../components/JurnalId.vue";
-// import Importer from "../components/parts/Importer.vue";
-import Input from "../components/elements/Forms/Input.vue";
 import Select from "../components/elements/Forms/Select.vue";
-import Button from "../components/elements/Button.vue";
 import { computed, ref } from "vue";
-import { subscribeConfirmDialog } from "../composables/launchForm";
 import BackupData from "../components/BackupData.vue";
 import ImportData from "../components/ImportData.vue";
 import ImportStockAwal from "../components/ImportStockAwal.vue"
-import StockCard from "../components/StockCard.vue";
 
 const listData = [
-          // { id: 'database', type: 'import', title: 'Import Database'}, 
+          // { id: 'database', type: 'import', title: 'Import Database'},
           // { id: 'salesOrder', type: 'import', title: 'Import Outstanding SO'},
           { id : 'BackupData', type: 'export', title: 'Backup data'},
           { id: 'ImportData', type: 'import', title: 'Import database'},
           { id: 'ImportStockAwal', type: 'import', title: 'Import stock awal'},
-          { id: 'StockCard', type: 'export', 'title': 'Export kartu stock' },
         ]
 
 // the variable that will contain id of listData what user selected in select option
@@ -96,7 +90,7 @@ const label = computed(() => {
 
 // the list of all components
 const components = {
-  BackupData, ImportData, ImportStockAwal, StockCard
+  BackupData, ImportData, ImportStockAwal
 }
 
 
