@@ -188,26 +188,26 @@ const handleUpdateOutput = async () => {
   for(const stock of stockChild.value) {
     // is stockToOuput.value.includes(stock)
     if(stockToUpdate.value.includes(stock.id)) {
-      const newRec = {
-        date: date.value,
-        type: type.value,
-        shift: shift.value,
-        nomor_so: nomor_so.value,
-        customer: customer.value
-      }
-      // update output
-      await updateOutputById(isEditMode.value, newRec)
       // update quantity
       await changeQuantityOutput(isEditMode.value, stock?.quantity)
     }
   }
+  const newRec = {
+    date: date.value,
+    type: type.value,
+    shift: shift.value,
+    nomor_so: nomor_so.value,
+    customer: customer.value
+  }
+  // update output
+  await updateOutputById(isEditMode.value, newRec)
   // finished
 }
 
 // will contain id of record that we will update it
 const isEditMode = ref(null)
 // checking is that sales order or not
-const isSalesOrder = computed(() => isEditMode.value ? !isNaN(isEditMode.value.slice(-8)) : null)
+const isSalesOrder = computed(() => isEditMode.value ? isEditMode.value.slice(0, 3) == "SO_" : null)
 
 
 // will contain condition is the output picking from salesOrder or not
@@ -215,9 +215,8 @@ const salesOrderPicked = ref([])
 // handle SOrder
 const handleSOrder = async (salesOrderId) => {
   // get last 8 character, and it must be number
-  const isContainSalesOrderNumber = salesOrderId.slice(-8)
   nomor_so.value = salesOrderId
-  if(isNaN(isContainSalesOrderNumber)){
+  if(!(salesOrderId.slice(0, 3) == "SO_")){
     return;
   }
   // get sales order by id. this will return { id, nomor_so, tanggal_so, customer }

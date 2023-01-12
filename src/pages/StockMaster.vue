@@ -2,7 +2,7 @@
     <div class="grid mx-2 gap-2">
         <!-- databale -->
         <datatable
-              :heads="['Kode item', 'Nama item', 'Kode produksi', 'tanggal produksi', 'quantity']"
+              :heads="['Kode item', 'Nama item', 'Kode produksi', 'tanggal produksi', 'quantity sekarang']"
               :keys="['kd_item', 'item_name', 'kd_produksi', 'product_created_format', 'quantity']"
               :datanya="Stock_masters"
               keydata="id"
