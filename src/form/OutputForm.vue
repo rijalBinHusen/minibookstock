@@ -57,6 +57,7 @@
             primary
             :value="isEditMode ? 'Update' : 'Submit'"
             small
+            id="button-output-form-submit"
           />
         </div>
       </div>

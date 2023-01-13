@@ -18,7 +18,7 @@
 
     <!-- data Table -->
 
-    <table class="table w-full table-compact">
+    <table :id="id" class="table w-full table-compact">
       <thead>
         <tr class>
           <th v-if="no" scope="col">No</th>
@@ -68,9 +68,9 @@
         </tr>
         <!--end ofsearch form-->
 
-        <tr class="hover" :key="r" v-for="(r, index) in showRow">
+        <tr :id="id+'-row-'+index" class="hover" :key="r" v-for="(r, index) in showRow">
           <th v-if="no">{{ index + deData.startRow + 1 }}</th>
-          <td :key="r[key]" v-for="key in keys">{{ r[key] }}</td>
+          <td :id="id+'-row-'+index+'-column-'+index2" :key="r[key]" v-for="(key, index2) in keys">{{ r[key] }}</td>
 
           <td v-if="option">
             <slot :prop="r"></slot>

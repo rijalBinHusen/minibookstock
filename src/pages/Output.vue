@@ -5,6 +5,7 @@
             <date-picker
                 class="ml-2 bg-base-200 p-2 rounded"
                 v-model="dateRecordToShow"
+                id="date-produk-keluar"
             >
             </date-picker>
             <!-- Show record by date -->
@@ -15,6 +16,7 @@
                 small
                 class="ml-2"
                 @trig="getRecordByDate"
+                id="button-tampilkan-produk-keluar"
             />
             <!-- add new output record -->
             <Button
@@ -23,6 +25,7 @@
                 type="button"
                 small
                 class="ml-2"
+                id="button-tambah-produk-keluar"
                 @trig="handleButton('add')"
             />
             <!-- show all output unfinished  -->
@@ -33,6 +36,7 @@
                 small
                 class="ml-2"
                 @trig="getRecordIsFinishedFalse"
+                id="button-belum-selesai-produk-keluar"
             />
 
         </span>

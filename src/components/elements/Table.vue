@@ -1,6 +1,6 @@
 <template>
   <div class="w-full mb-2 border" :style="style">
-    <table class="table w-full h-full table-compact">
+    <table :id="id" class="table w-full h-full table-compact">
       <thead>
         <tr>
           <th>No</th>
@@ -49,7 +49,7 @@
 import Button from "./Button.vue";
 /**
  how to use it?
-<Table 
+<Table
   keyData="Key that would you accept when button clicked"
   style="put your css style here"
   contents="array of object that would show in table"
@@ -57,7 +57,7 @@ import Button from "./Button.vue";
   thead="array of string for table header"
   tbody="array of string desribe your key content"
 />
- *  */ 
+ *  */
 export default {
   name: "Table",
   props: {
@@ -76,6 +76,7 @@ export default {
       type: Array,
       required: true,
     },
+    id: String,
   },
   emits: ["edit", "deleteRec"],
   components: {

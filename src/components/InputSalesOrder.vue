@@ -12,6 +12,7 @@
                 @change="handleItem"
                 :value="nomor_so"
                 :disabled="disabled"
+                id="input-sales-order"
                 />
             <datalist id="sales_order">
                 <option v-for="order in sales_orders" :key="order.id" :value="order.nomor_so + ' | ' +order.customer+ '*'+ order.id + '* '+ order.nomor_so" />

@@ -1,10 +1,10 @@
 <template>
-  <button v-if="type === 'button'" :class="className" @click="trigger">
+  <button :id="id" v-if="type === 'button'" :class="className" @click="trigger">
     <slot></slot>
     {{ value }}
   </button>
 
-  <a v-if="type === 'link'" :href="href" :class="className" @click="trigger">
+  <a :id="id" v-if="type === 'link'" :href="href" :class="className" @click="trigger">
     <slot></slot>
     {{ value }}
   </a>
@@ -14,7 +14,7 @@
 
 /**
  * How to use it?
- * 
+ *
     <Button
         primary | secondary | accent
         value="Your value of your button"
@@ -44,6 +44,7 @@ export default {
     icon: String,
     outline: Boolean,
     small: Boolean,
+    id: String,
   },
   emits: ["trig"],
   methods: {

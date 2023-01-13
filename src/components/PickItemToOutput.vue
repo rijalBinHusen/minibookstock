@@ -44,7 +44,7 @@
             <!-- Kode produksi -->
             <div v-if="currentStockMaster" class="form-control">
                 <label class="label">
-                    <span class="label-text">Qantity (Max: {{ quantityAvailableStockMaster }})</span>
+                    <span id="max-quantity" class="label-text">Qantity (Max: {{ quantityAvailableStockMaster }})</span>
                 </label>
                 <div class="relative">
                 <input
@@ -54,6 +54,7 @@
                     @keyup="quantity = $event.target.value"
                     :value="quantity"
                     @change="quantity = $event.target.value"
+                    id="quantity"
                     />
                 </div>
             </div>
@@ -64,6 +65,7 @@
                 secondary
                 value="Cancel"
                 @trig="resetForm"
+                id="reset-item"
                 small />
               <Button
                 type="button"
@@ -72,6 +74,7 @@
                 @trig="handleSubmit"
                 small
                 class="ml-2"
+                id="button-add-item"
               />
             </div>
         </div>
@@ -85,6 +88,7 @@
             :tbody="['item', 'quantity', 'product_created']"
             @deleteRec="handleBtnTable('remove', $event)"
             @edit="handleBtnTable('edit', $event)"
+            id="table-item"
         />
     </div>
 </template>
