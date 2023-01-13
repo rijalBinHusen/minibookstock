@@ -62,7 +62,6 @@ const handleSlowMoving = async () => {
 }
 
   onMounted( async () => {
-    console.log('slow moving')
     lists.value = await getSlowMovingItems()
   })
 

@@ -134,8 +134,6 @@ const handleStock = (operation, e) => {
     currentStockEdit.value = null
   }
   else {
-    console.log('stock child',stockChild.value)
-    console.log('it to remove', e)
     stockChild.value = stockChild.value.filter((rec) => rec?.id !== e)
   }
 }
@@ -248,36 +246,36 @@ const handleSOrder = async (salesOrderId) => {
     if(!dateStockMaster.length) {
       return;
     }
-    // get stockMasterById, this will return { item_id, product_created, quantity}
+    // get stockMasterById, this will return { item_id, product_created, quantity, available}
     const stockMaster = await getStockById(dateStockMaster[0]?.id)
-    // compare quantity
-    // if quantity > order
+    // compare available
+    // if available > order
     // or datestockmaster only availbale 1
-    if(stockMaster.quantity >= itemOrder.order || dateStockMaster.length === 1) {
+    if(stockMaster.available >= itemOrder.order || dateStockMaster.length === 1) {
         // put to item lists
-        // if the quantity stockMaster.quantity >= itemOrder.order alert it bro
-        if(stockMaster.quantity < itemOrder.order) {
+        // if the available stockMaster.available >= itemOrder.order alert it bro
+        if(stockMaster.available < itemOrder.order) {
           const item = await getItemById(itemOrder.item_id)
-          alert(`Permintaan item ${item.nm_item} sebanyak ${itemOrder.order} karton tidak cukup, stock hanya tersedia ${stockMaster.quantity} karton!`)
-          handleStock('add', { id: itemOrder.id, stock_master_id: stockMaster?.id, quantity: stockMaster.quantity })
+          alert(`Permintaan item ${item.nm_item} sebanyak ${itemOrder.order} karton tidak cukup, stock hanya tersedia ${stockMaster.available} karton!`)
+          handleStock('add', { id: itemOrder.id, stock_master_id: stockMaster?.id, quantity: stockMaster.available })
         } else {
           handleStock('add', { id: itemOrder.id, stock_master_id: stockMaster?.id, quantity: itemOrder.order })
         }
       } else {
         // count the - quantity = sisa item order1
-        const quantity2 = itemOrder.order - stockMaster.quantity
-        // put the quantity stock1
-        handleStock('add', { id: itemOrder.id, stock_master_id: stockMaster?.id, quantity: stockMaster.quantity })
-        // search for quantity 2
+        const quantity2 = itemOrder.order - stockMaster.available
+        // put the available stock1
+        handleStock('add', { id: itemOrder.id, stock_master_id: stockMaster?.id, quantity: stockMaster.available })
+        // search for available 2
         // get stockMasterById, this will return { item_id, product_created, quantity}
         const stockMaster2 = await getStockById(dateStockMaster[1]?.id)
         // sisa item order2, if quantity3 >= 0 it means enough
-        const quantity3 = stockMaster2.quantity - quantity2
-        // put the quantity stock2
+        const quantity3 = stockMaster2.available - quantity2
+        // put the available stock2
         handleStock('add', {
                 id: itemOrder.id + 1,
                 stock_master_id: stockMaster2?.id,
-                quantity: quantity3 >= 0 ? quantity2 : stockMaster2.quantity
+                quantity: quantity3 >= 0 ? quantity2 : stockMaster2.available
               })
       }
     }

@@ -94,9 +94,9 @@
 import Input from "./elements/Forms/Input.vue";
 import Button from "@/components/elements/Button.vue";
 import TableVue from "./elements/Table.vue";
-import { ref, defineEmits, defineProps, computed, onMounted, watch } from 'vue';
+import { ref, defineEmits, defineProps, onMounted, watch } from 'vue';
 import { getItemIdByKdItem, getItemById } from "../composables/MasterItems";
-import { getStockById, getStockToOutput } from "../composables/StockMaster"
+import { getStockById, itemThatAvailable, getAvailableDateByItem } from "../composables/StockMaster"
 import Select from "./elements/Forms/Select.vue";
 
 const props = defineProps({
@@ -105,8 +105,6 @@ const props = defineProps({
     currentStockEdit: Object,
 })
 
-// initiate stock to output
-const stock = getStockToOutput()
 // emit
 const emit = defineEmits(['addStock', 'removeStock', 'editStock', 'updateStock'])
 // will contain id of record that on edit
@@ -135,7 +133,7 @@ const handleItem = async (e) => {
         item.value = item_detail.value?.id
         // after item taken
         // get product created by it item that available to take
-        itemAvilabelDate.value = await stock.dateAvailableByItem(item.value)
+        itemAvilabelDate.value = await getAvailableDateByItem(item.value)
     }
     return;
 }
@@ -242,7 +240,9 @@ watch([props], async () => {
 // jika
 
 onMounted( async () => {
-    itemAvailable.value = await getStockToOutput().itemThatAvailable()
+    if(!props.isParentEditMode) {
+      itemAvailable.value = await itemThatAvailable()
+    }
 })
 
 </script>

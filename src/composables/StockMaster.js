@@ -119,10 +119,11 @@ export const getStockById = async (id) => {
   return findStock
     ? findStock
     : {
-        item_id: "Not found",
-        kd_produksi: "Not found",
-        product_created: "Not found",
-        quantity: "Not found",
+        item_id: 0,
+        kd_produksi: 0,
+        product_created: 0,
+        quantity: 0,
+        available: 0,
       };
 };
 
@@ -445,63 +446,4 @@ export const getSlowMovingItems = async () => {
   // sorting the result
   return result;
   // return result;
-};
-
-export const getStockToOutput = () => {
-  let listsStock = [];
-  // get all stock
-  // item that available
-  async function itemThatAvailable() {
-    await getAllAvailableStock()
-    let isItemTaken = [];
-    // result of item
-    let result = [];
-    for (const stock of listsStock) {
-      if (stock?.available > 0 && !isItemTaken.includes(stock?.item_id)) {
-        const item = await getItemById(stock?.item_id);
-        isItemTaken.push(stock?.item_id);
-        result.push({
-          item_id: stock?.item_id,
-          kd_item: item?.kd_item,
-          nm_item: item?.nm_item,
-        });
-      }
-    }
-  }
-  // get date by item
-  async function dateAvailableByItem(item_id) {
-    await getAllAvailableStock()
-    const result = [];
-    listsStock.forEach((stock) => {
-      // if availabel and item_id == item_id
-      if (stock?.item_id == item_id && stock?.available > 0) {
-        // product create as number
-        const product_created_as_number =
-          typeof stock?.product_created === "string"
-            ? new Date(stock?.product_created).getTime()
-            : stock?.product_created;
-        result.push({
-          id: stock?.id,
-          product_created:
-            "#" +
-            ddmmyyyy(product_created_as_number, "-") +
-            " | " +
-            stock?.kd_produksi,
-          origin_product_created: product_created_as_number,
-        });
-      }
-    });
-  }
-
-  async function getAllAvailableStock () {
-    if(listsStock.length) {
-      return;
-    }
-    // initiate idb
-    const stockdb = await useIdb(store);
-    // get stock
-    listsStock = await stockdb.getItemsByKeyGreaterThan("quantity", 0);
-  }
-
-  return { itemThatAvailable, dateAvailableByItem };
 };
