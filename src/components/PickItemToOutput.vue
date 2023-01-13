@@ -106,13 +106,13 @@ const props = defineProps({
 })
 
 // initiate stock to output
-const stock = async () => await getStockToOutput()
+const stock = getStockToOutput()
 // emit
 const emit = defineEmits(['addStock', 'removeStock', 'editStock', 'updateStock'])
 // will contain id of record that on edit
 const isEditMode = ref(null)
 // item llist that available
-const itemAvailable = stock
+const itemAvailable = ref(null)
 
 // item mode
 const itemModel = ref(null)
@@ -135,7 +135,7 @@ const handleItem = async (e) => {
         item.value = item_detail.value?.id
         // after item taken
         // get product created by it item that available to take
-        itemAvilabelDate.value = await getAvailableDateByItem(item_detail.value?.id)
+        itemAvilabelDate.value = await stock.dateAvailableByItem(item.value)
     }
     return;
 }
@@ -242,7 +242,7 @@ watch([props], async () => {
 // jika
 
 onMounted( async () => {
-    stock.value = await getStockToOutput()
+    itemAvailable.value = await getStockToOutput().itemThatAvailable()
 })
 
 </script>

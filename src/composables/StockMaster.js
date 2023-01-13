@@ -447,11 +447,12 @@ export const getSlowMovingItems = async () => {
   // return result;
 };
 
-export const getStockToOutput = async () => {
-  const listsStock = await stockdb.getItemsByKeyGreaterThan("quantity", 0);
+export const getStockToOutput = () => {
+  let listsStock = [];
   // get all stock
   // item that available
   async function itemThatAvailable() {
+    await getAllAvailableStock()
     let isItemTaken = [];
     // result of item
     let result = [];
@@ -469,6 +470,7 @@ export const getStockToOutput = async () => {
   }
   // get date by item
   async function dateAvailableByItem(item_id) {
+    await getAllAvailableStock()
     const result = [];
     listsStock.forEach((stock) => {
       // if availabel and item_id == item_id
@@ -489,6 +491,16 @@ export const getStockToOutput = async () => {
         });
       }
     });
+  }
+
+  async function getAllAvailableStock () {
+    if(listsStock.length) {
+      return;
+    }
+    // initiate idb
+    const stockdb = await useIdb(store);
+    // get stock
+    listsStock = await stockdb.getItemsByKeyGreaterThan("quantity", 0);
   }
 
   return { itemThatAvailable, dateAvailableByItem };
