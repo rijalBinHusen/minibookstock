@@ -13,14 +13,14 @@ export function generateId(lastId) {
   // 05
   let week = lastId.slice(id.length + 2, id.length+4); //08
   //if the week same
-  if (weekNow === Number(week)) {
+  if (weekNow === Number(week) && year === fullYear.slice(-2)) {
     id += year + week;
   }
   //if the week not same
   else {
     // if the week 9 change to 09
     weekNow = weekNow < 9 ? "0" + weekNow : weekNow;
-    id += fullYear.slice(2) + weekNow;
+    id += fullYear.slice(-2) + weekNow;
     increment = "0";
   }
   //0000
