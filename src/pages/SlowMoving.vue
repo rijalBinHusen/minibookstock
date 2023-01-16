@@ -41,7 +41,7 @@
   import { launchFormAndsubscribeMutation, launchForm, closeModalOrDialog } from "../composables/launchForm";
   import { onMounted, ref } from "vue";
   import ExportToXls from "../utils/ExportToXls";
-  import { ddmmyyyy } from "../utils/dateFormat";
+  import { full } from "../utils/dateFormat";
   // id: stock?.id,
   // kd_item: item?.kd_item,
   // nm_item: item?.nm_item,
@@ -57,8 +57,19 @@
   const lists = ref([])
 
 const handleSlowMoving = async () => {
+  // launch loader
+  launchForm('Loader', false)
+    // just pick what we're need
+    let res = lists.value.map((rec) => ({
+                kode_item: rec.kd_item,
+                nama_item: rec.item_name,
+                quantity: rec?.quantity,
+                tanggal_produksi: rec?.product_created_format
+              }))
     // waiting for process
-    ExportToXls(lists.value, `Slow moving ${ddmmyyyy(false, '-')}`)
+    ExportToXls(res, `Slow moving ${full()}`)
+    // close loader
+    closeModalOrDialog();
 }
 
   onMounted( async () => {

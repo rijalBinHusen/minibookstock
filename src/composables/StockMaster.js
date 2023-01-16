@@ -373,7 +373,7 @@ const wasGetStockThatAvailable = ref(false);
 
 export const getStockThatAvailable = async () => {
   //
-  if (wasGetStockThatAvailable.value && Stock_masters.value.length) {
+  if (wasGetStockThatAvailable.value || Stock_masters.value.length) {
     return;
   }
   // mark variable as true

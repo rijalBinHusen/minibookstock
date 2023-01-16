@@ -96,6 +96,18 @@ export const getNextYearTime = () => {
   // return as unix time
   return dateNow.getTime()
 }
+
+export function ExcelDateToJSDate(serial) {
+  var utc_days  = Math.floor(serial - 25569);
+  var utc_value = utc_days * 86400;
+  return new Date(utc_value * 1000);
+}
+
+export function JSToExcelDate(yourDate) {
+  let date = new Date(yourDate);
+  let converted = 25569.0 + ((date.getTime() - (date.getTimezoneOffset() * 60 * 1000)) / (1000 * 60 * 60 * 24));
+  return converted
+}
 //     else if (a[0] == "-2") {
 //       a001.setDate(a002 - 2);
 //       return a001.getTime();
