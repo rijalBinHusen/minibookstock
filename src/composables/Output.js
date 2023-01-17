@@ -375,3 +375,22 @@ export const changeQuantityOutput = async (id, yourNumberNewQuantity) => {
   await changeAvailableStock(origin.stock_master_id, differentQuantity);
   return;
 };
+
+
+export const getOutputByDate = async (date, shift) => {
+  // initiate db
+  const outputdb = await useIdb(store);
+  // get record by date
+  const records = await outputdb.getItemByTwoKeyValue('tanggal', ymdTime(date), 'shift', shift)
+  // result
+  const result = []
+  // map allRecord
+  if (records) {
+    for (const rec of records) {
+      // map record
+      const recordMapped = await outputTransactionMapped(rec);
+      result.push(recordMapped);
+    }
+  }
+  return result;
+};

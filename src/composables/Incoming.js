@@ -21,7 +21,7 @@ export const Incoming_transaction = ref([]);
 export const dateRecordToShow = ref(new Date());
 
 /**
- * 
+ *
   id string [pk]
   stock_master_ids string
   paper_id string
@@ -221,5 +221,45 @@ export const mapIncomingTransactionWoutItem = async () => {
         paper_id: income?.paper_id,
       });
   }
+  return result;
+}
+
+
+export const getIncomingByDate = async (date, shift) => {
+  // initiate idb
+  const incomedb = await useIdb(store);
+  // result
+  let result = []
+  // use jurnal produk masuk
+  const { getJurnalProdukMasukById } = useJurnalProdukMasuk()
+  // get income by date
+  let records =  await incomedb.getItemByTwoKeyValue('tanggal', ymdTime(date), 'shift', shift)
+  // dontt forget to sum quantity now with stock taken
+  if(records) {
+    // map all records
+    for (const income of records) {
+      // get type of incoming
+      const incomingType = await getJurnalProdukMasukById(income?.type)
+      // map stock master by stock master ids
+      for (const id of income?.stock_master_ids) {
+        // get stock master by id
+        const stockMaster = await getStockById(id);
+        // get nm_item from based on stockMaster.item_id
+        const item = await getItemById(stockMaster?.item_id);
+        result.push({
+          id: income?.id,
+          tanggal: ddmmyyyy(income?.tanggal, "-"),
+          shift: income?.shift,
+          paper_id: income?.paper_id,
+          nm_item: item?.nm_item,
+          quantity: stockMaster?.quantity,
+          available: stockMaster?.available,
+          product_created: ddmmyyyy(stockMaster?.product_created, "-"),
+          type: incomingType.nama_jurnal
+        });
+      }
+    }
+  }
+  // return
   return result;
 }

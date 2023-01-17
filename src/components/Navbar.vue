@@ -58,6 +58,7 @@ import { ref } from 'vue';
   const dropdownNavs = [
     { name: "StockMaster", title: "stock master", icon: "box" },
     { name: "SummaryStockMaster", title: "Summary stock", icon: "box" },
+    { name: "Transaction", title: "Transaksi", icon: "scroll" },
     { name: "SalesOrders", title: "sales orders", icon: "newspaper" },
     { name: "StockCard", title: "kartu stock", icon: "list-ol" },
     { name: "SlowMoving", title: "slow moving", icon: "tape" },

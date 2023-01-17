@@ -104,7 +104,6 @@ export const useIdb = async (storeName) => {
       });
   };
 
-  
   const getItemsByKeyGreaterThan = async (keySearch, greaterThanValue) => {
     let result = [];
     return store
@@ -128,6 +127,29 @@ export const useIdb = async (storeName) => {
       });
   };
 
+  const getItemByTwoKeyValue = async (key1Search, value1Search, key2Search, value2Search) => {
+    let result = [];
+    return store
+      .iterate(function (value, key, iterationNumber) {
+        // Resulting key/value pair -- this callback
+        // will be executed for every item in the
+        // database.
+        // console.log([key, value]);
+        if (value[key1Search] == value1Search && value[key2Search] == value2Search) {
+          // save to result
+          result.push(value);
+        }
+      })
+      .then(function () {
+        // return result
+        return result;
+      })
+      .catch(function (err) {
+        // This code runs if there were any errors
+        console.log(err);
+      });
+  };
+
   return {
     setItem,
     getItem,
@@ -137,6 +159,7 @@ export const useIdb = async (storeName) => {
     getItemsLimit,
     updateItem,
     getItemsByKeyValue,
-    getItemsByKeyGreaterThan
+    getItemsByKeyGreaterThan,
+    getItemByTwoKeyValue
   };
 };

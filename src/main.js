@@ -16,6 +16,7 @@ import {
   faNewspaper,
   faListOl,
   faTape,
+  faScroll,
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(
@@ -30,7 +31,8 @@ library.add(
   faBox,
   faNewspaper,
   faListOl,
-  faTape
+  faTape,
+  faScroll
 );
 
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";

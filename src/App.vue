@@ -24,6 +24,7 @@ import SalesOrders from "./pages/SalesOrders.vue";
 import StockCard from "./components/StockCard.vue";
 import SlowMoving from "./pages/SlowMoving.vue";
 import SummaryStockMaster from "./pages/SummaryStockMaster.vue";
+import Transaction from "./pages/Transaction.vue";
 
 export default {
   name: "App",
@@ -54,7 +55,8 @@ export default {
     SalesOrders,
     StockCard,
     SlowMoving,
-    SummaryStockMaster
+    SummaryStockMaster,
+    Transaction
   },
   mounted() {
     // subscribe mutation to know when modal or dialog trigger to activate it
