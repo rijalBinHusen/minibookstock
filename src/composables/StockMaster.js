@@ -45,6 +45,10 @@ export const createStock = async (
   product_created,
   quantity
 ) => {
+  // retrieve all available stock,
+  // if we push new record without retrieve all stock first, the function wil never do the intruction
+  // because the state is not null, even though the state just contain new record, not all stock
+  await getStockThatAvailable()
   // initiate idb
   const stockdb = await useIdb(store);
   // get last id

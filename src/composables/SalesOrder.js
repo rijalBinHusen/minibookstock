@@ -137,17 +137,14 @@ export const removeChildItemsOrder = async (idSOrder, itemOrderId) => {
       (child) => child != itemOrderId
     );
   }
-  console.log('sisa sales order', newChildItemsOrder)
   // if newChildItemsOrder.length, update the record
   if (newChildItemsOrder.length) {
-    console.log('update sales order')
     await updateSalesOrderById(idSOrder, {
       childItemsOrder: newChildItemsOrder,
     });
   }
   // else, childItemsOrder.length === 0, remove sales order
   else {
-    console.log('remove sales order')
     await removeSalesOrderById(idSOrder);
   }
   return;
