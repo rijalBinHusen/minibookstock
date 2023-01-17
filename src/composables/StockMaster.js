@@ -15,12 +15,13 @@ const store = "stock_master";
 // generator id
 import { generateId } from "../utils/GeneratorId";
 // incoming function
-import { createIncoming } from "./Incoming";
+import { createIncoming, getIncomingById } from "./Incoming";
 // conver excel date to javascript date
 import excelToJSDate from "../utils/ExcelDateToJs";
 // import local forage
 import { useIdb } from "../utils/localforage";
 import { getTotalStockTaken } from "./Output";
+import { useJurnalProdukMasuk } from "./Setting_JurnalId";
 
 // the state
 export const Stock_masters = ref([]);
@@ -451,3 +452,42 @@ export const getSlowMovingItems = async () => {
   return result;
   // return result;
 };
+
+export const getSummaryStockMaster = async () => {
+  // incoming type
+  const { getJurnalProdukMasukById } = useJurnalProdukMasuk()
+  // get all available item first
+  await getStockThatAvailable()
+  // variable that wuold contain result
+  let result = []
+  // loop the state
+  for(let stock of Stock_masters.value) {
+    // get incoming details
+    const incomingDetails = await getIncomingById(stock?.icoming_parent_id);
+    // get incoming type info
+    const incomingType = await getJurnalProdukMasukById(incomingDetails.type)
+    // find index by kd_item in result variable is that exists
+    let findIndex = result.findIndex(res => res?.kd_item == stock.kd_item)
+    // if exists, add total_quantity, details, product_dates
+    if(findIndex > -1) {
+      // total_quantity,
+      // result[1].total_quantity = 300 + 700
+      result[findIndex].total_quantity = result[findIndex].total_quantity + stock?.quantity
+      // details, 300 ctn ( Masuk gudang 27-Jan-2022 Nomor dokumen 03938 Transfer dari produksi)
+      result[findIndex].details = result[findIndex].details + '\r\n' + stock?.quantity + (` Masuk ${ddmmyyyy(incomingDetails.tanggal, '-')}, Dokumen ${incomingDetails?.paper_id}`)
+      // product_dates, | 300=27-01-23
+      result[findIndex].product_dates = result[findIndex].product_dates + '\r\n' + stock?.quantity + `=(${stock?.product_created_format} #${incomingType.nama_jurnal})`
+    } else {
+      // push to result variable
+      // <!-- kd_item, item_name, total_quantity, details, product_dates -->
+      result.push({
+        kd_item: stock?.kd_item,
+        item_name: stock?.item_name,
+        total_quantity: stock?.quantity,
+        details: stock?.quantity + (` Masuk ${ddmmyyyy(incomingDetails.tanggal, '-')}, Dokumen ${incomingDetails?.paper_id}`),
+        product_dates: stock?.quantity + `=(${stock?.product_created_format} #${incomingType.nama_jurnal})`
+      })
+    }
+  }
+  return result;
+}

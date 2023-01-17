@@ -4,7 +4,7 @@
     <div id="modal-confirm" class="modal">
       <div class="modal-box">
         <h3 class="font-bold text-lg">{{ typeDialog == 'confirm' ? 'Peringatan' : 'Pemberitahuan' }}</h3>
-        <p class="py-4">{{ dialogMessage }}</p>
+        <p class="py-4" v-html="dialogMessage"></p>
         <div v-if="typeDialog == 'confirm'" class="modal-action">
           <Button type="button" class="ml-2" primary small value="Iya" @trig="handleButton(true)" />
           <Button type="button" class="ml-2" secondary small value="Tidak" @trig="handleButton(false)" />

@@ -44,28 +44,29 @@
 import { ref } from 'vue';
 
 
-      const emit = defineEmits(['navigate_to_navbar'])
+  const emit = defineEmits(['navigate_to_navbar'])
 
-      const active = ref(null)
+  const active = ref(null)
 
-      const navs = [
-        { name: "Incoming", title: "produk masuk", icon: "dice-d6" },
-        // { name: "Vehicles", title: "Kendaraan", icon: "truck-moving" },
-        { name: "Output", title: "produk keluar", icon: "shopping-cart" },
-        // { name: "Exporter", title: "Exporter", icon: "file-download" },
-      ];
+  const navs = [
+    { name: "Incoming", title: "produk masuk", icon: "dice-d6" },
+    // { name: "Vehicles", title: "Kendaraan", icon: "truck-moving" },
+    { name: "Output", title: "produk keluar", icon: "shopping-cart" },
+    // { name: "Exporter", title: "Exporter", icon: "file-download" },
+  ];
 
-      const dropdownNavs = [
-        { name: "StockMaster", title: "stock master", icon: "box" },
-        { name: "SalesOrders", title: "sales orders", icon: "newspaper" },
-        { name: "StockCard", title: "kartu stock", icon: "list-ol" },
-        { name: "SlowMoving", title: "slow moving", icon: "tape" },
-        { name: "MasterItem", title: "master Item", icon: "layer-group" },
-        { name: "Setting", title: "setting", icon: "cog" },
-      ]
+  const dropdownNavs = [
+    { name: "StockMaster", title: "stock master", icon: "box" },
+    { name: "SummaryStockMaster", title: "Summary stock", icon: "box" },
+    { name: "SalesOrders", title: "sales orders", icon: "newspaper" },
+    { name: "StockCard", title: "kartu stock", icon: "list-ol" },
+    { name: "SlowMoving", title: "slow moving", icon: "tape" },
+    { name: "MasterItem", title: "master Item", icon: "layer-group" },
+    { name: "Setting", title: "setting", icon: "cog" },
+  ]
 
-      const navigate = (nav) => {
-        active.value = nav
-        emit('navigate_to_navbar', nav)
-      }
+  const navigate = (nav) => {
+    active.value = nav
+    emit('navigate_to_navbar', nav)
+  }
 </script>
