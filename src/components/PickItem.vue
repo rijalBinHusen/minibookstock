@@ -80,15 +80,15 @@
                 ></date-picker>
             </div>
             <div id="incoming_item_add" class="w-full text-right">
-            <Button 
-                type="button" 
-                primary 
-                :value="isEditMode ? 'Update' : 'Add item'" 
-                @trig="handleSubmit" 
+            <Button
+                type="button"
+                primary
+                :value="isEditMode ? 'Update' : 'Add item'"
+                @trig="handleSubmit"
                 small />
             </div>
         </div>
-        
+
         <TableVue
             style="overflow: auto; max-height: 300px"
             keyData="id"
@@ -108,7 +108,7 @@ import Input from "./elements/Forms/Input.vue";
 import datePicker from "vue3-datepicker";
 import Button from "@/components/elements/Button.vue";
 import TableVue from "./elements/Table.vue";
-import { ref, onMounted, defineEmits, defineProps, computed } from 'vue';
+import { ref, onMounted, defineEmits, defineProps, computed, watch } from 'vue';
 import { gettingStartedRecord as getItem, Master_items, getItemIdByKdItem, getItemById } from "../composables/MasterItems";
 import { ymdTime } from "../utils/dateFormat"
 
@@ -157,7 +157,7 @@ const handleUpdateDate = (whatDate, e) => {
     // if product create date date changed
     // create new variable date
     const date = new Date(e)
-    
+
     if(item.value && whatDate == 'created') {
         // set product date that to input to daatabase
         product_created.value = e
@@ -181,22 +181,21 @@ const emit = defineEmits(['addStock', 'removeStock', 'editStock', 'updateStock']
 const handleSubmit = async () => {
     if(item.value && kd_produksi.value && product_created.value && quantity.value) {
         const record = {
-                item_id: item.value, 
-                kd_produksi: kd_produksi.value, 
-                product_created: ymdTime(product_created.value), 
+                item_id: item.value,
+                kd_produksi: kd_produksi.value,
+                product_created: ymdTime(product_created.value),
                 quantity: quantity.value
             }
         if(isEditMode.value) {
             emit('updateStock', { id: isEditMode.value, value: record})
         }  else {
             emit('addStock', record)
-        }   
+        }
             // reset the form after submit
         resetForm()
     } else {
         alert("Tidak boleh ada form yang kosong!")
     }
-    isEditMode.value = null
 }
 
 const resetForm = () => {
@@ -206,42 +205,15 @@ const resetForm = () => {
         kd_produksi.value = ""
         quantity.value = ""
         item_full.value = ""
+        isEditMode.value = null
     }, 500)
 }
-
-const countOfHandleItem = ref(0)
-
 // btn table handle
 const handleBtnTable = async (operation, id) => {
     if(operation == 'edit') {
-        countOfHandleItem.value = countOfHandleItem.value +1
         emit('editStock', id)
-        // detecting the current stock edit because it async in parent
-        if(props?.currentStockEdit) {
-            // get item
-            const item = await getItemById(props?.currentStockEdit['item_id'])
-            // product kode
-            kd_produksi.value = props?.currentStockEdit['kd_produksi']
-            quantity.value = props?.currentStockEdit['quantity']
-            item_full.value = item.kd_item + "* " + item.nm_item
-            // waiting item to input text
-            await handleItem({target: { value: item_full.value }})
-            // set editmode 
-            isEditMode.value = id
-            // set product created using this way, so the expired date automate show
-            handleUpdateDate('created',
-                new Date(props?.currentStockEdit['product_created'])
-            )
-        } else {
-            // call this function again in 500ms because the props come too late,
-            // but we face infinite loop this function,
-            // so we are using this way
-            if(countOfHandleItem.value < 2) {
-                setTimeout(() => {
-                    handleBtnTable('edit', id)
-                }, 500)
-            }
-        }
+        // set editmode
+        isEditMode.value = id
     } else {
         const confirm = window.confirm("Apakah anda yakin akan menghapus item tersebut")
         if(confirm) {
@@ -253,6 +225,24 @@ const handleBtnTable = async (operation, id) => {
 onMounted( async () => {
     // getting all item
     await getItem()
+})
+
+watch([props], async () => {
+  // detecting the current stock edit because it async in parent
+  if(props?.currentStockEdit) {
+      // get item
+      const item = await getItemById(props?.currentStockEdit['item_id'])
+      // product kode
+      kd_produksi.value = props?.currentStockEdit['kd_produksi']
+      quantity.value = props?.currentStockEdit['quantity']
+      item_full.value = item.kd_item + "* " + item.nm_item
+      // waiting item to input text
+      await handleItem({target: { value: item_full.value }})
+      // set product created using this way, so the expired date automate show
+      handleUpdateDate('created',
+          new Date(props?.currentStockEdit['product_created'])
+      )
+  }
 })
 
 </script>

@@ -82,7 +82,6 @@
 
 <script setup>
 import datePicker from "vue3-datepicker";
-import Select from "../components/elements/Forms/Select.vue";
 import Input from "../components/elements/Forms/Input.vue";
 import Button from "../components/elements/Button.vue";
 import PickItemVue from "../components/PickItem.vue";
@@ -154,46 +153,44 @@ const handleStock = async (operation, e) => {
   }
   // update stock
   else if(operation == 'update') {
-    // total quantity taken
-    const stockTaken = await getTotalStockTaken(e.id)
-    // prevent update stock when quantity < total taken
-    if(Number(e.value.quantity) < Number(stockTaken.allTaken)) {
-      // show message
-      alert(`Stock sudah terambil ${stockTaken.allTaken}, quantity tidak boleh kurang dari ${stockTaken.allTaken}!`)
-      return;
+    // set current edit stock to null
+    currentStockEdit.value = null
+    // if editMode
+    if(isEditMode.value) {
+      // total quantity taken
+      const stockTaken = await getTotalStockTaken(e.id)
+      // prevent update stock when quantity < total taken
+      if(Number(e.value.quantity) < Number(stockTaken.allTaken)) {
+        // show message
+        alert(`Stock sudah terambil ${stockTaken.allTaken}, quantity tidak boleh kurang dari ${stockTaken.allTaken}!`)
+        return;
+      }
+      // if edit mode push idStock to update
+      idStockToUpdate.value.push(e.id)
     }
     // update localstate
     stockChild.value = stockChild.value.map((rec) => {
       if(rec?.id == e.id) {
-        if(isEditMode.value) {
           return { id: e.id, ...e.value }
-        }
-        return e.value
       }
       return rec
     })
-    // set current edit stock to null
-    currentStockEdit.value = null
-    // if edit mode push idStock to update
-    if(isEditMode.value) {
-      idStockToUpdate.value.push(e.id)
-    }
   }
   // remove stock
    else {
-    // get and wait stock by id
-    const stock = await getStockById(e)
-    // prevent remove when stock has been taked
-    if(stock?.isTaken) {
-      alert("Barang sudah dimuat di kendaraan, tidak bisa dihapus!")
-      return;
-    }
-    // remove fromlocal state
-    stockChild.value = stockChild.value.filter((rec) => rec?.id !== e)
-    // if edit mode, push to id stock to remove
-    if(isEditMode.value) {
+     // if edit mode, push to id stock to remove
+     if(isEditMode.value) {
+      // get and wait stock by id
+      const stock = await getStockById(e)
+      // prevent remove when stock has been taked
+      if(stock?.isTaken) {
+        alert("Barang sudah dimuat di kendaraan, tidak bisa dihapus!")
+        return;
+      }
       idStockToRemove.value.push(e)
     }
+     // remove fromlocal state
+     stockChild.value = stockChild.value.filter((rec) => rec?.id !== e)
   }
 }
 

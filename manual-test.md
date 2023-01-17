@@ -80,25 +80,25 @@
 # 2023-01-16
 
 ## Testing jurnal produk masuk
-- bisa membuat jurnal produk masuk
-- bisa tampil semua jurnal produk masuk
-- bisa update jurnal produk masuk
+- [x] bisa membuat jurnal produk masuk
+- [x] bisa tampil semua jurnal produk masuk
+- [x] bisa update jurnal produk masuk
 
 ## Testing jurnal produk keluar
-- bisa membuat jurnal produk keluar
-- bisa tampil semua jurnal produk keluar
-- bisa update jurnal produk keluar
+- [x] bisa membuat jurnal produk keluar
+- [x] bisa tampil semua jurnal produk keluar
+- [x] bisa update jurnal produk keluar
 
 ## Testing menu master item
-- bisa membuat item
-- bisa tampil semua item
-- bisa update item
+- [x] bisa membuat item
+- [x] bisa tampil semua item
+- [x] bisa update item
 
 ## Testing menu incoming produk
-- bisa membuat incoming produk
-  - menambahkan item baru
-  - mengedit item yang sudah ditambhakan
-  - menghapus item yang sudah ditambahkan
+- [x] bisa membuat incoming produk
+  - [x] menambahkan item baru pada incoming form
+  - [x] mengedit item yang sudah ditambhakan
+  - [x] menghapus item yang sudah ditambahkan
 - menampilkan semua incoming produk
 - update incoming produk
   - menampilkan incoming record yang akan diupdate
