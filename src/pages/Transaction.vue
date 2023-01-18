@@ -25,7 +25,7 @@
                 class="ml-2"
               />
               <Button
-                v-if="isAvailableToExport"
+                v-if="isAvailableToExport && lists.length"
                 small
                 primary
                 value="Export to Excel"

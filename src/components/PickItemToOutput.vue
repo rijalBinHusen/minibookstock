@@ -83,7 +83,7 @@
             style="overflow: auto; max-height: 300px"
             keyData="id"
             :contents="stockChild"
-            :options="[ Boolean(isParentEditMode) ? 'edit' : 'delete']"
+            :options="[ Boolean(isParentEditMode) ? '' : 'delete', 'edit']"
             :thead="['Item', 'quantity', 'tanggal produksi']"
             :tbody="['item', 'quantity', 'product_created']"
             @deleteRec="handleBtnTable('remove', $event)"
