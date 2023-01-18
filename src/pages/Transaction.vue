@@ -24,25 +24,33 @@
                 @trig="handleSubmit"
                 class="ml-2"
               />
-              <!-- <Button
+              <Button
+                v-if="isAvailableToExport"
                 small
                 primary
                 value="Export to Excel"
                 type="button"
-                @trig="handleSubmit"
+                @trig="handleExport"
                 class="ml-2"
-              /> -->
+              />
           </div>
       </div>
+      <datatable
+        :heads="['Nomor dokumen', 'Customer', 'Kode Item', 'Nama item', 'Quantity', 'Tanggal produk']"
+        :keys="['nomor_dokumen', 'customer', 'item_id', 'nama_lengkap', 'quantity', 'product_created']"
+        :datanya="lists"
+        keydata="id"
+        no
+        id="table-transaction"
+      />
   </div>
   </template>
 
 
   <script setup>
-  import { ref } from 'vue';
+  import { ref, watch } from 'vue';
+  import Datatable from '../components/parts/Datatable.vue';
   import Button from '../components/elements/Button.vue';
-  // import stock card
-  import { stockCard } from "../reports/StockCard"
   // import date picker
   import datePicker from "vue3-datepicker";
   // shift component
@@ -50,38 +58,78 @@
   import { launchForm, closeModalOrDialog, subscribeConfirmDialog } from "../composables/launchForm"
   import { getIncomingByDate } from '../composables/Incoming';
   import { getOutputByDate } from '../composables/Output';
+  import ExportToXls from '../utils/ExportToXls';
+import { ddmmyyyy } from '../utils/dateFormat';
   // date start
   const dateStart = ref(new Date())
   // shift
   const shift = ref()
   // variable that would contain lists of record (local state)
   const lists = ref([])
+  // isAvailable to export
+  const isAvailableToExport = ref(false)
 
   // to show record
   const handleSubmit = async () => {
+    lists.value.length = 0
     // get incoming
     const incoming = await getIncomingByDate(dateStart.value, shift.value)
     // get output
     const output = await getOutputByDate(dateStart.value, shift.value)
-    console.log('output', output)
-    console.log('incomiing', incoming)
+    // map and push to list
+    for ( let income of incoming) {
+      lists.value.push({
+        shift: income?.shift,
+        total_waktu: null,
+        nomor_do: null,
+        nomor_dokumen: income?.paper_id,
+        register: null,
+        start: income?.diserahkan,
+        finish: income?.diterima,
+        plat_nomor: null,
+        customer: income?.type,
+        item_id: income?.kd_item,
+        quantity: income?.quantity,
+        nama_tally: null,
+        product_created: income?.product_created,
+        nama_lengkap: income?.nm_item,
+      })
+    }
+    for (let out of output) {
+      lists.value.push({
+        shift: out?.shift,
+        total_waktu: null,
+        nomor_do: null,
+        nomor_dokumen: out?.nomor_so,
+        register: null,
+        start: null,
+        finish: null,
+        plat_nomor: null,
+        customer: out?.customer,
+        item_id: out?.kd_item,
+        quantity: out?.quantity,
+        nama_tally: null,
+        product_created: out?.product_created,
+        nama_lengkap: out?.nm_item
+      })
+    }
+    isAvailableToExport.value = true
   }
+
+  watch([dateStart, shift], () => {
+    isAvailableToExport.value = false
+  })
 
 
   const handleExport = async () => {
-      // IF the form not null
-      if(itemId.value && dateStart.value && dateEnd.value) {
-          // launch the loader
-          launchForm('Loader', false)
-          // launch the loader
-          // const asdfwer =  await launchForm('Loader', false);
-          // export stock card
-          await stockCard(itemId.value, dateStart.value.getTime(), dateEnd.value.getTime())
-          // console.log(itemId.value)
-          // close the loader
-          closeModalOrDialog(false)
-      } else {
-          subscribeConfirmDialog('alert', 'Tidak boleh ada form yang kosong');
-      }
+    // launch the loader
+    launchForm('Loader', false)
+    // launch the loader
+    // const asdfwer =  await launchForm('Loader', false);
+    // export stock card
+    ExportToXls(lists.value, `Transaksi ${ddmmyyyy(dateStart.value, '-')} Shift ${shift.value}`)
+    // console.log(itemId.value)
+    // close the loader
+    closeModalOrDialog(false)
   }
   </script>

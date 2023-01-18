@@ -14,6 +14,8 @@ import { getItemById } from "./MasterItems";
 import { useIdb } from "../utils/localforage";
 // import typep jurnal
 import { useJurnalProdukMasuk } from "./Setting_JurnalId"
+// output
+import { getTotalStockTaken } from "./Output"
 
 // the state
 export const Incoming_transaction = ref([]);
@@ -234,7 +236,6 @@ export const getIncomingByDate = async (date, shift) => {
   const { getJurnalProdukMasukById } = useJurnalProdukMasuk()
   // get income by date
   let records =  await incomedb.getItemByTwoKeyValue('tanggal', ymdTime(date), 'shift', shift)
-  // dontt forget to sum quantity now with stock taken
   if(records) {
     // map all records
     for (const income of records) {
@@ -242,6 +243,8 @@ export const getIncomingByDate = async (date, shift) => {
       const incomingType = await getJurnalProdukMasukById(income?.type)
       // map stock master by stock master ids
       for (const id of income?.stock_master_ids) {
+        // dontt forget to sum quantity now with stock taken
+        const allQuantityThatTaken = await getTotalStockTaken(id)
         // get stock master by id
         const stockMaster = await getStockById(id);
         // get nm_item from based on stockMaster.item_id
@@ -251,11 +254,14 @@ export const getIncomingByDate = async (date, shift) => {
           tanggal: ddmmyyyy(income?.tanggal, "-"),
           shift: income?.shift,
           paper_id: income?.paper_id,
+          kd_item: item?.kd_item,
           nm_item: item?.nm_item,
-          quantity: stockMaster?.quantity,
+          quantity: stockMaster?.quantity + allQuantityThatTaken.allFinished,
           available: stockMaster?.available,
           product_created: ddmmyyyy(stockMaster?.product_created, "-"),
-          type: incomingType.nama_jurnal
+          type: incomingType.nama_jurnal,
+          diserahkan: income?.diserahkan,
+          diterima: income?.diterima,
         });
       }
     }

@@ -186,7 +186,7 @@ export const outputTransactionMapped = async (doc) => {
   // const result = [];
   // // if the state null
   if (!doc) {
-    return result;
+    return;
   }
   // Output_transaction.value.forEach((doc) => {
   // for (const doc of Output_transaction.value) {
@@ -200,14 +200,12 @@ export const outputTransactionMapped = async (doc) => {
     tanggal: ddmmyyyy(doc?.tanggal, "-"),
     shift: doc?.shift,
     nomor_so: doc?.nomor_so,
+    kd_item: item?.kd_item,
     nm_item: item?.nm_item,
     product_created: ddmmyyyy(master.product_created, "-"),
     quantity: doc?.quantity,
     isFinished: doc?.isFinished,
   };
-  // }
-  // }
-  // );
 };
 
 export const markAsFinished = async (id) => {
@@ -388,8 +386,11 @@ export const getOutputByDate = async (date, shift) => {
   if (records) {
     for (const rec of records) {
       // map record
-      const recordMapped = await outputTransactionMapped(rec);
-      result.push(recordMapped);
+      // just get record that isFinished == true
+      if(rec?.isFinished) {
+        const recordMapped = await outputTransactionMapped(rec);
+        result.push(recordMapped);
+      }
     }
   }
   return result;
