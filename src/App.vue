@@ -5,9 +5,10 @@
 
 <template>
     <Navbar @navigate_to_navbar="toNav($event)" />
-      <component :is="activeNav"></component>
+      <component style="min-height:24rem" :is="activeNav"></component>
     <Modal v-if="formActive"  />
     <Confirm v-if="dialogActive" />
+    <FooterVue />
 </template>
 
 <script>
@@ -25,6 +26,7 @@ import StockCard from "./components/StockCard.vue";
 import SlowMoving from "./pages/SlowMoving.vue";
 import SummaryStockMaster from "./pages/SummaryStockMaster.vue";
 import Transaction from "./pages/Transaction.vue";
+import FooterVue from "./components/Footer.vue";
 
 export default {
   name: "App",

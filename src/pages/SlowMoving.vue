@@ -64,7 +64,9 @@ const handleSlowMoving = async () => {
                 kode_item: rec.kd_item,
                 nama_item: rec.item_name,
                 quantity: rec?.quantity,
-                tanggal_produksi: rec?.product_created_format
+                tanggal_produksi: rec?.product_created_format,
+                tanggal_transfer: rec?.tanggal_transfer,
+                asal_produk: rec?.asal_produk
               }))
     // waiting for process
     ExportToXls(res, `Slow moving ${full()}`)

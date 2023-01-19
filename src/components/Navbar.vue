@@ -1,11 +1,13 @@
 <template>
   <div class="navbar mb-2 shadow-lg bg-base-200 text-base-content rounded-box">
     <div class="px-2 mx-2 navbar-start">
-      <!-- Burger -->
+      <!-- Dropdown box -->
       <div class="dropdown">
+        <!-- Burger -->
         <label tabindex="0" class="btn btn-ghost btn-circle">
           <svg id="drop-down-toggle" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" /></svg>
         </label>
+        <!-- End of Burger -->
         <ul tabindex="0" class="menu menu-compact dropdown-content mt-3 p-2 shadow bg-primary rounded-box w-52">
           <li  v-for="nav in dropdownNavs" :key="nav.title" >
             <a :id="'navigation-'+nav.title.replace(' ', '-')" @click="navigate(nav.name)" :class="['text-sm text-black rounded-btn uppercase', nav.name == active ? 'bg-base-100' : '']">
@@ -15,7 +17,7 @@
           </li>
         </ul>
       </div>
-      <!-- End of Burger -->
+      <!-- End of Dropdown box -->
       <span class="text-lg font-bold">
         Book of stock
       </span>
@@ -31,10 +33,36 @@
       </div>
     </div>
     <div class="navbar-end">
-        <span class="btn btn-ghost btn-sm rounded-btn">
+      <!-- Dropdown box -->
+      <div class="dropdown dropdown-end">
+        <!-- Burger -->
+        <label tabindex="0" class="btn btn-ghost btn-circle inline">
+          <!-- <span class="btn btn-ghost btn-sm rounded-btn">
+          -->
           Credit
-          <font-awesome-icon class="ml-2" icon="info-circle" />
-        </span>
+            <font-awesome-icon icon="info-circle" />
+          <!-- </span> -->
+        </label>
+        <!-- End of Burger -->
+        <ul tabindex="0" class="menu menu-compact dropdown-content mt-3 p-2 shadow bg-primary rounded-box w-64">
+          <li class="text-sm">
+            Thanks to all who have helped me:
+          </li>
+          <li class="text-sm inline">
+            <font-awesome-icon icon="tag" />
+            The almighty god
+          </li>
+          <li class="text-sm inline">
+            <font-awesome-icon icon="tag" />
+            My parents
+          </li>
+          <li class="text-sm inline">
+            <font-awesome-icon icon="tag" />
+            My Family
+          </li>
+        </ul>
+      </div>
+      <!-- End of Dropdown box -->
     </div>
 </div>
 

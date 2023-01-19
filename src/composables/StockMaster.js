@@ -9,6 +9,7 @@ import {
   getNextYearTime,
   time,
   dayPlusOrMinus,
+  JSToExcelDate
 } from "../utils/dateFormat";
 // store name
 const store = "stock_master";
@@ -444,13 +445,27 @@ export const getSlowMovingItems = async () => {
   await getStockThatAvailable();
   // 14 day before
   const day14Before = dayPlusOrMinus(false, -14);
+  // use jurnal produk masuk
+  const { getJurnalProdukMasukById } = useJurnalProdukMasuk()
   // filter
-  const result = Stock_masters.value.filter(
-    (stock) => time(stock?.product_created) <= day14Before
-  );
-  // sorting the result
-  return result;
+  const result = []
+  // looping it
+  for(let stock of Stock_masters.value ) {
+    if(time(stock?.product_created) <= day14Before) {
+      // incoming details
+      const incomingDetails = await getIncomingById(stock?.icoming_parent_id)
+      // jurnal type
+      const jurnalInfo = await getJurnalProdukMasukById(incomingDetails?.type)
+      // push to result
+      result.push({
+        ...stock,
+        tanggal_transfer: JSToExcelDate(incomingDetails.tanggal),
+        asal_produk: jurnalInfo.nama_jurnal
+      })
+    }
+  }
   // return result;
+  return result;
 };
 
 export const getSummaryStockMaster = async () => {
