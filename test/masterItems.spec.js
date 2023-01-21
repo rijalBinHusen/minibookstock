@@ -1,5 +1,5 @@
 import "fake-indexeddb/auto"
-import { createItem, getItemById, updateItemById, getItemIdByKdItem } from "../src/composables/MasterItems"
+import { createItem, getItemById, updateItemById, getItemIdByKdItem, getAllDataToBackup } from "../src/composables/MasterItems"
 import { describe, it, expect } from 'vitest'
 
 let newItemId = null
