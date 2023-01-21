@@ -506,3 +506,80 @@ export const getSummaryStockMaster = async () => {
   }
   return result;
 }
+
+
+export class StockMasterToOutput {
+  constructor() {
+    this.state = [];
+  }
+
+  async getAvailableDateByItem (item_id) {
+    // get all item that available
+    await this.getStock();
+    // will contain the result
+    const result = [];
+    this.state.forEach((stock) => {
+      // if availabel and item_id == item_id
+      if (stock?.item_id == item_id && stock?.available > 0) {
+        // product create as number
+        const product_created_as_number =
+          typeof stock?.product_created === "string"
+            ? new Date(stock?.product_created).getTime()
+            : stock?.product_created;
+        result.push({
+          id: stock?.id,
+          product_created:
+            "#" +
+            ddmmyyyy(product_created_as_number, "-") +
+            " | " +
+            stock?.kd_produksi,
+          origin_product_created: product_created_as_number,
+        });
+    }
+    });
+    // sorting the result
+    return result.sort(
+      (a, b) => a["origin_product_created"] - b["origin_product_created"]
+    );
+    // return result;
+  };
+
+  async getItemThatAvailable () {
+    // get stock
+    // get item that available not null
+    await this.getStock();
+    // is item taken while looping all record
+    let isItemTaken = [];
+    // result of item
+    let result = [];
+    for (const stock of this.state) {
+      if (stock?.available > 0 && !isItemTaken.includes(stock?.item_id)) {
+        const item = await getItemById(stock?.item_id);
+        isItemTaken.push(stock?.item_id);
+        result.push({
+          item_id: stock?.item_id,
+          kd_item: item?.kd_item,
+          nm_item: item?.nm_item,
+        });
+      }
+    }
+    return result;
+  }
+
+  async getStock() {
+    // get stock that available from db
+    // initiate idb
+    const stockdb = await useIdb(store);
+    // stock that available
+    const stockAvailable = await stockdb.getItemsByKeyGreaterThan("quantity", 0 );
+    for (const stock of stockAvailable) {
+      // map stock
+      const stockMapped = await documentsMapper(stock);
+      // push to state
+      this.state.push(stockMapped);
+    }
+
+    // return
+    return;
+  }
+}

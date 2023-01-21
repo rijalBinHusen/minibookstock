@@ -4,6 +4,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "test": "vitest",
     "serve": "vite preview"
   },
   "dependencies": {
@@ -11,8 +12,6 @@
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@fortawesome/vue-fontawesome": "^3.0.0-5",
     "@vuepic/vue-datepicker": "^3.6.3",
-    "daisyui": "^1.16.0",
-    "eslint": "^8.32.0",
     "localforage": "^1.10.0",
     "vue": "^3.2.16",
     "vue3-datepicker": "^0.2.5",
@@ -20,6 +19,10 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "daisyui": "^1.16.0",
+    "eslint": "^8.32.0",
+    "vitest": "^0.27.2",
+    "fake-indexeddb": "^4.0.1",
     "@vitejs/plugin-vue": "^1.9.3",
     "autoprefixer": "^10.4.0",
     "postcss": "^8.3.11",
