@@ -12,6 +12,7 @@
     "@fortawesome/vue-fontawesome": "^3.0.0-5",
     "@vuepic/vue-datepicker": "^3.6.3",
     "daisyui": "^1.16.0",
+    "eslint": "^8.32.0",
     "localforage": "^1.10.0",
     "vue": "^3.2.16",
     "vue3-datepicker": "^0.2.5",

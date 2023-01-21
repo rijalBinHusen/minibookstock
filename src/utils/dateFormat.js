@@ -108,6 +108,17 @@ export function JSToExcelDate(yourDate) {
   let converted = 25569.0 + ((date.getTime() - (date.getTimezoneOffset() * 60 * 1000)) / (1000 * 60 * 60 * 24));
   return converted
 }
+
+export const getDaysArray = (start, end) => {
+  let arr = [];
+  let dateStart = new Date(start);
+  let dateEnd = new Date(end)
+  for (let dt = dateStart; dt <= dateEnd; dt.setDate(dt.getDate() + 1)) {
+    arr.push(ymdTime(dt));
+  }
+  return arr;
+}
+
 //     else if (a[0] == "-2") {
 //       a001.setDate(a002 - 2);
 //       return a001.getTime();
