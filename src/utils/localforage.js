@@ -67,7 +67,6 @@ export const useIdb = async (storeName) => {
       mode: 'remove',
       store: storeName,
       idRecord: key,
-      value: JSON.stringify(value),
     });
     await store.removeItem(key);
     return;
