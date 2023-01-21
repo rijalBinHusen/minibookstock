@@ -1,14 +1,34 @@
-import localforage from "localforage";
+import localforage from 'localforage';
 
 export const useIdb = async (storeName) => {
   // create instance
   const store = localforage.createInstance({
-    name: "my_report_stock",
+    name: 'my_report_stock',
     storeName,
   });
 
+  const logging = localforage.createInstance({
+    name: 'my_report_stock',
+    storeName: 'logs',
+  });
+
+  let countOfLoggerAtATime = 0;
+
   const setItem = async (key, value) => {
     await store.setItem(key, value);
+    // create new date time first
+    const dtime = new Date().getTime();
+    // increment count
+    countOfLoggerAtATime = countOfLoggerAtATime + 1 + '';
+    // id logger
+    const idLog = dtime + countOfLoggerAtATime;
+    // record to log
+    await logging.setItem(idLog, {
+      mode: 'set',
+      store: storeName,
+      idRecord: key,
+      value: JSON.stringify(value),
+    });
     return;
   };
 
@@ -35,8 +55,22 @@ export const useIdb = async (storeName) => {
       });
   };
 
-  const removeItem = (key) => {
-    return store.removeItem(key);
+  const removeItem = async (key) => {
+    // create new date time first
+    const dtime = new Date().getTime();
+    // increment count
+    countOfLoggerAtATime = countOfLoggerAtATime + 1;
+    // id logger
+    const idLog = dtime + countOfLoggerAtATime + '';
+    // record to log
+    await logging.setItem(idLog, {
+      mode: 'remove',
+      store: storeName,
+      idRecord: key,
+      value: JSON.stringify(value),
+    });
+    await store.removeItem(key);
+    return;
   };
 
   const findOneItemByKeyValue = (keySearch, valueSearch) => {
@@ -127,7 +161,12 @@ export const useIdb = async (storeName) => {
       });
   };
 
-  const getItemByTwoKeyValue = async (key1Search, value1Search, key2Search, value2Search) => {
+  const getItemByTwoKeyValue = async (
+    key1Search,
+    value1Search,
+    key2Search,
+    value2Search
+  ) => {
     let result = [];
     return store
       .iterate(function (value, key, iterationNumber) {
@@ -135,7 +174,10 @@ export const useIdb = async (storeName) => {
         // will be executed for every item in the
         // database.
         // console.log([key, value]);
-        if (value[key1Search] == value1Search && value[key2Search] == value2Search) {
+        if (
+          value[key1Search] == value1Search &&
+          value[key2Search] == value2Search
+        ) {
           // save to result
           result.push(value);
         }
@@ -150,7 +192,11 @@ export const useIdb = async (storeName) => {
       });
   };
 
-  const getItemsByKeyGreaterOrEqualThanAndLowerOrEqualThan = async (keySearch, greaterOrEqualThanValue, LowerOrEqualThanValue) => {
+  const getItemsByKeyGreaterOrEqualThanAndLowerOrEqualThan = async (
+    keySearch,
+    greaterOrEqualThanValue,
+    LowerOrEqualThanValue
+  ) => {
     let result = [];
     return store
       .iterate(function (value, key, iterationNumber) {
@@ -158,7 +204,10 @@ export const useIdb = async (storeName) => {
         // will be executed for every item in the
         // database.
         // console.log([key, value]);
-        if (value[keySearch] >= greaterOrEqualThanValue && value[keySearch] <= LowerOrEqualThanValue ) {
+        if (
+          value[keySearch] >= greaterOrEqualThanValue &&
+          value[keySearch] <= LowerOrEqualThanValue
+        ) {
           // save to result
           result.push(value);
         }
@@ -184,6 +233,6 @@ export const useIdb = async (storeName) => {
     getItemsByKeyValue,
     getItemsByKeyGreaterThan,
     getItemByTwoKeyValue,
-    getItemsByKeyGreaterOrEqualThanAndLowerOrEqualThan
+    getItemsByKeyGreaterOrEqualThanAndLowerOrEqualThan,
   };
 };
