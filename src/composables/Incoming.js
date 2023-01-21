@@ -1,21 +1,21 @@
-import { summary } from "../utils/summaryIdb";
-import { ref } from "vue";
+import { summary } from '../utils/summaryIdb';
+import { ref } from 'vue';
 // import { getItemById } from "./MasterItems";
-import { ymdTime, ddmmyyyy } from "../utils/dateFormat";
+import { ymdTime, ddmmyyyy } from '../utils/dateFormat';
 // store name
-const store = "incoming_transaction";
+const store = 'incoming_transaction';
 // generator id
-import { generateId } from "../utils/GeneratorId";
+import { generateId } from '../utils/GeneratorId';
 // import set parent function for stock master
-import { setStockParent, getStockById } from "./StockMaster";
+import { setStockParent, getStockById } from './StockMaster';
 // master item function
-import { getItemById } from "./MasterItems";
+import { getItemById } from './MasterItems';
 // import localforage function
-import { useIdb } from "../utils/localforage";
+import { useIdb } from '../utils/localforage';
 // import typep jurnal
-import { useJurnalProdukMasuk } from "./Setting_JurnalId"
+import { useJurnalProdukMasuk } from './Setting_JurnalId';
 // output
-import { getTotalStockTaken } from "./Output"
+import { getTotalStockTaken } from './Output';
 
 // the state
 export const Incoming_transaction = ref([]);
@@ -52,7 +52,7 @@ export const createIncoming = async (
   // generate next id
   const nextId = summaryRecord?.lastUpdated
     ? generateId(summaryRecord?.lastUpdated?.lastId)
-    : generateId("INCOMING_TR22030000");
+    : generateId('INCOMING_TR22030000');
   // initiate new record
   const record = {
     created: new Date().getTime(),
@@ -114,20 +114,23 @@ export const removeIncomingById = async (id) => {
 // // };
 
 export const getIncomingById = async (id) => {
-  // initiate idb
-  const incomedb = await useIdb(store);
-  // find stock
-  const findIncome = await incomedb.getItem(id);
+  let findIncome = false;
+  if (id) {
+    // initiate idb
+    const incomedb = await useIdb(store);
+    // find stock
+    findIncome = await incomedb.getItem(id);
+  }
   return findIncome
     ? findIncome
     : {
-        paper_id: "Not found",
-        tanggal: "Not found",
-        shift: "Not found",
-        diterima: "Not found",
-        type: "Not found",
-        diserahkan: "Not found",
-        catatan: "Not found",
+        paper_id: 'Not found',
+        tanggal: false,
+        shift: 'Not found',
+        diterima: 'Not found',
+        type: false,
+        diserahkan: 'Not found',
+        catatan: 'Not found',
       };
 };
 
@@ -168,13 +171,13 @@ export const incomingTransactionMapped = async () => {
       const item = await getItemById(stockMaster?.item_id);
       result.push({
         id: income?.id,
-        tanggal: ddmmyyyy(income?.tanggal, "-"),
+        tanggal: ddmmyyyy(income?.tanggal, '-'),
         shift: income?.shift,
         paper_id: income?.paper_id,
         nm_item: item?.nm_item,
         quantity: stockMaster?.quantity,
         available: stockMaster?.available,
-        product_created: ddmmyyyy(stockMaster?.product_created, "-"),
+        product_created: ddmmyyyy(stockMaster?.product_created, '-'),
       });
     }
   }
@@ -195,12 +198,12 @@ export const getRecordByDate = async () => {
   const incomedb = await useIdb(store);
   // get income by date
   Incoming_transaction.value = await incomedb.getItemsByKeyValue(
-    "tanggal",
+    'tanggal',
     ymdTime(dateRecordToShow.value)
   );
   // return
   return;
-}
+};
 
 export const mapIncomingTransactionWoutItem = async () => {
   const result = [];
@@ -209,56 +212,60 @@ export const mapIncomingTransactionWoutItem = async () => {
     return result;
   }
   // use jurnal produk masuk
-  const { getJurnalProdukMasukById } = useJurnalProdukMasuk()
+  const { getJurnalProdukMasukById } = useJurnalProdukMasuk();
   // map all state
   for (const income of Incoming_transaction.value) {
     // get name jurnal
-    const jurnal = await getJurnalProdukMasukById(income?.type)
+    const jurnal = await getJurnalProdukMasukById(income?.type);
     // push it
     result.push({
-        id: income?.id,
-        tanggal: ddmmyyyy(income?.tanggal, "-"),
-        shift: income?.shift,
-        type: jurnal.nama_jurnal,
-        paper_id: income?.paper_id,
-      });
+      id: income?.id,
+      tanggal: ddmmyyyy(income?.tanggal, '-'),
+      shift: income?.shift,
+      type: jurnal.nama_jurnal,
+      paper_id: income?.paper_id,
+    });
   }
   return result;
-}
-
+};
 
 export const getIncomingByDate = async (date, shift) => {
   // initiate idb
   const incomedb = await useIdb(store);
   // result
-  let result = []
+  let result = [];
   // use jurnal produk masuk
-  const { getJurnalProdukMasukById } = useJurnalProdukMasuk()
+  const { getJurnalProdukMasukById } = useJurnalProdukMasuk();
   // get income by date
-  let records =  await incomedb.getItemByTwoKeyValue('tanggal', ymdTime(date), 'shift', shift)
-  if(records) {
+  let records = await incomedb.getItemByTwoKeyValue(
+    'tanggal',
+    ymdTime(date),
+    'shift',
+    shift
+  );
+  if (records) {
     // map all records
     for (const income of records) {
       // get type of incoming
-      const incomingType = await getJurnalProdukMasukById(income?.type)
+      const incomingType = await getJurnalProdukMasukById(income?.type);
       // map stock master by stock master ids
       for (const id of income?.stock_master_ids) {
         // dontt forget to sum quantity now with stock taken
-        const allQuantityThatTaken = await getTotalStockTaken(id)
+        const allQuantityThatTaken = await getTotalStockTaken(id);
         // get stock master by id
         const stockMaster = await getStockById(id);
         // get nm_item from based on stockMaster.item_id
         const item = await getItemById(stockMaster?.item_id);
         result.push({
           id: income?.id,
-          tanggal: ddmmyyyy(income?.tanggal, "-"),
+          tanggal: ddmmyyyy(income?.tanggal, '-'),
           shift: income?.shift,
           paper_id: income?.paper_id,
           kd_item: item?.kd_item,
           nm_item: item?.nm_item,
           quantity: stockMaster?.quantity + allQuantityThatTaken.allFinished,
           available: stockMaster?.available,
-          product_created: ddmmyyyy(stockMaster?.product_created, "-"),
+          product_created: ddmmyyyy(stockMaster?.product_created, '-'),
           type: incomingType.nama_jurnal,
           diserahkan: income?.diserahkan,
           diterima: income?.diterima,
@@ -268,4 +275,4 @@ export const getIncomingByDate = async (date, shift) => {
   }
   // return
   return result;
-}
+};

@@ -8,6 +8,7 @@ import {
   getTotalStockTaken,
 } from '../composables/Output';
 import ExportToXls from '../utils/ExportToXls';
+import { loaderMessage } from '../composables/launchForm';
 
 export const stockCard = async (item_id, tanggal_start, tanggal_finished) => {
   // use jurnal produk masuk
@@ -16,10 +17,16 @@ export const stockCard = async (item_id, tanggal_start, tanggal_finished) => {
   const itemInfo = await getItemById(item_id);
   // temproray result
   let tempRes = [];
+  // show message to loader
+  loaderMessage('Mengambil stock master');
   // get all stock master
   const stockMasters = await getStockMasterByItemId(item_id);
   // loop all stock masters
-  for (const stock of stockMasters) {
+  for (const [index, stock] of stockMasters.entries()) {
+    // show message to loader
+    loaderMessage(
+      `Mengambil stock master ${index} dari ${stockMasters.length}`
+    );
     // get info icoming_parent_id
     const incomingInfo = await getIncomingById(stock?.icoming_parent_id);
     // get name jurnal
@@ -29,6 +36,7 @@ export const stockCard = async (item_id, tanggal_start, tanggal_finished) => {
     // push incoming
     tempRes.push({
       unix_time: incomingInfo?.tanggal,
+      stock_id: stock?.id,
       tanggal: ddmmyyyy(incomingInfo?.tanggal, '-'),
       nomor_dokumen: incomingInfo?.paper_id,
       shift: incomingInfo?.shift,
