@@ -142,7 +142,7 @@ export const updateIncomingById = async (id, keyValueToUpdate) => {
     return item?.id == id ? { ...item, ...keyValueToUpdate } : item;
   });
   // update in idb
-  incomedb.updateItem(id, keyValueToUpdate);
+  await incomedb.updateItem(id, keyValueToUpdate);
   // saveData();
   return;
 };
