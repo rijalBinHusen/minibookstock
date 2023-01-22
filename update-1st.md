@@ -75,7 +75,7 @@ Adapaun kriteria sales order yang akan dimasukkan ke database adalah sebagai ber
 Slow moving adalah menu yang menyaring seluruh produk yang ada digudang yang berusia > 14 hari, pengguna dapat meng-ekspor data yang ditampilkan dalam bentuk excel sehingga dapat digunakan untuk berbagai kepentingan.
 
 ### Bagaimana cara memperbaharui aplikasi
-1. Backup database aplikasi agar dapat di import diaplikasi baru
+<!-- 1. Backup database aplikasi agar dapat di import diaplikasi baru
   - Masuk aplikasi Monitoring FIFO
   - Masuk menu *Setting*, pada bilah sebelah kanan, klick form tarik-turun, pilih *bakcup database*.
   - Kemudian klick tombol *Backup data*
@@ -96,6 +96,13 @@ Slow moving adalah menu yang menyaring seluruh produk yang ada digudang yang ber
   - Pilih *import database*
   - Klick *Choose file*, kemudian pilih file database yang telah kita backup sebelumnya.
   - Klick *mulai import*.
-  - Selesai.
+  - Selesai. -->
+  - Kunjungi folder aplikasi yang baru.
+  - Copy seluruh file yang ada di folder tersebut.
+  - Pergi ke folder aplikasi yang dipakai saat ini.
+  - Hapus seluruh file didalamnya, kecuali file *manifest.json*.
+  - Paste file dari folder aplikasi baru.
+  - Kunjungi aplikasi seperti biasa.
+  - Jika tidak ada perubahan tekan *Reload* pada browser.
 
 Cukup sampai disini dulu untuk pembaruan aplikasi kali ini, semoga dapat dengan mudah memahami, semoga kedamaian selalu dilimpahkan kepada kita semua.
