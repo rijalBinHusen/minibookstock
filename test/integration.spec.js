@@ -93,7 +93,7 @@ for(let i = 0; i < 10; i++)  {
         })
     })
 
-    const decrement_available = - faker.datatype.number({ max: quantity })
+    const decrement_available = - faker.datatype.number({ min:10, max: quantity })
     const result_of_decrement = quantity + decrement_available
     // update available
     describe(`available now must be equal to ${quantity} ${decrement_available} = ${result_of_decrement}`, () => {

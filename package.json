@@ -21,10 +21,12 @@
   "devDependencies": {
     "@faker-js/faker": "^7.6.0",
     "@vitejs/plugin-vue": "^1.9.3",
+    "@vue/test-utils": "^2.2.7",
     "autoprefixer": "^10.4.0",
     "daisyui": "^1.16.0",
     "eslint": "^8.32.0",
     "fake-indexeddb": "^4.0.1",
+    "jsdom": "^21.0.0",
     "postcss": "^8.3.11",
     "tailwindcss": "^2.2.19",
     "vite": "^2.6.4",
