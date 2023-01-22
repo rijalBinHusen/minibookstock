@@ -75,7 +75,12 @@ const handleSlowMoving = async () => {
 }
 
   onMounted( async () => {
+    // launch the loader
+    launchForm('Loader', false)
+    // waiting for process
     lists.value = await getSlowMovingItems()
+    // close the loader
+    closeModalOrDialog(false)
   })
 
   </script>

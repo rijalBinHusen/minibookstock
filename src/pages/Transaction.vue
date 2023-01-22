@@ -55,7 +55,7 @@
   import datePicker from "vue3-datepicker";
   // shift component
   import SelectShift from '../components/parts/SelectShift.vue';
-  import { launchForm, closeModalOrDialog, subscribeConfirmDialog } from "../composables/launchForm"
+  import { launchForm, closeModalOrDialog, loaderMessage } from "../composables/launchForm"
   import { getIncomingByDate } from '../composables/Incoming';
   import { getOutputByDate } from '../composables/Output';
   import ExportToXls from '../utils/ExportToXls';
@@ -71,11 +71,19 @@ import { ddmmyyyy } from '../utils/dateFormat';
 
   // to show record
   const handleSubmit = async () => {
+    // empty the state
     lists.value.length = 0
+    // show Loader
+    launchForm('Loader', false)
+    // show message to loader
+    loaderMessage("Mendapatkan produk masuk!")
     // get incoming
     const incoming = await getIncomingByDate(dateStart.value, shift.value)
+    // show another mmessage to loader
+    loaderMessage("Mendapatkan produk keluar!")
     // get output
     const output = await getOutputByDate(dateStart.value, shift.value)
+    loaderMessage("Menerjemahkan menjadi transaksi!")
     // map and push to list
     for ( let income of incoming) {
       lists.value.push({
@@ -114,6 +122,7 @@ import { ddmmyyyy } from '../utils/dateFormat';
       })
     }
     isAvailableToExport.value = true
+    closeModalOrDialog(false)
   }
 
   watch([dateStart, shift], () => {

@@ -24,24 +24,34 @@ import { useJurnalProdukKeluar, useJurnalProdukMasuk } from '../composables/Sett
 import { getAllDataToBackup as getBackupSalesOrder } from "../composables/SalesOrder"
 import { getAllDataToBackup as getBackupOrderItem } from "../composables/SalesOrderItem"
 import { summary } from "../utils/summaryIdb"
-import { launchForm, closeModalOrDialog } from "../composables/launchForm"
+import { launchForm, closeModalOrDialog, loaderMessage } from "../composables/launchForm"
 // import function to export text to file and download it
 import { startExport } from "../composables/ExportAsFile"
 // import date time formater
 import { full } from "../utils/dateFormat"
+import { useIdb } from '../utils/localforage';
 
 const handleBackup = async () => {
     // launch the loader
     launchForm('Loader', false)
-    // import function get all jurnal
-    const { getAllDataToBackup: getBackupJurnalKeluar } = useJurnalProdukKeluar()
-    const { getAllDataToBackup: getBackupJurnalIncoming } = useJurnalProdukMasuk()
-    const { getAllDataToBackup: getBackupSummary } = await summary()
-    // the list of function that return data that we'are gonna backup
-    const list = [getBackupIncoming, getBackupMasterItems, getBackupOutput, getBackupStockMaster, getBackupJurnalIncoming, getBackupJurnalKeluar, getBackupSummary, getBackupSalesOrder, getBackupOrderItem]
-    // map all function to get all data in local storage
-    const result = await Promise.all(list.map((get) => get()))
-    // export all data as file
+    // will contain all result
+    const result = []
+    // summary db
+    const summary = await useIdb("summary")
+    // get all items summary
+    const summary_items = await summary.getItems()
+    // looping summary items and get all data
+    for(const [index, sum] of summary_items.entries()) {
+        // show message to loader
+        loaderMessage(`Mendapatkan ${index + 1 } dari ${summary_items.length} tabel, total ${sum.total} record.`)
+        // initiate db
+        const dbCurrentTable = await useIdb(sum.id)
+        // get all items
+        const allItems = await dbCurrentTable.getItems()
+        // push to result
+        result.push({ store: sum.id, data: allItems })
+    }
+    // // export all data as file
     await startExport(result, "Backup monitoring FIFO "+full() + '.json')
     // console.log(result)
     // close the loader

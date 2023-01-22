@@ -2,6 +2,7 @@ import { summary } from "../utils/summaryIdb";
 import { ref } from "vue";
 // item function
 import { getItemById, getItemIdByKdItem, createItem } from "./MasterItems";
+import { loaderMessage } from "./launchForm"
 // date formatter
 import {
   ddmmyyyy,
@@ -382,6 +383,8 @@ export const getStockThatAvailable = async () => {
   if (wasGetStockThatAvailable.value || Stock_masters.value.length) {
     return;
   }
+  // show message to loader
+  loaderMessage("Mendapatkan seluruh stock master")
   // mark variable as true
   wasGetStockThatAvailable.value = true;
   // empty state
@@ -391,7 +394,9 @@ export const getStockThatAvailable = async () => {
   const stockdb = await useIdb(store);
   // stock that available
   const stockAvailable = await stockdb.getItemsByKeyGreaterThan("quantity", 0);
-  for (const stock of stockAvailable) {
+  for (const [index, stock] of stockAvailable.entries()) {
+    // show message to lodaer
+    loaderMessage(`Menerjemahkan menjadi stock master, ${index} dari ${stockAvailable.length} stock`)
     // map stock
     const stockMapped = await documentsMapper(stock);
     // push to state
@@ -450,7 +455,8 @@ export const getSlowMovingItems = async () => {
   // filter
   const result = []
   // looping it
-  for(let stock of Stock_masters.value ) {
+  for(let [index, stock] of Stock_masters.value.entries() ) {
+    loaderMessage(`Menerjemahkan menjadi slow moving ${index} dari ${Stock_masters.value.length}`)
     if(time(stock?.product_created) <= day14Before) {
       // incoming details
       const incomingDetails = await getIncomingById(stock?.icoming_parent_id)
@@ -476,7 +482,9 @@ export const getSummaryStockMaster = async () => {
   // variable that wuold contain result
   let result = []
   // loop the state
-  for(let stock of Stock_masters.value) {
+  for(let [index, stock] of Stock_masters.value.entries()) {
+    // show message to loader
+    loaderMessage(`Menerjemahkan menjadi summary stock, ${index} dari ${Stock_masters.value.length} stock`)
     // get incoming details
     const incomingDetails = await getIncomingById(stock?.icoming_parent_id);
     // get incoming type info

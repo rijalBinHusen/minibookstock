@@ -65,7 +65,12 @@ const handleMasterStock = async () => {
 }
 
 onMounted( async () => {
+  // launch the loader
+  launchForm('Loader', false)
+  // waiting for process
   lists.value = await getSummaryStockMaster()
+  // close the loader
+  closeModalOrDialog(false)
 })
 
 </script>
