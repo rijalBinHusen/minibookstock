@@ -14,8 +14,7 @@ export const useIdb = async (storeName) => {
 
   let countOfLoggerAtATime = 0;
 
-  const setItem = async (key, value) => {
-    await store.setItem(key, value);
+  const addLog = async (mode, key, value) => {
     // create new date time first
     const dtime = new Date().getTime();
     // increment count
@@ -24,11 +23,17 @@ export const useIdb = async (storeName) => {
     const idLog = dtime + countOfLoggerAtATime;
     // record to log
     await logging.setItem(idLog, {
-      mode: 'set',
+      mode,
+      time: dtime,
       store: storeName,
       idRecord: key,
-      value: JSON.stringify(value),
+      value: value ? JSON.stringify(value) : 'null',
     });
+  };
+
+  const setItem = async (key, value) => {
+    await addLog('set', key, value);
+    await store.setItem(key, value);
     return;
   };
 
@@ -56,18 +61,7 @@ export const useIdb = async (storeName) => {
   };
 
   const removeItem = async (key) => {
-    // create new date time first
-    const dtime = new Date().getTime();
-    // increment count
-    countOfLoggerAtATime = countOfLoggerAtATime + 1;
-    // id logger
-    const idLog = dtime + countOfLoggerAtATime + '';
-    // record to log
-    await logging.setItem(idLog, {
-      mode: 'remove',
-      store: storeName,
-      idRecord: key,
-    });
+    addLog('remove', key, false);
     await store.removeItem(key);
     return;
   };

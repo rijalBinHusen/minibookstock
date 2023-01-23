@@ -3,7 +3,9 @@
     <!-- <component :is="activeComponent"></component> -->
     <JurnalId />
     <div class="bg-base-200 w-6/12 p-2">
-      <p class="text-3xl text-center">{{ label || 'Export atau Import data' }}</p>
+      <p class="text-3xl text-center">
+        {{ label || 'Export atau Import data' }}
+      </p>
       <Select
         value="id"
         text="title"
@@ -14,9 +16,9 @@
         @selectedd="selectedDataType = $event"
       />
 
-    <component :is="components[selectedDataType]"></component>
-    <!-- Crud the list location id that would be import to database -->
-    <!-- <div class="mt-4">
+      <component :is="components[selectedDataType]"></component>
+      <!-- Crud the list location id that would be import to database -->
+      <!-- <div class="mt-4">
       <div id="incoming_add_submit" class="w-full flex">
         <Input
           @send="newLocationId = $event"
@@ -41,7 +43,7 @@
       </div>
     </div> -->
 
-    <!-- End of Crud the list location id that would be import to database -->
+      <!-- End of Crud the list location id that would be import to database -->
       <!-- <Input
         v-if="labelImport"
         type="file"
@@ -51,48 +53,54 @@
         button="Import"
         ref="importerField"
       /> -->
-        <!-- @change="impor($event)" -->
-  </div>
+      <!-- @change="impor($event)" -->
+    </div>
   </div>
 </template>
 
 <script setup>
-import JurnalId from "../components/JurnalId.vue";
-import Select from "../components/elements/Forms/Select.vue";
-import { computed, ref } from "vue";
-import BackupData from "../components/BackupData.vue";
-import ImportData from "../components/ImportData.vue";
-import ImportStockAwal from "../components/ImportStockAwal.vue"
+import JurnalId from '../components/JurnalId.vue';
+import Select from '../components/elements/Forms/Select.vue';
+import { computed, ref } from 'vue';
+import BackupData from '../components/BackupData.vue';
+import ExportLogs from '../components/ExportLogs.vue';
+import ImportData from '../components/ImportData.vue';
+import ImportStockAwal from '../components/ImportStockAwal.vue';
 
 const listData = [
-          // { id: 'database', type: 'import', title: 'Import Database'},
-          // { id: 'salesOrder', type: 'import', title: 'Import Outstanding SO'},
-          { id : 'BackupData', type: 'export', title: 'Backup data'},
-          { id: 'ImportData', type: 'import', title: 'Import database'},
-          { id: 'ImportStockAwal', type: 'import', title: 'Import stock awal'},
-        ]
+  // { id: 'database', type: 'import', title: 'Import Database'},
+  // { id: 'salesOrder', type: 'import', title: 'Import Outstanding SO'},
+  { id: 'BackupData', type: 'export', title: 'Backup data' },
+  { id: 'ImportData', type: 'import', title: 'Import database' },
+  { id: 'ImportStockAwal', type: 'import', title: 'Import stock awal' },
+  { id: 'ExportLogs', type: 'export', title: 'Export aktivitas aplikasi' },
+];
 
 // the variable that will contain id of listData what user selected in select option
-const selectedDataType = ref(null)
+const selectedDataType = ref(null);
 
 // the label that would show in input type file
 const label = computed(() => {
   // if the selected import just selected
-  if(selectedDataType.value) {
+  if (selectedDataType.value) {
     // find the id of selected import
-    const findList = listData.find((list) => list.id === selectedDataType.value)
+    const findList = listData.find(
+      (list) => list.id === selectedDataType.value
+    );
     // return label
-    if(findList) {
-      return findList?.title
+    if (findList) {
+      return findList?.title;
     }
   }
-})
+});
 
 // the list of all components
 const components = {
-  BackupData, ImportData, ImportStockAwal
-}
-
+  BackupData,
+  ImportData,
+  ImportStockAwal,
+  ExportLogs,
+};
 
 // list of location id that would be import to database
 

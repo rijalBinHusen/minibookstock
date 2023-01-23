@@ -3,9 +3,9 @@
     <Button
       small
       primary
-      value="Backup data"
+      value="Export logs"
       type="button"
-      @trig="handleBackup"
+      @trig="handleExportLogs"
     />
   </div>
 </template>
@@ -24,32 +24,17 @@ import { startExport } from '../composables/ExportAsFile';
 import { full } from '../utils/dateFormat';
 import { useIdb } from '../utils/localforage';
 
-const handleBackup = async () => {
+const handleExportLogs = async () => {
   // launch the loader
   launchForm('Loader', false);
   // will contain all result
   const result = [];
   // summary db
-  const summary = await useIdb('summary');
+  const summary = await useIdb('logs');
   // get all items summary
-  const summary_items = await summary.getItems();
-  // looping summary items and get all data
-  for (const [index, sum] of summary_items.entries()) {
-    // show message to loader
-    loaderMessage(
-      `Mendapatkan ${index + 1} dari ${summary_items.length} tabel, total ${
-        sum.total
-      } record.`
-    );
-    // initiate db
-    const dbCurrentTable = await useIdb(sum.id);
-    // get all items
-    const allItems = await dbCurrentTable.getItems();
-    // push to result
-    result.push({ store: sum.id, data: allItems });
-  }
+  const log_items = await summary.getItems();
   // // export all data as file
-  await startExport(result, 'Backup monitoring FIFO ' + full() + '.json');
+  await startExport(log_items, 'Backup monitoring FIFO ' + full() + '.json');
   // console.log(result)
   // close the loader
   closeModalOrDialog(false);
