@@ -18,16 +18,16 @@ export const useIdb = async (storeName) => {
     // create new date time first
     const dtime = new Date().getTime();
     // increment count
-    countOfLoggerAtATime = countOfLoggerAtATime + 1 + '';
+    countOfLoggerAtATime = countOfLoggerAtATime + 1;
     // id logger
-    const idLog = dtime + countOfLoggerAtATime;
+    const idLog = dtime + countOfLoggerAtATime + '';
     // record to log
     await logging.setItem(idLog, {
       mode,
       time: dtime,
       store: storeName,
       idRecord: key,
-      value: value ? JSON.stringify(value) : 'null',
+      value: JSON.stringify(value),
     });
   };
 
