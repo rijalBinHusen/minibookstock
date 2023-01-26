@@ -199,6 +199,7 @@ export const outputTransactionMapped = async (doc) => {
     id: doc?.id,
     tanggal: ddmmyyyy(doc?.tanggal, '-'),
     shift: doc?.shift,
+    customer: doc?.customer,
     nomor_so: doc?.nomor_so,
     kd_item: item?.kd_item,
     nm_item: item?.nm_item,

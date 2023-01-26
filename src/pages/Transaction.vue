@@ -88,6 +88,7 @@ const isAvailableToExport = ref(false);
 
 // to show record
 const handleSubmit = async () => {
+  if (!shift.value || !dateStart.value) return;
   // empty the state
   lists.value.length = 0;
   // show Loader
