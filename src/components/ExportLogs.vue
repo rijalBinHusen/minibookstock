@@ -34,7 +34,10 @@ const handleExportLogs = async () => {
   // get all items summary
   const log_items = await summary.getItems();
   // // export all data as file
-  await startExport(log_items, 'Backup monitoring FIFO ' + full() + '.json');
+  await startExport(
+    log_items,
+    'Log aktivitas aplikasi FIFO ' + full() + '.json'
+  );
   // console.log(result)
   // close the loader
   closeModalOrDialog(false);

@@ -22,12 +22,21 @@
           <SelectShift @selected-shift="shift = $event" :shift="shift" />
           <!-- end of Shift -->
           <!-- Coming from -->
-          <SelectTypeDocument jurnal="keluar" :typeJurnal="type" @selected-type="type = $event" />
+          <SelectTypeDocument
+            jurnal="keluar"
+            :typeJurnal="type"
+            @selected-type="type = $event"
+          />
           <!-- End of coming from -->
         </div>
 
         <div id="incoming_paper" class="grid grid-cols-3 gap-4">
-          <InputSalesOrder :disabled="Boolean(isSalesOrder|| isEditMode)" small :nomor_so="nomor_so" @picked-sales-order="handleSOrder($event)" />
+          <InputSalesOrder
+            :disabled="Boolean(isSalesOrder || isEditMode)"
+            small
+            :nomor_so="nomor_so"
+            @picked-sales-order="handleSOrder($event)"
+          />
           <Input
             label="Customer"
             @send="customer = $event"
@@ -39,26 +48,33 @@
         </div>
 
         <!-- Item picker -->
-         <PickItemToOutputVue
-            :isParentEditMode="isEditMode"
-            :stockChild="stockChildDetails"
-            @addStock="handleStock('add', $event)"
-            @removeStock="handleStock('remove', $event)"
-            @editStock="handleStock('edit', $event)"
-            @updateStock="handleStock('update', $event)"
-            :currentStockEdit="currentStockEdit"
-          />
-         <!-- End of Item picker -->
+        <PickItemToOutputVue
+          :isParentEditMode="isEditMode"
+          :stockChild="stockChildDetails"
+          @addStock="handleStock('add', $event)"
+          @removeStock="handleStock('remove', $event)"
+          @editStock="handleStock('edit', $event)"
+          @updateStock="handleStock('update', $event)"
+          :currentStockEdit="currentStockEdit"
+        />
+        <!-- End of Item picker -->
 
-
-        <div v-if="!isSalesOrder && !currentStockEdit" id="incoming_add_submit" class="w-full mt-4">
-          <Button type="button"
+        <div
+          v-if="!isSalesOrder && !currentStockEdit"
+          id="incoming_add_submit"
+          class="w-full mt-4"
+        >
+          <!-- show button when message null -->
+          <Button
+            v-if="!message"
+            type="button"
             @trig="handleSubmit"
             primary
             :value="isEditMode ? 'Update' : 'Submit'"
             small
             id="button-output-form-submit"
           />
+          <span v-else> {{ message }} </span>
         </div>
       </div>
     </div>
@@ -66,131 +82,175 @@
 </template>
 
 <script setup>
-import datePicker from "vue3-datepicker";
-import Input from "../components/elements/Forms/Input.vue";
-import Button from "../components/elements/Button.vue";
-import PickItemToOutputVue from "../components/PickItemToOutput.vue";
-import SelectShift from "../components/parts/SelectShift.vue";
-import SelectTypeDocument from "../components/parts/SelectTypeDocument.vue";
-import InputSalesOrder from "../components/InputSalesOrder.vue";
-import { ref, onMounted, computed, watch } from "vue";
-import { closeModalOrDialog } from "../composables/launchForm"
-import { useStore } from "vuex";
-import { getItemById, gettingStartedRecord as getItems } from "../composables/MasterItems";
-import { ddmmyyyy } from "../utils/dateFormat";
-import { getAvailableDateByItem, getStockById } from "../composables/StockMaster";
-import { createOutput, getOutputById, updateOutputById, changeQuantityOutput } from "../composables/Output"
-import { getSalesOrderById, removeChildItemsOrder } from "../composables/SalesOrder"
-import { getItemOrderById, changeOrderValue } from "../composables/SalesOrderItem"
+import datePicker from 'vue3-datepicker';
+import Input from '../components/elements/Forms/Input.vue';
+import Button from '../components/elements/Button.vue';
+import PickItemToOutputVue from '../components/PickItemToOutput.vue';
+import SelectShift from '../components/parts/SelectShift.vue';
+import SelectTypeDocument from '../components/parts/SelectTypeDocument.vue';
+import InputSalesOrder from '../components/InputSalesOrder.vue';
+import { ref, onMounted, computed, watch } from 'vue';
+import { closeModalOrDialog } from '../composables/launchForm';
+import { useStore } from 'vuex';
+import {
+  getItemById,
+  gettingStartedRecord as getItems,
+} from '../composables/MasterItems';
+import { ddmmyyyy } from '../utils/dateFormat';
+import {
+  getAvailableDateByItem,
+  getStockById,
+} from '../composables/StockMaster';
+import {
+  createOutput,
+  getOutputById,
+  updateOutputById,
+  changeQuantityOutput,
+} from '../composables/Output';
+import {
+  getSalesOrderById,
+  removeChildItemsOrder,
+} from '../composables/SalesOrder';
+import {
+  getItemOrderById,
+  changeOrderValue,
+} from '../composables/SalesOrderItem';
 
 // vuex
-const store = useStore()
+const store = useStore();
 // date record
-const date = ref(new Date())
+const date = ref(new Date());
 // shift record
-const shift = ref(1)
+const shift = ref(1);
 // type incom product
-const type = ref(null)
+const type = ref(null);
 // paper id record
-const nomor_so = ref(null)
+const nomor_so = ref(null);
 // customer name
-const customer = ref(null)
+const customer = ref(null);
 // master stock
-const stockChild = ref([])
+const stockChild = ref([]);
 // current stock editing
-const currentStockEdit=ref(null)
+const currentStockEdit = ref(null);
 // stock to update while editing form
-const stockToUpdate = ref([])
+const stockToUpdate = ref([]);
 
-
-const stockChildDetails = ref([])
+const stockChildDetails = ref([]);
 
 const stockChildMap = async () => {
-  stockChildDetails.value = []
-  for(const stock of stockChild.value) {
-    const getStockMaster = await getStockById(stock?.stock_master_id)
-    const getItem = await getItemById(getStockMaster?.item_id)
+  stockChildDetails.value = [];
+  for (const stock of stockChild.value) {
+    const getStockMaster = await getStockById(stock?.stock_master_id);
+    const getItem = await getItemById(getStockMaster?.item_id);
     stockChildDetails.value.push({
       id: stock?.id,
       item: getItem.nm_item,
       quantity: stock?.quantity,
-      product_created: ddmmyyyy(getStockMaster.product_created, "-")
-    })
+      product_created: ddmmyyyy(getStockMaster.product_created, '-'),
+    });
   }
-}
+};
 // to add new item form
 const handleStock = (operation, e) => {
   //  data from child = { stock_master_id, quantity }
-  if(operation == 'add') {
-    const id = e?.id || stockChild.value.length +1 + ""
-    stockChild.value.push({ id, ...e })
+  if (operation == 'add') {
+    const id = e?.id || stockChild.value.length + 1 + '';
+    stockChild.value.push({ id, ...e });
   } else if (operation == 'edit') {
-    currentStockEdit.value = stockChild.value.find((rec) => rec?.id == e)
-  }  else if(operation == 'update') {
-    stockChild.value = stockChild.value.map((stock) => stock?.id == e.id ? { id: e.id, ...e.value} : stock)
+    currentStockEdit.value = stockChild.value.find((rec) => rec?.id == e);
+  } else if (operation == 'update') {
+    stockChild.value = stockChild.value.map((stock) =>
+      stock?.id == e.id ? { id: e.id, ...e.value } : stock
+    );
     // if isedit mode, push to stock to uupdate
-    if(isEditMode.value) {
-      stockToUpdate.value.push(e.id)
+    if (isEditMode.value) {
+      stockToUpdate.value.push(e.id);
     }
-    currentStockEdit.value = null
+    currentStockEdit.value = null;
+  } else {
+    stockChild.value = stockChild.value.filter((rec) => rec?.id !== e);
   }
-  else {
-    stockChild.value = stockChild.value.filter((rec) => rec?.id !== e)
-  }
-}
+};
 
 const handleSubmit = async () => {
-  if(!date.value || !shift.value || !type.value || !nomor_so.value || !stockChild.value || !customer.value) {
-    alert("Tidak boleh ada form yang kosong")
+  // prevent form to submitted twice
+  if (message.value) return;
+  // there is form null
+  if (
+    !date.value ||
+    !shift.value ||
+    !type.value ||
+    !nomor_so.value ||
+    !stockChild.value ||
+    !customer.value
+  ) {
+    alert('Tidak boleh ada form yang kosong');
     return;
   }
 
-  if(isEditMode.value) {
+  if (isEditMode.value) {
     // update record
-    await handleUpdateOutput()
+    await handleUpdateOutput();
   }
   // create new output
   else {
-    await handleCreateOutput()
+    await handleCreateOutput();
   }
 
-  closeModalOrDialog(true)
+  closeModalOrDialog(true);
   // empty the value
-  isEditMode.value = null
-  salesOrderPicked.value = []
-}
+  isEditMode.value = null;
+  salesOrderPicked.value = [];
+};
 
+// message to show while insert to database
+const message = ref(null);
 const handleCreateOutput = async () => {
   // stock child value = data from child = { stock_master_id, quantity }
   // then insert incoming transction with child from insert all stock
-  for (const stock of stockChild.value) {
+  for (const [index, stock] of stockChild.value.entries()) {
+    // set message to show
+    message.value = `Memasukkan produk ${index + 1} dari ${
+      stockChild.value.length
+    }`;
     // create output record
-    await createOutput(date.value, type.value, shift.value, nomor_so.value, stock?.stock_master_id, stock?.quantity, customer.value)
+    await createOutput(
+      date.value,
+      type.value,
+      shift.value,
+      nomor_so.value,
+      stock?.stock_master_id,
+      stock?.quantity,
+      customer.value
+    );
     // change order quantity if it picked from item order, this will return (order - yournumber)
-    if(stock.id.length > 3) {
-      const orderQuantity = await changeOrderValue(stock.id, -stock.quantity)
+    if (stock.id.length > 3) {
+      const orderQuantity = await changeOrderValue(stock.id, -stock.quantity);
       // if order quantity === 0
       // remove item order id from salesorder.childitem
-      if(orderQuantity === 0) {
-        for(const SOrder of salesOrderPicked.value) {
-          if(SOrder) {
-            await removeChildItemsOrder(SOrder, stock.id)
+      if (orderQuantity === 0) {
+        for (const SOrder of salesOrderPicked.value) {
+          if (SOrder) {
+            await removeChildItemsOrder(SOrder, stock.id);
           }
         }
       }
     }
   }
   return;
-}
+};
 
 const handleUpdateOutput = async () => {
   // stock child value = data from child = { id,  stock_master_id, quantity }
+  // set message to show
+  message.value = `Update produk`;
   // looping all child stock as stock
-  for(const stock of stockChild.value) {
+  for (const stock of stockChild.value) {
+    // set message to show
     // is stockToOuput.value.includes(stock)
-    if(stockToUpdate.value.includes(stock.id)) {
+    if (stockToUpdate.value.includes(stock.id)) {
       // update quantity
-      await changeQuantityOutput(isEditMode.value, stock?.quantity)
+      await changeQuantityOutput(isEditMode.value, stock?.quantity);
     }
   }
   const newRec = {
@@ -198,131 +258,152 @@ const handleUpdateOutput = async () => {
     type: type.value,
     shift: shift.value,
     nomor_so: nomor_so.value,
-    customer: customer.value
-  }
+    customer: customer.value,
+  };
   // update output
-  await updateOutputById(isEditMode.value, newRec)
+  await updateOutputById(isEditMode.value, newRec);
   // finished
-}
+};
 
 // will contain id of record that we will update it
-const isEditMode = ref(null)
+const isEditMode = ref(null);
 // checking is that sales order or not
-const isSalesOrder = computed(() => isEditMode.value ? isEditMode.value.slice(0, 3) == "SO_" : null)
-
+const isSalesOrder = computed(() =>
+  isEditMode.value ? isEditMode.value.slice(0, 3) == 'SO_' : null
+);
 
 // will contain condition is the output picking from salesOrder or not
-const salesOrderPicked = ref([])
+const salesOrderPicked = ref([]);
 // handle SOrder
 const handleSOrder = async (salesOrderId) => {
   // get last 8 character, and it must be number
-  nomor_so.value = salesOrderId
-  if(!(salesOrderId.slice(0, 3) == "SO_")){
+  nomor_so.value = salesOrderId;
+  if (!(salesOrderId.slice(0, 3) == 'SO_')) {
     return;
   }
   // yang memanggil fungsi ini
   // ketika menambahkan output baru
   // ketika melihat sales order
   // get sales order by id. this will return { id, nomor_so, tanggal_so, customer }
-  const salesOrderDetails = await getSalesOrderById(salesOrderId)
+  const salesOrderDetails = await getSalesOrderById(salesOrderId);
   // if sales order not found
-  if(!salesOrderDetails) {
+  if (!salesOrderDetails) {
     return;
   }
   // put to nomor_so the form
-  nomor_so.value = salesOrderDetails.nomor_so
-  customer.value = salesOrderDetails.customer
+  nomor_so.value = salesOrderDetails.nomor_so;
+  customer.value = salesOrderDetails.customer;
   // if salesOrderDetails.childItemsOrder.length > 0
-  if(salesOrderDetails.childItemsOrder.length > 0) {
-  // get all item order by salesOrderDetails.childItemsOrder
-    for(const idItemOrder of salesOrderDetails.childItemsOrder) {
-    // get sales order item. this will return { id, item_id, order }
-    const itemOrder = await getItemOrderById(idItemOrder)
-    // item order is null
-    if(!itemOrder?.id) {
-      return;
-    }
-    // get stock master by item id, this will return [{ id, product_created }, .....]
-    const dateStockMaster = await getAvailableDateByItem(itemOrder.item_id)
-    if(!dateStockMaster.length) {
-      return;
-    }
-    // get stockMasterById, this will return { item_id, product_created, quantity, available}
-    const stockMaster = await getStockById(dateStockMaster[0]?.id)
-    // compare available
-    // if available > order
-    // or datestockmaster only availbale 1
-    if(stockMaster.available >= itemOrder.order || dateStockMaster.length === 1) {
+  if (salesOrderDetails.childItemsOrder.length > 0) {
+    // get all item order by salesOrderDetails.childItemsOrder
+    for (const idItemOrder of salesOrderDetails.childItemsOrder) {
+      // get sales order item. this will return { id, item_id, order }
+      const itemOrder = await getItemOrderById(idItemOrder);
+      // item order is null
+      if (!itemOrder?.id) {
+        return;
+      }
+      // get stock master by item id, this will return [{ id, product_created }, .....]
+      const dateStockMaster = await getAvailableDateByItem(itemOrder.item_id);
+      if (!dateStockMaster.length) {
+        return;
+      }
+      // get stockMasterById, this will return { item_id, product_created, quantity, available}
+      const stockMaster = await getStockById(dateStockMaster[0]?.id);
+      // compare available
+      // if available > order
+      // or datestockmaster only availbale 1
+      if (
+        stockMaster.available >= itemOrder.order ||
+        dateStockMaster.length === 1
+      ) {
         // put to item lists
         // if the available stockMaster.available >= itemOrder.order alert it bro
-        if(stockMaster.available < itemOrder.order) {
-          const item = await getItemById(itemOrder.item_id)
-          alert(`Permintaan item ${item.nm_item} sebanyak ${itemOrder.order} karton tidak cukup, stock hanya tersedia ${stockMaster.available} karton!`)
-          handleStock('add', { id: itemOrder.id, stock_master_id: stockMaster?.id, quantity: stockMaster.available })
+        if (stockMaster.available < itemOrder.order) {
+          const item = await getItemById(itemOrder.item_id);
+          alert(
+            `Permintaan item ${item.nm_item} sebanyak ${itemOrder.order} karton tidak cukup, stock hanya tersedia ${stockMaster.available} karton!`
+          );
+          handleStock('add', {
+            id: itemOrder.id,
+            stock_master_id: stockMaster?.id,
+            quantity: stockMaster.available,
+          });
         } else {
-          handleStock('add', { id: itemOrder.id, stock_master_id: stockMaster?.id, quantity: itemOrder.order })
+          handleStock('add', {
+            id: itemOrder.id,
+            stock_master_id: stockMaster?.id,
+            quantity: itemOrder.order,
+          });
         }
       } else {
         // count the - quantity = sisa item order1
-        const quantity2 = itemOrder.order - stockMaster.available
+        const quantity2 = itemOrder.order - stockMaster.available;
         // put the available stock1
-        handleStock('add', { id: itemOrder.id, stock_master_id: stockMaster?.id, quantity: stockMaster.available })
+        handleStock('add', {
+          id: itemOrder.id,
+          stock_master_id: stockMaster?.id,
+          quantity: stockMaster.available,
+        });
         // search for available 2
         // get stockMasterById, this will return { item_id, product_created, quantity}
-        const stockMaster2 = await getStockById(dateStockMaster[1]?.id)
+        const stockMaster2 = await getStockById(dateStockMaster[1]?.id);
         // sisa item order2, if quantity3 >= 0 it means enough
-        const quantity3 = stockMaster2.available - quantity2
+        const quantity3 = stockMaster2.available - quantity2;
         // put the available stock2
         handleStock('add', {
-                id: itemOrder.id + 1,
-                stock_master_id: stockMaster2?.id,
-                quantity: quantity3 >= 0 ? quantity2 : stockMaster2.available
-              })
+          id: itemOrder.id + 1,
+          stock_master_id: stockMaster2?.id,
+          quantity: quantity3 >= 0 ? quantity2 : stockMaster2.available,
+        });
       }
     }
   }
   // record sorder that picked
-  salesOrderPicked.value.push((salesOrderId))
-}
+  salesOrderPicked.value.push(salesOrderId);
+};
 
 // watch stock child, and render every it change
-const watcherCallFunction = ref(null)
-watch([stockChild], () => {
-  // reset time out
-  clearTimeout(watcherCallFunction.value)
-  // set new timeout
-  watcherCallFunction.value = setTimeout(() => {
-    stockChildMap()
-  }, 300)
-}, { deep: true })
+const watcherCallFunction = ref(null);
+watch(
+  [stockChild],
+  () => {
+    // reset time out
+    clearTimeout(watcherCallFunction.value);
+    // set new timeout
+    watcherCallFunction.value = setTimeout(() => {
+      stockChildMap();
+    }, 300);
+  },
+  { deep: true }
+);
 
-onMounted( async () => {
-  await getItems()
+onMounted(async () => {
+  await getItems();
   // checking is any document to edit in state
-  isEditMode.value = store.state.form?.document
-  if(isEditMode.value) {
+  isEditMode.value = store.state.form?.document;
+  if (isEditMode.value) {
     // if sales order
-    if(isSalesOrder.value) {
-      handleSOrder(isEditMode.value)
+    if (isSalesOrder.value) {
+      handleSOrder(isEditMode.value);
     }
     // else, edit output
     else {
       // get output details
-      const output = await getOutputById(isEditMode.value)
+      const output = await getOutputById(isEditMode.value);
       // add to stock child
       handleStock('add', {
         id: output.id,
         stock_master_id: output.stock_master_id,
         quantity: output.quantity,
-      })
+      });
       // set variable
-      date.value = new Date(output.tanggal)
-      shift.value = Number(output.shift)
-      type.value = output.type
-      nomor_so.value = output.nomor_so
-      customer.value = output?.customer
+      date.value = new Date(output.tanggal);
+      shift.value = Number(output.shift);
+      type.value = output.type;
+      nomor_so.value = output.nomor_so;
+      customer.value = output?.customer;
     }
   }
-})
-
+});
 </script>
