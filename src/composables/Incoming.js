@@ -276,3 +276,14 @@ export const getIncomingByDate = async (date, shift) => {
   // return
   return result;
 };
+
+export const getIncomeBetweenDate = async (date1, date2) => {
+  const incomedb = await useIdb(store);
+  // get income by date
+  const allIncomes =
+    await incomedb.getItemsByKeyGreaterOrEqualThanAndLowerOrEqualThan(
+      'tanggal',
+      date1,
+      date2
+    );
+};

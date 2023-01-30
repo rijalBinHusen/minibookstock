@@ -32,7 +32,6 @@ export const useIdb = async (storeName) => {
   };
 
   const setItem = async (key, value) => {
-    await addLog('set', key, value);
     await store.setItem(key, value);
     return;
   };
@@ -103,8 +102,11 @@ export const useIdb = async (storeName) => {
     const item = await getItem(key);
     // new item
     const newItem = { ...item, ...keyValueToUpdate };
+    // record to log
+    await addLog('update', key, { ...keyValueToUpdate });
     // then set item
     await setItem(key, newItem);
+    // return
     return;
   };
 
@@ -215,6 +217,25 @@ export const useIdb = async (storeName) => {
       });
   };
 
+  const getItemsThatValueIncludes = async (yourString) => {
+    const result = [];
+    return store
+      .iterate(function (value, key, iterationNumber) {
+        if (Object.values(value).includes(yourString)) {
+          result.push(value);
+        }
+        // return result;
+      })
+      .then(function () {
+        // console.log("Iteration has completed, last iterated pair:");
+        return result;
+      })
+      .catch(function (err) {
+        // This code runs if there were any errors
+        console.log(err);
+      });
+  };
+
   return {
     setItem,
     getItem,
@@ -227,5 +248,6 @@ export const useIdb = async (storeName) => {
     getItemsByKeyGreaterThan,
     getItemByTwoKeyValue,
     getItemsByKeyGreaterOrEqualThanAndLowerOrEqualThan,
+    getItemsThatValueIncludes,
   };
 };
