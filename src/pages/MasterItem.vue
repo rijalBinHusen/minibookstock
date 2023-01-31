@@ -43,7 +43,7 @@
       <Button
         primary
         :value="isEditMode ? 'Update' : 'Tambah'"
-        type="submit"
+        type="button"
         small
         class="ml-2"
         id="submit-master-item"
@@ -179,7 +179,6 @@ watch([nm_item, kd_item, age_item], (newVal) => {
     if (newVal[2] !== origin.value?.age_item) {
       changed.value = { ...changed.value, age_item: newVal[2] };
     }
-    console.log(newVal);
   }
 });
 
