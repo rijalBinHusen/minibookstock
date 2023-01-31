@@ -1,5 +1,5 @@
 <template>
-  <div class="form-control">
+  <div :id="id" class="form-control">
     <label v-if="label" class="label">
       <span class="label-text">{{ label }}</span>
     </label>
@@ -13,6 +13,7 @@
         @keypress.enter="$emit('trig')"
         :ref="ref"
         :disabled="disabled"
+        :id="'form-' + id"
       />
       <button
         v-if="button"
@@ -26,7 +27,6 @@
 </template>
 
 <script>
-
 /**
  * <Input
               label="Plat nomor"
@@ -37,12 +37,12 @@
               />
  */
 export default {
-  name: "Input",
+  name: 'Input',
   props: {
     label: String,
     type: {
       type: String,
-      default: "text",
+      default: 'text',
     },
     tipe: String,
     placeholder: String,
@@ -51,27 +51,36 @@ export default {
     value: String,
     ref: String,
     disabled: Boolean,
+    id: String,
   },
-  emits: ["send", "trig"],
+  emits: ['send', 'trig'],
+  data() {
+    return {
+      counter: null,
+    };
+  },
   methods: {
     send(ev) {
-      this.$emit("send", ev);
+      clearTimeout(this.counter);
+      this.counter = setTimeout(() => {
+        this.$emit('send', ev);
+      }, 300);
     },
   },
   computed: {
     formTipe() {
-      let className = ["input"];
-      if (this.button) className.push("w-full pr-16 input");
-      if (this.small) className.push("input-sm");
-      if (this.tipe.includes("primary")) className.push("input-primary");
-      if (this.tipe.includes("secondary")) className.push("input-secondary");
-      if (this.tipe.includes("accent")) className.push("input-accent");
-      if (this.tipe.includes("border")) className.push("input-bordered");
-      if (this.tipe.includes("large")) className.push("input-large");
-      if (this.tipe.includes("small")) className.push("input-sm");
-      if (this.tipe.includes("xsmall")) className.push("input-xs");
+      let className = ['input'];
+      if (this.button) className.push('w-full pr-16 input');
+      if (this.small) className.push('input-sm');
+      if (this.tipe.includes('primary')) className.push('input-primary');
+      if (this.tipe.includes('secondary')) className.push('input-secondary');
+      if (this.tipe.includes('accent')) className.push('input-accent');
+      if (this.tipe.includes('border')) className.push('input-bordered');
+      if (this.tipe.includes('large')) className.push('input-large');
+      if (this.tipe.includes('small')) className.push('input-sm');
+      if (this.tipe.includes('xsmall')) className.push('input-xs');
 
-      return className.join(" ");
+      return className.join(' ');
     },
   },
 };
