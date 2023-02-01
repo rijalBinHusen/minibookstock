@@ -64,7 +64,7 @@ export default {
       clearTimeout(this.counter);
       this.counter = setTimeout(() => {
         this.$emit('send', ev);
-      }, 300);
+      }, 100);
     },
   },
   computed: {

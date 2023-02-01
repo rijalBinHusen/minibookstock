@@ -210,16 +210,6 @@ export const outputTransactionMapped = async (doc) => {
 };
 
 export const markAsFinished = async (id) => {
-  // mark in state
-  Output_transaction.value = Output_transaction.value.map((doc) => {
-    if (doc?.id === id) {
-      // update the quantity
-      // changeAvailableStock(doc?.stock_master_id,)
-      // mark as finished
-      return { ...doc, isFinished: true };
-    }
-    return doc;
-  });
   // get record
   const findRec = await getOutputById(id);
   // get stock master id
@@ -342,16 +332,6 @@ export const getOutputByStockMasterId = async (stock_master_id) => {
 };
 
 export const markAsUnFinished = async (id) => {
-  // mark in state
-  Output_transaction.value = Output_transaction.value.map((doc) => {
-    if (doc?.id === id) {
-      // update the quantity
-      // changeAvailableStock(doc?.stock_master_id,)
-      // mark as finished
-      return { ...doc, isFinished: false };
-    }
-    return doc;
-  });
   // get record
   const findRec = await getOutputById(id);
   // get stock master id

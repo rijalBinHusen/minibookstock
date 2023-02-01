@@ -276,8 +276,9 @@ const isSalesOrder = computed(() =>
 const salesOrderPicked = ref([]);
 // handle SOrder
 const handleSOrder = async (salesOrderId) => {
-  // get last 8 character, and it must be number
+  // set value nomor_so
   nomor_so.value = salesOrderId;
+  // if the paramater not sales order
   if (!(salesOrderId.slice(0, 3) == 'SO_')) {
     return;
   }
@@ -293,7 +294,7 @@ const handleSOrder = async (salesOrderId) => {
   // put to nomor_so the form
   nomor_so.value = salesOrderDetails.nomor_so;
   customer.value = salesOrderDetails.customer;
-  // if salesOrderDetails.childItemsOrder.length > 0
+  // if sales order details has item order child || salesOrderDetails.childItemsOrder.length > 0
   if (salesOrderDetails.childItemsOrder.length > 0) {
     // get all item order by salesOrderDetails.childItemsOrder
     for (const idItemOrder of salesOrderDetails.childItemsOrder) {
@@ -310,8 +311,8 @@ const handleSOrder = async (salesOrderId) => {
       }
       // get stockMasterById, this will return { item_id, product_created, quantity, available}
       const stockMaster = await getStockById(dateStockMaster[0]?.id);
-      // compare available
-      // if available > order
+      // compare available stock master
+      // if available stock master > order
       // or datestockmaster only availbale 1
       if (
         stockMaster.available >= itemOrder.order ||

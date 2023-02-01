@@ -40,6 +40,7 @@ describe('Click submit button ', async () => {
     // Assert payload is correct
     const expectedPayload = { kd_item, nm_item, age_item };
     expect(wrapper.emitted('formSubmitted')).toMatchObject(expectedPayload);
+    await wrapper.vm.handleSubmit();
 
     // wait until dom updated
     await flushPromises();
