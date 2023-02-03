@@ -368,13 +368,13 @@ export const changeQuantityOutput = async (id, yourNumberNewQuantity) => {
     await updateOutputById(id, { quantity: yourNumberNewQuantity });
     // change available stock
     await changeAvailableStock(origin.stock_master_id);
-  } else {
-    subscribeConfirmDialog(
-      'alert',
-      `${stock?.itemName} kurang dari ketersediaan!`
-    );
+    return;
   }
-  return;
+
+  subscribeConfirmDialog(
+    'alert',
+    `${stock?.itemName} kurang dari ketersediaan!`
+  );
 };
 
 export const getOutputByDate = async (date, shift) => {

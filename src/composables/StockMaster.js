@@ -226,15 +226,9 @@ export const changeAvailableStock = async (id_stock, yourNumberPlusOrMinus) => {
   // get all taken in output transaction
   const stockTaken = await getTotalStockTaken(id_stock);
   // now available - all taken in output
-  const available = findRec?.available - stockTaken.allTaken;
+  const available = findRec?.quantity - stockTaken.allTaken;
   // isTaken value
   const isTaken = Number(findRec?.quantity) != available ? true : false;
-
-  // set new Available, check is that >= 0
-  // const available =
-  //   Number(findRec?.available) + Number(yourNumberPlusOrMinus) >= 0
-  //     ? Number(findRec?.available) + Number(yourNumberPlusOrMinus)
-  //     : false;
   // if > 0
   if (available >= 0) {
     // new item
