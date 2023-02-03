@@ -532,9 +532,32 @@ export const getSummaryStockMaster = async () => {
   return result;
 };
 
+class StockToOutput {
+  #state = [];
+  constructor(arrOfStock) {
+    // looping arrofstock
+    arrOfStock.forEach((rec) => {
+      this.#state.push(
+        new Stock(
+          rec?.available,
+          rec?.available_end,
+          rec?.icoming_parent_id,
+          rec?.id,
+          rec?.isTaken,
+          rec?.item_id,
+          rec?.kd_produksi,
+          rec?.product_created,
+          rec?.quantity
+        )
+      );
+    });
+  }
+}
+
 export class StockMasterToOutput {
   constructor() {
     this.state = [];
+    this.getStock;
   }
 
   async getAvailableDateByItem(item_id) {
@@ -627,7 +650,7 @@ export class Stock {
     this.available_end = available_end;
     this.icoming_parent_id = icoming_parent_id;
     this.id = id;
-    this.isTaken = id;
+    this.isTaken = isTaken;
     this.item_id = item_id;
     this.kd_produksi = kd_produksi;
     this.product_created = product_created;
