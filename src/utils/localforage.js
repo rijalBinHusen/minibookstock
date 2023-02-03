@@ -27,7 +27,7 @@ export const useIdb = async (storeName) => {
       time: dtime,
       store: storeName,
       idRecord: key,
-      value: JSON.stringify(value),
+      value: value,
     });
   };
 
@@ -60,7 +60,7 @@ export const useIdb = async (storeName) => {
   };
 
   const removeItem = async (key) => {
-    addLog('remove', key, false);
+    addLog('remove', key, { id: key });
     await store.removeItem(key);
     return;
   };
@@ -102,6 +102,7 @@ export const useIdb = async (storeName) => {
     const item = await getItem(key);
     // new item
     const newItem = { ...item, ...keyValueToUpdate };
+    await addLog('beforeupdate', key, item);
     // record to log
     await addLog('update', key, { ...keyValueToUpdate });
     // then set item
