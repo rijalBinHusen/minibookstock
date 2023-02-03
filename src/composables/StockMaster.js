@@ -1,8 +1,8 @@
-import { summary } from "../utils/summaryIdb";
-import { ref } from "vue";
+import { summary } from '../utils/summaryIdb';
+import { ref } from 'vue';
 // item function
-import { getItemById, getItemIdByKdItem, createItem } from "./MasterItems";
-import { loaderMessage } from "./launchForm"
+import { getItemById, getItemIdByKdItem, createItem } from './MasterItems';
+import { loaderMessage } from './launchForm';
 // date formatter
 import {
   ddmmyyyy,
@@ -10,20 +10,20 @@ import {
   getNextYearTime,
   time,
   dayPlusOrMinus,
-  JSToExcelDate
-} from "../utils/dateFormat";
+  JSToExcelDate,
+} from '../utils/dateFormat';
 // store name
-const store = "stock_master";
+const store = 'stock_master';
 // generator id
-import { generateId } from "../utils/GeneratorId";
+import { generateId } from '../utils/GeneratorId';
 // incoming function
-import { createIncoming, getIncomingById } from "./Incoming";
+import { createIncoming, getIncomingById } from './Incoming';
 // conver excel date to javascript date
-import excelToJSDate from "../utils/ExcelDateToJs";
+import excelToJSDate from '../utils/ExcelDateToJs';
 // import local forage
-import { useIdb } from "../utils/localforage";
-import { getTotalStockTaken } from "./Output";
-import { useJurnalProdukMasuk } from "./Setting_JurnalId";
+import { useIdb } from '../utils/localforage';
+import { getTotalStockTaken } from './Output';
+import { useJurnalProdukMasuk } from './Setting_JurnalId';
 
 // the state
 export const Stock_masters = ref([]);
@@ -51,7 +51,7 @@ export const createStock = async (
   // retrieve all available stock,
   // if we push new record without retrieve all stock first, the function wil never do the intruction
   // because the state is not null, even though the state just contain new record, not all stock
-  await getStockThatAvailable()
+  await getStockThatAvailable();
   // initiate idb
   const stockdb = await useIdb(store);
   // get last id
@@ -59,7 +59,7 @@ export const createStock = async (
   // generate next id
   const nextId = summaryRecord?.lastUpdated
     ? generateId(summaryRecord?.lastUpdated?.lastId)
-    : generateId("STOCK_MASTER22030000");
+    : generateId('STOCK_MASTER22030000');
   // initiate new record
   const record = {
     created: new Date().getTime(),
@@ -158,7 +158,7 @@ export const documentsMapper = async (doc) => {
     ...doc,
     item_name: item?.nm_item,
     kd_item: item?.kd_item,
-    product_created_format: ddmmyyyy(doc?.product_created, "-"),
+    product_created_format: ddmmyyyy(doc?.product_created, '-'),
   };
 };
 
@@ -197,15 +197,15 @@ export const getAvailableDateByItem = async (item_id) => {
     if (stock?.item_id == item_id && stock?.available > 0) {
       // product create as number
       const product_created_as_number =
-        typeof stock?.product_created === "string"
+        typeof stock?.product_created === 'string'
           ? new Date(stock?.product_created).getTime()
           : stock?.product_created;
       result.push({
         id: stock?.id,
         product_created:
-          "#" +
-          ddmmyyyy(product_created_as_number, "-") +
-          " | " +
+          '#' +
+          ddmmyyyy(product_created_as_number, '-') +
+          ' | ' +
           stock?.kd_produksi,
         origin_product_created: product_created_as_number,
       });
@@ -213,7 +213,7 @@ export const getAvailableDateByItem = async (item_id) => {
   });
   // sorting the result
   return result.sort(
-    (a, b) => a["origin_product_created"] - b["origin_product_created"]
+    (a, b) => a['origin_product_created'] - b['origin_product_created']
   );
   // return result;
 };
@@ -223,20 +223,20 @@ export const changeAvailableStock = async (id_stock, yourNumberPlusOrMinus) => {
   const stockdb = await useIdb(store);
   // get the record
   const findRec = await stockdb.getItem(id_stock);
+  // get all taken in output transaction
+  const stockTaken = await getTotalStockTaken(id_stock);
+  // now available - all taken in output
+  const available = findRec?.available - stockTaken.allTaken;
   // isTaken value
-  const isTaken =
-    Number(findRec?.quantity) !=
-    Number(findRec?.available) + Number(yourNumberPlusOrMinus)
-      ? true
-      : false;
+  const isTaken = Number(findRec?.quantity) != available ? true : false;
 
   // set new Available, check is that >= 0
-  const available =
-    Number(findRec?.available) + Number(yourNumberPlusOrMinus) >= 0
-      ? Number(findRec?.available) + Number(yourNumberPlusOrMinus)
-      : false;
+  // const available =
+  //   Number(findRec?.available) + Number(yourNumberPlusOrMinus) >= 0
+  //     ? Number(findRec?.available) + Number(yourNumberPlusOrMinus)
+  //     : false;
   // if > 0
-  if (available !== false) {
+  if (available >= 0) {
     // new item
     const keyValueToUpdate = { available, isTaken };
     // save to database
@@ -284,7 +284,7 @@ export const createStockAwal = async (
     // create new stock
     const stock = await createStock(
       isItemExists.id,
-      "stock awal",
+      'stock awal',
       ymdTime(date),
       quantity
     );
@@ -294,9 +294,9 @@ export const createStockAwal = async (
       nama_item,
       ymdTime(),
       1,
-      "stock awal",
-      "stock awal",
-      "stock awal",
+      'stock awal',
+      'stock awal',
+      'stock awal',
       null
     );
     // set parent stock
@@ -312,16 +312,16 @@ export const createStockAwal = async (
       Number(umur_product)
     );
     // create new stock
-    const stock = await createStock(item, "stock awal", date, quantity);
+    const stock = await createStock(item, 'stock awal', date, quantity);
     // create incoming record
     const incoming = await createIncoming(
       [stock.id],
       nama_item,
       ymdTime(),
       1,
-      "stock awal",
-      "stock awal",
-      "stock awal",
+      'stock awal',
+      'stock awal',
+      'stock awal',
       null
     );
     // set parent stock
@@ -360,10 +360,10 @@ export const getStockByIdForIncomingForm = async (id) => {
   return findStock
     ? { ...findStock, quantity: findStock?.quantity + allOutput.allFinished }
     : {
-        item_id: "Not found",
-        kd_produksi: "Not found",
-        product_created: "Not found",
-        quantity: "Not found",
+        item_id: 'Not found',
+        kd_produksi: 'Not found',
+        product_created: 'Not found',
+        quantity: 'Not found',
       };
 };
 
@@ -371,7 +371,7 @@ export const getStockMasterByItemId = async (item_id) => {
   // initiate idb
   const stockdb = await useIdb(store);
   // get data from db based on item id
-  const allStock = await stockdb.getItemsByKeyValue("item_id", item_id);
+  const allStock = await stockdb.getItemsByKeyValue('item_id', item_id);
   // return all stock
   return allStock;
 };
@@ -384,7 +384,7 @@ export const getStockThatAvailable = async () => {
     return;
   }
   // show message to loader
-  loaderMessage("Mendapatkan seluruh stock master")
+  loaderMessage('Mendapatkan seluruh stock master');
   // mark variable as true
   wasGetStockThatAvailable.value = true;
   // empty state
@@ -393,10 +393,12 @@ export const getStockThatAvailable = async () => {
   // initiate idb
   const stockdb = await useIdb(store);
   // stock that available
-  const stockAvailable = await stockdb.getItemsByKeyGreaterThan("quantity", 0);
+  const stockAvailable = await stockdb.getItemsByKeyGreaterThan('quantity', 0);
   for (const [index, stock] of stockAvailable.entries()) {
     // show message to lodaer
-    loaderMessage(`Menerjemahkan menjadi stock master, ${index} dari ${stockAvailable.length} stock`)
+    loaderMessage(
+      `Menerjemahkan menjadi stock master, ${index} dari ${stockAvailable.length} stock`
+    );
     // map stock
     const stockMapped = await documentsMapper(stock);
     // push to state
@@ -421,7 +423,7 @@ export const mapStockForStockMaster = async () => {
       kd_item: item?.kd_item,
       nm_item: item?.nm_item,
       kd_produksi: stock?.kd_produksi,
-      product_created: ddmmyyyy(stock?.product_created, "-"),
+      product_created: ddmmyyyy(stock?.product_created, '-'),
       quantity: stock?.quantity,
       incoming_parent_id: stock?.icoming_parent_id,
     });
@@ -451,23 +453,25 @@ export const getSlowMovingItems = async () => {
   // 14 day before
   const day14Before = dayPlusOrMinus(false, -14);
   // use jurnal produk masuk
-  const { getJurnalProdukMasukById } = useJurnalProdukMasuk()
+  const { getJurnalProdukMasukById } = useJurnalProdukMasuk();
   // filter
-  const result = []
+  const result = [];
   // looping it
-  for(let [index, stock] of Stock_masters.value.entries() ) {
-    loaderMessage(`Menerjemahkan menjadi slow moving ${index} dari ${Stock_masters.value.length}`)
-    if(time(stock?.product_created) <= day14Before) {
+  for (let [index, stock] of Stock_masters.value.entries()) {
+    loaderMessage(
+      `Menerjemahkan menjadi slow moving ${index} dari ${Stock_masters.value.length}`
+    );
+    if (time(stock?.product_created) <= day14Before) {
       // incoming details
-      const incomingDetails = await getIncomingById(stock?.icoming_parent_id)
+      const incomingDetails = await getIncomingById(stock?.icoming_parent_id);
       // jurnal type
-      const jurnalInfo = await getJurnalProdukMasukById(incomingDetails?.type)
+      const jurnalInfo = await getJurnalProdukMasukById(incomingDetails?.type);
       // push to result
       result.push({
         ...stock,
         tanggal_transfer: JSToExcelDate(incomingDetails.tanggal),
-        asal_produk: jurnalInfo.nama_jurnal
-      })
+        asal_produk: jurnalInfo.nama_jurnal,
+      });
     }
   }
   // return result;
@@ -476,30 +480,43 @@ export const getSlowMovingItems = async () => {
 
 export const getSummaryStockMaster = async () => {
   // incoming type
-  const { getJurnalProdukMasukById } = useJurnalProdukMasuk()
+  const { getJurnalProdukMasukById } = useJurnalProdukMasuk();
   // get all available item first
-  await getStockThatAvailable()
+  await getStockThatAvailable();
   // variable that wuold contain result
-  let result = []
+  let result = [];
   // loop the state
-  for(let [index, stock] of Stock_masters.value.entries()) {
+  for (let [index, stock] of Stock_masters.value.entries()) {
     // show message to loader
-    loaderMessage(`Menerjemahkan menjadi summary stock, ${index} dari ${Stock_masters.value.length} stock`)
+    loaderMessage(
+      `Menerjemahkan menjadi summary stock, ${index} dari ${Stock_masters.value.length} stock`
+    );
     // get incoming details
     const incomingDetails = await getIncomingById(stock?.icoming_parent_id);
     // get incoming type info
-    const incomingType = await getJurnalProdukMasukById(incomingDetails.type)
+    const incomingType = await getJurnalProdukMasukById(incomingDetails.type);
     // find index by kd_item in result variable is that exists
-    let findIndex = result.findIndex(res => res?.kd_item == stock.kd_item)
+    let findIndex = result.findIndex((res) => res?.kd_item == stock.kd_item);
     // if exists, add total_quantity, details, product_dates
-    if(findIndex > -1) {
+    if (findIndex > -1) {
       // total_quantity,
       // result[1].total_quantity = 300 + 700
-      result[findIndex].total_quantity = result[findIndex].total_quantity + stock?.quantity
+      result[findIndex].total_quantity =
+        result[findIndex].total_quantity + stock?.quantity;
       // details, 300 ctn ( Masuk gudang 27-Jan-2022 Nomor dokumen 03938 Transfer dari produksi)
-      result[findIndex].details = result[findIndex].details + '\r\n' + stock?.quantity + (` Masuk ${ddmmyyyy(incomingDetails.tanggal, '-')}, Dokumen ${incomingDetails?.paper_id}`)
+      result[findIndex].details =
+        result[findIndex].details +
+        '\r\n' +
+        stock?.quantity +
+        ` Masuk ${ddmmyyyy(incomingDetails.tanggal, '-')}, Dokumen ${
+          incomingDetails?.paper_id
+        }`;
       // product_dates, | 300=27-01-23
-      result[findIndex].product_dates = result[findIndex].product_dates + '\r\n' + stock?.quantity + `=(${stock?.product_created_format} #${incomingType.nama_jurnal})`
+      result[findIndex].product_dates =
+        result[findIndex].product_dates +
+        '\r\n' +
+        stock?.quantity +
+        `=(${stock?.product_created_format} #${incomingType.nama_jurnal})`;
     } else {
       // push to result variable
       // <!-- kd_item, item_name, total_quantity, details, product_dates -->
@@ -507,21 +524,26 @@ export const getSummaryStockMaster = async () => {
         kd_item: stock?.kd_item,
         item_name: stock?.item_name,
         total_quantity: stock?.quantity,
-        details: stock?.quantity + (` Masuk ${ddmmyyyy(incomingDetails.tanggal, '-')}, Dokumen ${incomingDetails?.paper_id}`),
-        product_dates: stock?.quantity + `=(${stock?.product_created_format} #${incomingType.nama_jurnal})`
-      })
+        details:
+          stock?.quantity +
+          ` Masuk ${ddmmyyyy(incomingDetails.tanggal, '-')}, Dokumen ${
+            incomingDetails?.paper_id
+          }`,
+        product_dates:
+          stock?.quantity +
+          `=(${stock?.product_created_format} #${incomingType.nama_jurnal})`,
+      });
     }
   }
   return result;
-}
-
+};
 
 export class StockMasterToOutput {
   constructor() {
     this.state = [];
   }
 
-  async getAvailableDateByItem (item_id) {
+  async getAvailableDateByItem(item_id) {
     // get all item that available
     await this.getStock();
     // will contain the result
@@ -531,28 +553,28 @@ export class StockMasterToOutput {
       if (stock?.item_id == item_id && stock?.available > 0) {
         // product create as number
         const product_created_as_number =
-          typeof stock?.product_created === "string"
+          typeof stock?.product_created === 'string'
             ? new Date(stock?.product_created).getTime()
             : stock?.product_created;
         result.push({
           id: stock?.id,
           product_created:
-            "#" +
-            ddmmyyyy(product_created_as_number, "-") +
-            " | " +
+            '#' +
+            ddmmyyyy(product_created_as_number, '-') +
+            ' | ' +
             stock?.kd_produksi,
           origin_product_created: product_created_as_number,
         });
-    }
+      }
     });
     // sorting the result
     return result.sort(
-      (a, b) => a["origin_product_created"] - b["origin_product_created"]
+      (a, b) => a['origin_product_created'] - b['origin_product_created']
     );
     // return result;
-  };
+  }
 
-  async getItemThatAvailable () {
+  async getItemThatAvailable() {
     // get stock
     // get item that available not null
     await this.getStock();
@@ -579,7 +601,10 @@ export class StockMasterToOutput {
     // initiate idb
     const stockdb = await useIdb(store);
     // stock that available
-    const stockAvailable = await stockdb.getItemsByKeyGreaterThan("quantity", 0 );
+    const stockAvailable = await stockdb.getItemsByKeyGreaterThan(
+      'quantity',
+      0
+    );
     for (const stock of stockAvailable) {
       // map stock
       const stockMapped = await documentsMapper(stock);
@@ -589,5 +614,87 @@ export class StockMasterToOutput {
 
     // return
     return;
+  }
+}
+
+export class Stock {
+  constructor(
+    available,
+    available_end,
+    icoming_parent_id,
+    id,
+    isTaken,
+    item_id,
+    kd_produksi,
+    product_created,
+    quantity
+  ) {
+    this.available = available;
+    this.available_end = available_end;
+    this.icoming_parent_id = icoming_parent_id;
+    this.id = id;
+    this.isTaken = id;
+    this.item_id = item_id;
+    this.kd_produksi = kd_produksi;
+    this.product_created = product_created;
+    this.quantity = quantity;
+  }
+}
+
+export class StockInformation {
+  constructor(idStock) {
+    // id stock must be string
+    if (typeof idStock !== 'string') return;
+    this.idStock = idStock;
+    this.stockDetails = null;
+    this.getStock();
+  }
+
+  async availableStock() {
+    await this.getStock();
+    return this.stockDetails.available;
+  }
+
+  async isAvailableBy(yourNumber) {
+    await this.getStock();
+    return this.stockDetails?.available >= yourNumber;
+  }
+
+  async isStockTaken() {
+    await this.getStock();
+    return this.stockDetails.isTaken;
+  }
+
+  async isExists() {
+    await this.getStock();
+    return Boolean(this.stockDetails.id);
+  }
+
+  async itemId() {
+    await this.getStock();
+    return this.stockDetails.item_id;
+  }
+
+  async itemName() {
+    await this.getStock();
+    const item = await getItemById(this.stockDetails.item_id);
+    return item?.nm_item;
+  }
+
+  async getStock() {
+    // if stock details not null or id stock null
+    if (this.stockDetails || !this.idStock) return;
+    const stock = await getStockById(this.idStock);
+    this.stockDetails = new Stock(
+      stock?.available,
+      stock?.available_end,
+      stock?.icoming_parent_id,
+      stock?.id,
+      stock?.isTaken,
+      stock?.item_id,
+      stock?.kd_produksi,
+      stock?.product_created,
+      stock?.quantity
+    );
   }
 }

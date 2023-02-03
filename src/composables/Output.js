@@ -11,12 +11,14 @@ import {
   getStockById,
   changeAvailableStock,
   changeQuantityStock,
+  StockInformation,
 } from './StockMaster';
 // import item function
 import { getItemById } from './MasterItems';
 // import idb
 import { useIdb } from '../utils/localforage';
 import { useJurnalProdukKeluar } from './Setting_JurnalId';
+import { subscribeConfirmDialog } from './launchForm';
 
 // the state
 export const Output_transaction = ref([]);
@@ -68,23 +70,34 @@ export const createOutput = async (
     isFinished: false,
     customer,
   };
-  // change available master stock, do something when available
-  const isAvailable = await changeAvailableStock(
-    stock_master_id,
-    -Number(quantity)
-  );
-  // // save to database if isAvailable true
-  if (isAvailable) {
-    await outputdb.setItem(nextId, record);
-    // map record
-    const recordMapped = await outputTransactionMapped(record);
-    // push to state
-    Output_transaction.value.unshift(recordMapped);
-    // update summary
-    await summaryRecord.updateSummary(nextId);
-    // return the record
-    return record;
+  // check available stock
+  const stock = new StockInformation(stock_master_id);
+  // is stock exists
+  const isStockExists = stock?.isExists;
+  // if stock master is Exists
+  if (isStockExists) {
+    // save to database if available >= quantity
+    if (stock?.isAvailableBy(quantity)) {
+      await outputdb.setItem(nextId, record);
+      // map record
+      const recordMapped = await outputTransactionMapped(record);
+      // push to state
+      Output_transaction.value.unshift(recordMapped);
+      // update summary
+      await summaryRecord.updateSummary(nextId);
+      // change available stock
+      await changeAvailableStock(stock_master_id);
+      // return the record
+      return record;
+    }
+    // get item of stock
+    const itemInfo = await getItemById(stock?.itemId);
+    // else alert
+    subscribeConfirmDialog('alert', `Stock ${itemInfo?.nm_item} tidak cukup`);
+    return;
   }
+  // else alert
+  subscribeConfirmDialog('alert', 'Stock tidak ditemukan');
 };
 
 // export const gettingStartedRecord = () => {
@@ -119,20 +132,21 @@ export const getRecordByDate = async () => {
 };
 
 export const removeOutputById = async (id) => {
-  // initiate db
-  const outputdb = await useIdb(store);
   // remove from statate
   Output_transaction.value = Output_transaction.value.filter((rec) => {
     if (rec.id !== id) {
       return rec;
     }
   });
+  // initiate db
+  const outputdb = await useIdb(store);
   // get record first
   const record = await outputdb.getItem(id);
-  // change available stock
-  await changeAvailableStock(record?.stock_master_id, Number(record?.quantity));
   // saveData();
   await outputdb.removeItem(id);
+  // change available stock
+  await changeAvailableStock(record?.stock_master_id);
+  //
   return;
 };
 
@@ -345,15 +359,21 @@ export const markAsUnFinished = async (id) => {
 export const changeQuantityOutput = async (id, yourNumberNewQuantity) => {
   // get the original output
   const origin = await getOutputById(id);
-  // compare to new current output (that we're gonna update it)
-  // origin - new number | 1000 - 5000 = -4000 (available -4000)
-  // origin - new number | 1000 - 500 = +500 (available +500)
-  const differentQuantity =
-    Number(origin?.quantity) - Number(yourNumberNewQuantity);
-  // update output
-  await updateOutputById(id, { quantity: yourNumberNewQuantity });
-  // change available stock
-  await changeAvailableStock(origin.stock_master_id, differentQuantity);
+  // get stock details
+  const stock = new StockInformation(origin?.stock_master_id);
+  // check available stock
+  // if available >= quantity update output
+  if (stock?.isAvailableBy(yourNumberNewQuantity)) {
+    // update output
+    await updateOutputById(id, { quantity: yourNumberNewQuantity });
+    // change available stock
+    await changeAvailableStock(origin.stock_master_id);
+  } else {
+    subscribeConfirmDialog(
+      'alert',
+      `${stock?.itemName} kurang dari ketersediaan!`
+    );
+  }
   return;
 };
 
