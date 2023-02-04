@@ -111,18 +111,18 @@ const changed = ref({});
 const emit = defineEmits(['formSubmit']);
 
 // to create item
+// if the form empty
 const handleSubmit = async () => {
-  // we're doing this to make easy for unti testing
-  emit('formSubmit', {
-    kd_item: kd_item.value,
-    nm_item: nm_item.value,
-    age_item: age_item.value,
-  });
-  // if the form empty
   if (!nm_item.value || !kd_item.value || !age_item.value) {
     subscribeConfirmDialog('alert', 'Tidak boleh ada form yang kosong');
     return;
   }
+  // we're doing this to make easy for unti testing
+  // emit('formSubmit', {
+  //   kd_item: kd_item.value,
+  //   nm_item: nm_item.value,
+  //   age_item: age_item.value,
+  // });
   // update item
   // to update item
   if (isEditMode.value) {

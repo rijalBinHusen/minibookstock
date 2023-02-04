@@ -54,17 +54,9 @@ export default {
     id: String,
   },
   emits: ['send', 'trig'],
-  data() {
-    return {
-      counter: null,
-    };
-  },
   methods: {
     send(ev) {
-      clearTimeout(this.counter);
-      this.counter = setTimeout(() => {
-        this.$emit('send', ev);
-      }, 100);
+      this.$emit('send', ev);
     },
   },
   computed: {
