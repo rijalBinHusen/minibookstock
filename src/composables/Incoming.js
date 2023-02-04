@@ -1,11 +1,8 @@
-import { summary } from '../utils/summaryIdb';
 import { ref } from 'vue';
 // import { getItemById } from "./MasterItems";
 import { ymdTime, ddmmyyyy } from '../utils/dateFormat';
 // store name
 const store = 'incoming_transaction';
-// generator id
-import { generateId } from '../utils/GeneratorId';
 // import set parent function for stock master
 import { setStockParent, getStockById } from './StockMaster';
 // master item function
@@ -35,28 +32,11 @@ export const dateRecordToShow = ref(new Date());
   catatan string
  */
 
-export const createIncoming = async (
-  stock_master_ids,
-  paper_id,
-  tanggal,
-  shift,
-  diterima,
-  type,
-  diserahkan,
-  catatan
-) => {
+export const createIncoming = async ( stock_master_ids, paper_id, tanggal, shift, diterima, type, diserahkan, catatan ) => {
   // initiate idb
   const incomedb = await useIdb(store);
-  // get last id
-  const summaryRecord = await summary(store);
-  // generate next id
-  const nextId = summaryRecord?.lastUpdated
-    ? generateId(summaryRecord?.lastUpdated?.lastId)
-    : generateId('INCOMING_TR22030000');
   // initiate new record
   const record = {
-    created: new Date().getTime(),
-    id: nextId,
     stock_master_ids,
     paper_id,
     tanggal: ymdTime(tanggal),
@@ -66,20 +46,16 @@ export const createIncoming = async (
     diserahkan,
     catatan,
   };
-  // // push to state
-  Incoming_transaction.value.unshift(record);
-  // // update summary
-  await summaryRecord.updateSummary(nextId);
-  // // save tolocalstorage
-  // saveData();
   // save to indexeddb
-  await incomedb.setItem(nextId, record);
+  const recordInserted = await incomedb.createItem(record);
+  // // push to state
+  Incoming_transaction.value.unshift(recordInserted);
   // set parent for each stock master
   stock_master_ids.forEach((stockId) => {
-    setStockParent(stockId, nextId);
+    setStockParent(stockId, recordInserted?.id);
   });
   // return the whole record
-  return record;
+  return recordInserted;
 };
 
 export const gettingStartedRecord = async () => {

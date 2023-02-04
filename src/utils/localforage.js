@@ -1,4 +1,7 @@
 import localforage from 'localforage';
+import { addLog } from "./logging"
+import { summary } from "./summaryIdb"
+import { generateId } from "./GeneratorId"
 
 export const useIdb = async (storeName) => {
   // create instance
@@ -6,30 +9,20 @@ export const useIdb = async (storeName) => {
     name: 'my_report_stock',
     storeName,
   });
-
-  const logging = localforage.createInstance({
-    name: 'my_report_stock',
-    storeName: 'logs',
-  });
-
-  let countOfLoggerAtATime = 0;
-
-  const addLog = async (mode, key, value) => {
-    // create new date time first
-    const dtime = new Date().getTime();
-    // increment count
-    countOfLoggerAtATime = countOfLoggerAtATime + 1;
-    // id logger
-    const idLog = dtime + countOfLoggerAtATime + '';
-    // record to log
-    await logging.setItem(idLog, {
-      mode,
-      time: dtime,
-      store: storeName,
-      idRecord: key,
-      value: value,
-    });
-  };
+  const createItem = async(value) => {
+    // get summary
+    const sum = await summary(storeName)
+    // generateID
+    const nextId = sum?.lastUpdated ? generateId(sum?.lastUpdated?.lastId) : generateId(storeName + "_22030000")
+    // record to set
+    const record = { ...value, id: nextId, created: new Date().getTime() }
+    // setItem
+    await setItem(nextId, record)
+    // update summary
+    await sum.updateSummary(nextId)
+    // return the whole record
+    return record;
+  }
 
   const setItem = async (key, value) => {
     await store.setItem(key, value);
@@ -42,8 +35,7 @@ export const useIdb = async (storeName) => {
 
   const getItemsLimit = async (limit) => {
     const result = [];
-    return store
-      .iterate(function (value, key, iterationNumber) {
+    return store.iterate(function (value, key, iterationNumber) {
         if (iterationNumber < limit && value && key) {
           result.push(value);
         }
@@ -60,7 +52,7 @@ export const useIdb = async (storeName) => {
   };
 
   const removeItem = async (key) => {
-    addLog('remove', key, { id: key });
+    addLog(storeName, 'remove', key, { id: key });
     await store.removeItem(key);
     return;
   };
@@ -102,9 +94,9 @@ export const useIdb = async (storeName) => {
     const item = await getItem(key);
     // new item
     const newItem = { ...item, ...keyValueToUpdate };
-    await addLog('beforeupdate', key, item);
+    await addLog(storeName, 'beforeupdate', key, item);
     // record to log
-    await addLog('update', key, { ...keyValueToUpdate });
+    await addLog(storeName, 'update', key, { ...keyValueToUpdate });
     // then set item
     await setItem(key, newItem);
     // return
@@ -250,5 +242,6 @@ export const useIdb = async (storeName) => {
     getItemByTwoKeyValue,
     getItemsByKeyGreaterOrEqualThanAndLowerOrEqualThan,
     getItemsThatValueIncludes,
+    createItem,
   };
 };

@@ -1,4 +1,3 @@
-import { summary } from '../utils/summaryIdb';
 import { ref } from 'vue';
 // item function
 import { getItemById, getItemIdByKdItem, createItem } from './MasterItems';
@@ -14,8 +13,6 @@ import {
 } from '../utils/dateFormat';
 // store name
 const store = 'stock_master';
-// generator id
-import { generateId } from '../utils/GeneratorId';
 // incoming function
 import { createIncoming, getIncomingById } from './Incoming';
 // conver excel date to javascript date
@@ -55,15 +52,8 @@ export const createStock = async (
   // initiate idb
   const stockdb = await useIdb(store);
   // get last id
-  const summaryRecord = await summary(store);
-  // generate next id
-  const nextId = summaryRecord?.lastUpdated
-    ? generateId(summaryRecord?.lastUpdated?.lastId)
-    : generateId('STOCK_MASTER22030000');
   // initiate new record
   const record = {
-    created: new Date().getTime(),
-    id: nextId,
     item_id,
     kd_produksi,
     product_created,
@@ -71,16 +61,14 @@ export const createStock = async (
     available: Number(quantity),
     available_start: ymdTime(),
   };
+  // save to indexeddb
+  const insertedRecord = await stockdb.createItem(record);
   // map record
-  const recordMaped = await documentsMapper(record);
+  const recordMaped = await documentsMapper(insertedRecord);
   // // push to state
   Stock_masters.value.unshift(recordMaped);
-  // // update summary
-  await summaryRecord.updateSummary(nextId);
-  // save to indexeddb
-  await stockdb.setItem(nextId, record);
 
-  return record;
+  return insertedRecord;
 };
 
 // export const gettingStartedRecord = async () => {
@@ -245,11 +233,6 @@ export const changeAvailableStock = async (id_stock) => {
     alert(
       `Item ${item.nm_item} tidak dapat dimasukkan karena ketersediaan stock kurang dari permintaan`
     );
-    console.log('item:', item.nm_item);
-    console.log('stock id', id_stock);
-    console.log('quantity: ', findRec?.quantity);
-    console.log('stock taken: ', stockTaken.allTaken);
-    console.log('available: ', available);
     // false return
     return false;
   }

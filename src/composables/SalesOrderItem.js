@@ -1,30 +1,15 @@
 import { useIdb } from "../utils/localforage";
-import { summary } from "../utils/summaryIdb";
-import { generateId } from "../utils/GeneratorId";
 
 const store = "item_orders";
 
 export const createItemOrder = async (item_id, order) => {
   const db = await useIdb(store);
-  // get last id
-  const summaryRecord = await summary(store);
-  // generate next id
-  const nextId = summaryRecord?.lastUpdated
-    ? generateId(summaryRecord?.lastUpdated?.lastId)
-    : generateId("ITEM_ORDER_TR22030000");
   // initiate new record
-  const record = {
-    created: new Date().getTime(),
-    id: nextId,
-    item_id,
-    order,
-  };
-  // // update summary
-  await summaryRecord.updateSummary(nextId);
+  const record = { item_id, order };
   // save to indexeddb
-  await db.setItem(nextId, record);
+  const recordInserted = await db.setItem(nextId, record);
   //  return next id
-  return nextId;
+  return recordInserted?.id;
 };
 
 export const removeItemOrderById = async (id) => {

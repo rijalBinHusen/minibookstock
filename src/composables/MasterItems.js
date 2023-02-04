@@ -1,51 +1,23 @@
-import { summary } from '../utils/summaryIdb';
 import { ref } from 'vue';
 // store name
 const store = 'items';
-// generator id
-import { generateId } from '../utils/GeneratorId';
 // // import { dayPlusOrMinus } from "../utils/dateFormat";
 import { useIdb } from '../utils/localforage';
 
 // the state
 export const Master_items = ref([]);
 
-export const createItem = async (
-  kd_item,
-  nm_item,
-  division,
-  last_used,
-  age_item
-) => {
+export const createItem = async (kd_item, nm_item, division, last_used, age_item) => {
   const dbitems = await useIdb(store);
-  // get last id
-  const summaryRecord = await summary(store);
-  // generate next id
-  const nextId = summaryRecord?.lastUpdated
-    ? generateId(summaryRecord?.lastUpdated?.lastId)
-    : generateId('ITM22030000');
   // initiate new record
-  const record = {
-    created: new Date().getTime(),
-    id: nextId,
-    kd_item,
-    nm_item,
-    division,
-    last_used,
-    age_item,
-    // sort: summaryRecord?.sort ? summaryRecord?.sort + 1 : 1,
-  };
-  // // push to state
-  Master_items.value.unshift(record);
-  // // update summary
-  await summaryRecord.updateSummary(nextId);
-  // // save tolocalstorage
-  // saveData();
-
+  // sort: summaryRecord?.sort ? summaryRecord?.sort + 1 : 1,
+  const record = { kd_item, nm_item, division, last_used, age_item };
   // save to indexeddb
-  await dbitems.setItem(nextId, record);
+  const recordInserted = await dbitems.createItem(record);
+  // push to state
+  Master_items.value.unshift(recordInserted);
 
-  return nextId;
+  return recordInserted?.id;
 };
 
 export const gettingStartedRecord = async () => {

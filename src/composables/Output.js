@@ -1,11 +1,8 @@
-import { summary } from '../utils/summaryIdb';
 import { ref } from 'vue';
 // import { getItemById } from "./MasterItems";
 import { ymdTime, ddmmyyyy } from '../utils/dateFormat';
 // store name
 const store = 'output_transaction';
-// generator id
-import { generateId } from '../utils/GeneratorId';
 // import set parent function for stock master
 import {
   getStockById,
@@ -51,18 +48,10 @@ export const createOutput = async (
 ) => {
   // initiate db
   const outputdb = await useIdb(store);
-  // get last id
-  const summaryRecord = await summary(store);
-  // generate next id
-  const nextId = summaryRecord?.lastUpdated
-    ? generateId(summaryRecord?.lastUpdated?.lastId)
-    : generateId('OUTPUT_TR22030000');
   // initiate new record
   const record = {
-    created: new Date().getTime(),
     tanggal: ymdTime(tanggal),
     type,
-    id: nextId,
     nomor_so,
     stock_master_id,
     shift,
@@ -78,17 +67,16 @@ export const createOutput = async (
   if (isStockExists) {
     // save to database if available >= quantity
     if (stock?.isAvailableBy(quantity)) {
-      await outputdb.setItem(nextId, record);
+      // insert to idb
+      const recordInserted = await outputdb.createItem(record);
       // map record
-      const recordMapped = await outputTransactionMapped(record);
+      const recordMapped = await outputTransactionMapped(recordInserted);
       // push to state
       Output_transaction.value.unshift(recordMapped);
-      // update summary
-      await summaryRecord.updateSummary(nextId);
       // change available stock
       await changeAvailableStock(stock_master_id);
       // return the record
-      return record;
+      return recordInserted;
     }
     // get item of stock
     const itemInfo = await getItemById(stock?.itemId);

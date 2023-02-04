@@ -1,7 +1,4 @@
-import { summary } from "../utils/summaryIdb";
 import { ref } from "vue";
-// generator id
-import { generateId } from "../utils/GeneratorId";
 // import localforage function
 import { useIdb } from "../utils/localforage"
 
@@ -13,30 +10,15 @@ export const useJurnalProdukMasuk = () => {
   // create jurnal
   const createJurnalProdukMasuk = async (nama_jurnal) => {
     // initiate store
-    const incomejurnaldb = await useIdb(store)
-    // get last id
-    const summaryRecord = await summary(store);
-    // generate next id
-    const nextId = summaryRecord?.lastUpdated
-      ? generateId(summaryRecord?.lastUpdated?.lastId)
-      : generateId("j_income_22030000");
+    const incomejurnaldb = await useIdb(store)// get last id
     // initiate new record
-    const record = {
-      created: new Date().getTime(),
-      id: nextId,
-      nama_jurnal,
-    };
-    // // push to state
-    Jurnal_produk_masuk.value.unshift(record);
-    // // update summary
-    // await summary.updateSummary(nextId);
-    await summaryRecord.updateSummary(nextId);
-    // // insert into localstorage
-    // saveData();
+    const record = { nama_jurnal };
     // insert into indexeddb
-    await incomejurnaldb.setItem(nextId, record)
+    const recordInserted = await incomejurnaldb.createItem(record)
+    // // push to state
+    Jurnal_produk_masuk.value.unshift(recordInserted);
 
-    return nextId;
+    return recordInserted?.id;
   };
   // get jurnal produk masuk
   const gettingJurnalProdukMasukRecord = async () => {
@@ -104,29 +86,14 @@ export const useJurnalProdukKeluar = () => {
   const createJurnalProdukKeluar = async (nama_jurnal) => {
     // initiate store
     const outjurnaldb = await useIdb(store)
-    // get last id
-    const summaryRecord = await summary(store);
-    // generate next id
-    const nextId = summaryRecord?.lastUpdated
-      ? generateId(summaryRecord?.lastUpdated?.lastId)
-      : generateId("j_output_22030000");
     // initiate new record
-    const record = {
-      created: new Date().getTime(),
-      id: nextId,
-      nama_jurnal,
-    };
-    // // push to state
-    Jurnal_produk_keluar.value.unshift(record);
-    // // update summary
-    // await summary.updateSummary(nextId);
-    await summaryRecord.updateSummary(nextId);
-    // // insert into localstorage
-    // saveData();
+    const record = { nama_jurnal };
     // insert to idb
-    await outjurnaldb.setItem(nextId, record)
+    const recordInserted = await outjurnaldb.createItem(record)
+    // // push to state
+    Jurnal_produk_keluar.value.unshift(recordInserted);
 
-    return nextId;
+    return recordInserted?.id;
   };
   // get jurnal produk masuk
   const gettingJurnalProdukKeluarRecord = async () => {

@@ -1,6 +1,4 @@
 import { useIdb } from "../utils/localforage";
-import { summary } from "../utils/summaryIdb";
-import { generateId } from "../utils/GeneratorId";
 import { time } from "../utils/dateFormat";
 import { ref } from "vue";
 
@@ -11,30 +9,14 @@ export const sales_orders = ref([]);
 
 export const createSalesOrder = async (tanggal_so, nomor_so, customer) => {
   const db = await useIdb(store);
-  // get last id
-  const summaryRecord = await summary(store);
-  // generate next id
-  const nextId = summaryRecord?.lastUpdated
-    ? generateId(summaryRecord?.lastUpdated?.lastId)
-    : generateId("SO_22030000");
   // initiate new record
-  const record = {
-    created: new Date().getTime(),
-    id: nextId,
-    tanggal_so,
-    nomor_so,
-    customer,
-    imported: time(),
-    childItemsOrder: [],
-  };
-  // // update summary
-  await summaryRecord.updateSummary(nextId);
+  const record = { tanggal_so, nomor_so,customer,imported: time(),childItemsOrder: [] };
   // save to indexeddb
-  await db.setItem(nextId, record);
+  const insertedRecord = await db.createItem(record);
   // push to state
-  sales_orders.value.push(record);
+  sales_orders.value.push(insertedRecord);
   //  return next id
-  return nextId;
+  return insertedRecord?.id;
 };
 
 export const removeSalesOrderById = async (id) => {
