@@ -35,7 +35,7 @@ const variableSaved = {
   newOutputId: null,
 };
 
-for (let i = 0; i < 10; i++) {
+for (let i = 0; i < 1; i++) {
   // item kode for item master
   const item_kode = faker.datatype.string(10);
   // item name

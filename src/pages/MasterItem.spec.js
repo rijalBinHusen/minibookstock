@@ -3,7 +3,7 @@ import { describe, it, expect, test } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import MasterItem from './MasterItem.vue';
 import { faker } from '@faker-js/faker';
-import { Master_items, createItem } from '../composables/MasterItems';
+import { Master_items } from '../composables/MasterItems';
 
 describe('Click submit button ', async () => {
   // mount component
@@ -16,25 +16,34 @@ describe('Click submit button ', async () => {
   const formKdItem = wrapper.find('#form-kd_item');
   const formNmItem = wrapper.find('#form-nm_item');
   const formAgeItem = wrapper.find('#form-age_item');
-
-  function setFormValue() {
-
-  }
-  // testing create item
-  it('Create new record', async () => {
+  // function to set form
+  async function setFormValue (kdItem, nmItem, ageItem) {
     // set value kd_item value
-    await formKdItem.setValue(kd_item);
+    await formKdItem.setValue(kdItem);
     // triggering form using key up, so the value emitted to parent
     await formKdItem.trigger('keyup.alt');
     // set value nm_item value
-    await formNmItem.setValue(nm_item);
+    await formNmItem.setValue(nmItem);
     // triggering form using key up, so the value emitted to parent
     await formNmItem.trigger('keyup.alt');
     // set value age_item value
-    await formAgeItem.setValue(age_item);
+    await formAgeItem.setValue(ageItem);
     // triggering form using key up, so the value emitted to parent
     await formAgeItem.trigger('keyup.alt');
-    
+  }
+
+  // function to waiting
+  function timeMs () {
+    return new Promise((res) => {
+      setTimeout(() => {
+          res()
+      }, 2000);
+    })
+  }
+  // testing create item
+  it('Create new record', async () => {
+    // set value form
+    await setFormValue(kd_item, nm_item, age_item)
     // waiting dom updated
     await flushPromises()
 
@@ -46,21 +55,8 @@ describe('Click submit button ', async () => {
     await wrapper.find('#form_item').trigger('submit');
     // await wrapper.find('#submit-master-item').trigger('click');
 
-    // Assert payload is correct
-    // const expectedPayload = { kd_item, nm_item, age_item };
-    // catch emit event and compare the value
-    // expect(wrapper.emitted('formSubmit')[0][0]).toMatchObject(expectedPayload);
     // wait for a little while, we hope the component finished create new item
-    await new Promise((res) => {
-      setTimeout(() => {
-          res()
-      }, 4000);
-    })
-    // reset the form
-    // await wrapper.vm.resetForm();
-
-    // create new item
-    // await createItem(kd_item, nm_item, "none", false, age_item)
+    await timeMs()
 
     // wait until dom updated
     await flushPromises();
@@ -101,11 +97,7 @@ describe('Click submit button ', async () => {
     // click btn edit
     await btnEdit.trigger('click');
     // wait for a little while, we hope the component finished fill the form
-    await new Promise((res) => {
-      setTimeout(() => {
-          res()
-      }, 4000);
-    })
+    await timeMs()
     // wait dom updated
     await flushPromises()
     // detecting form must be equal
@@ -113,8 +105,46 @@ describe('Click submit button ', async () => {
     expect(formKdItem.element.value).toBe(kd_item);
     expect(formAgeItem.element.value).toBe(age_item);
     // update form
+    await setFormValue(kd_item_update, nm_item_update, age_item_update)
+    await flushPromises()
+    // detecting form must be equal to new variable
+    expect(formNmItem.element.value).toBe(nm_item_update);
+    expect(formKdItem.element.value).toBe(kd_item_update);
+    expect(formAgeItem.element.value).toBe(age_item_update);
+    // trigger click button submit
+    await wrapper.find('#form_item').trigger('submit');
+    // await wrapper.find('#submit-master-item').trigger('click');
 
-    
+    // wait for a little while, we hope the component finished create new item
+    await timeMs()
+
+    // wait until dom updated
+    await flushPromises();
+    // it('Value in form must be null after submitted', () => {
+    expect(formNmItem.element.value).toBe('');
+    expect(formKdItem.element.value).toBe('');
+    expect(formAgeItem.element.value).toBe('');
   })
+
+  it('Detecting table that contain lists of item after update item', async () => {
+    // });
+    // detecting text in table
+    // table-master-item-row-0-column-0
+    const table_kd_item = wrapper.find('#table-master-item-row-0-column-0');
+    // table-master-item-row-0-column-1
+    const table_nm_item = wrapper.find('#table-master-item-row-0-column-1');
+    // table-master-item-row-0-column-2
+    const table_age_item = wrapper.find('#table-master-item-row-0-column-2');
+
+    // it('Value in table must equal to new record variable', async () => {
+    // detecting datatable
+    expect(table_kd_item.exists()).equal(true);
+    expect(table_kd_item.text()).equal(kd_item_update);
+    expect(table_nm_item.text()).equal(nm_item_update);
+    expect(table_age_item.text()).equal(age_item_update);
+    // record in state must be 1
+    expect(Master_items.value.length).equal(1);
+    
+  });
 
 });
