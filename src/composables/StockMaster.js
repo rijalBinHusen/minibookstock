@@ -218,15 +218,16 @@ export const getAvailableDateByItem = async (item_id) => {
   // return result;
 };
 
-export const changeAvailableStock = async (id_stock, yourNumberPlusOrMinus) => {
+export const changeAvailableStock = async (id_stock) => {
   // initiate idb
   const stockdb = await useIdb(store);
   // get the record
   const findRec = await stockdb.getItem(id_stock);
   // get all taken in output transaction
   const stockTaken = await getTotalStockTaken(id_stock);
-  // now available - all taken in output
-  const available = findRec?.quantity - stockTaken.allTaken;
+  // full quantity (quantity now + stock all finished) - all taken in output
+  const available =
+    findRec?.quantity + stockTaken.allFinished - stockTaken.allTaken;
   // isTaken value
   const isTaken = Number(findRec?.quantity) != available ? true : false;
   // if > 0
@@ -244,6 +245,11 @@ export const changeAvailableStock = async (id_stock, yourNumberPlusOrMinus) => {
     alert(
       `Item ${item.nm_item} tidak dapat dimasukkan karena ketersediaan stock kurang dari permintaan`
     );
+    console.log('item:', item.nm_item);
+    console.log('stock id', id_stock);
+    console.log('quantity: ', findRec?.quantity);
+    console.log('stock taken: ', stockTaken.allTaken);
+    console.log('available: ', available);
     // false return
     return false;
   }

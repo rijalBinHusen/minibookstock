@@ -30,6 +30,7 @@ describe('Click submit button ', async () => {
     // triggering form using key up, so the value emitted to parent
     await formAgeItem.trigger('keyup.alt');
 
+    // the value of from must be equal
     expect(formNmItem.element.value).toBe(nm_item);
     expect(formKdItem.element.value).toBe(kd_item);
     expect(formAgeItem.element.value).toBe(age_item + '');
@@ -38,32 +39,32 @@ describe('Click submit button ', async () => {
     // await wrapper.find('#submit-master-item').trigger('click');
 
     // Assert payload is correct
-    // const expectedPayload = { kd_item, nm_item, age_item };
-    // expect(wrapper.emitted('formSubmitted')).toMatchObject(expectedPayload);
+    const expectedPayload = { kd_item, nm_item, age_item };
+    expect(wrapper.emitted('formSubmit')[0][0]).toMatchObject(expectedPayload);
     // await wrapper.vm.handleSubmit();
 
-    // // wait until dom updated
-    // await flushPromises();
-    // // it('Value in form must be null after submitted', () => {
-    // expect(formNmItem.element.value).toBe('');
-    // expect(formKdItem.element.value).toBe('');
-    // expect(formAgeItem.element.value).toBe('');
-    // // });
-    // // detecting text in table
-    // // table-master-item-row-0-column-0
-    // const table_kd_item = wrapper.find('#table-master-item-row-0-column-0');
-    // // table-master-item-row-0-column-1
-    // const table_nm_item = wrapper.find('#table-master-item-row-0-column-1');
-    // // table-master-item-row-0-column-2
-    // const table_age_item = wrapper.find('#table-master-item-row-0-column-2');
+    // wait until dom updated
+    await flushPromises();
+    // it('Value in form must be null after submitted', () => {
+    expect(formNmItem.element.value).toBe('');
+    expect(formKdItem.element.value).toBe('');
+    expect(formAgeItem.element.value).toBe('');
+    // });
+    // detecting text in table
+    // table-master-item-row-0-column-0
+    const table_kd_item = wrapper.find('#table-master-item-row-0-column-0');
+    // table-master-item-row-0-column-1
+    const table_nm_item = wrapper.find('#table-master-item-row-0-column-1');
+    // table-master-item-row-0-column-2
+    const table_age_item = wrapper.find('#table-master-item-row-0-column-2');
 
-    // // it('Value in table must equal to new record variable', async () => {
-    // // detecting datatable
-    // expect(table_kd_item.exists()).equal(true);
-    // expect(table_kd_item.text()).equal(kd_item);
-    // expect(table_nm_item.text()).equal(nm_item);
-    // expect(table_age_item.text()).equal(age_item);
-    // expect(Master_items.value.length).equal(1);
+    // it('Value in table must equal to new record variable', async () => {
+    // detecting datatable
+    expect(table_kd_item.exists()).equal(true);
+    expect(table_kd_item.text()).equal(kd_item);
+    expect(table_nm_item.text()).equal(nm_item);
+    expect(table_age_item.text()).equal(age_item);
+    expect(Master_items.value.length).equal(1);
     // });
   });
 });
