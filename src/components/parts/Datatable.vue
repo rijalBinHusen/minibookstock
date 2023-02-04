@@ -73,7 +73,7 @@
           <td :id="id+'-row-'+index+'-column-'+index2" :key="r[key]" v-for="(key, index2) in keys">{{ r[key] }}</td>
 
           <td v-if="option">
-            <slot :prop="r"></slot>
+            <slot :prop="{ ...r, row: index }"></slot>
           </td>
         </tr>
       </tbody>

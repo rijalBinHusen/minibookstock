@@ -77,6 +77,7 @@
         value="Edit"
         type="button"
         small
+        :id="'btn-edit-row-'+slotProps.prop.row"
         class="ml-2"
         :datanya="slotProps.prop.id"
         @trig="handleButton($event)"

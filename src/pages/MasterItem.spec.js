@@ -6,34 +6,42 @@ import { faker } from '@faker-js/faker';
 import { Master_items, createItem } from '../composables/MasterItems';
 
 describe('Click submit button ', async () => {
-  it('Create new record', async () => {
-    // mount component
-    let wrapper = mount(MasterItem);
+  // mount component
+  let wrapper = mount(MasterItem);
+  // new record
+  const kd_item = faker.datatype.string(5);
+  const nm_item = faker.datatype.string(15);
+  const age_item = faker.datatype.number({ max: 12 }) + "";
+  // form item master
+  const formKdItem = wrapper.find('#form-kd_item');
+  const formNmItem = wrapper.find('#form-nm_item');
+  const formAgeItem = wrapper.find('#form-age_item');
 
-    // new record
-    const kd_item = faker.datatype.string(5);
-    const nm_item = faker.datatype.string(15);
-    const age_item = faker.datatype.number({ max: 12 }) + "";
-    // set kd_item value
-    const formKdItem = wrapper.find('#form-kd_item');
+  function setFormValue() {
+
+  }
+  // testing create item
+  it('Create new record', async () => {
+    // set value kd_item value
     await formKdItem.setValue(kd_item);
     // triggering form using key up, so the value emitted to parent
     await formKdItem.trigger('keyup.alt');
-    // set nm_item value
-    const formNmItem = wrapper.find('#form-nm_item');
+    // set value nm_item value
     await formNmItem.setValue(nm_item);
     // triggering form using key up, so the value emitted to parent
     await formNmItem.trigger('keyup.alt');
-    // set age_item value
-    const formAgeItem = wrapper.find('#form-age_item');
+    // set value age_item value
     await formAgeItem.setValue(age_item);
     // triggering form using key up, so the value emitted to parent
     await formAgeItem.trigger('keyup.alt');
+    
+    // waiting dom updated
+    await flushPromises()
 
     // the value of from must be equal
     expect(formNmItem.element.value).toBe(nm_item);
     expect(formKdItem.element.value).toBe(kd_item);
-    expect(formAgeItem.element.value).toBe(age_item + '');
+    expect(formAgeItem.element.value).toBe(age_item);
     // trigger click button submit
     await wrapper.find('#form_item').trigger('submit');
     // await wrapper.find('#submit-master-item').trigger('click');
@@ -42,7 +50,7 @@ describe('Click submit button ', async () => {
     // const expectedPayload = { kd_item, nm_item, age_item };
     // catch emit event and compare the value
     // expect(wrapper.emitted('formSubmit')[0][0]).toMatchObject(expectedPayload);
-    // wait for a little while, we hope the component finished to create new item
+    // wait for a little while, we hope the component finished create new item
     await new Promise((res) => {
       setTimeout(() => {
           res()
@@ -60,6 +68,9 @@ describe('Click submit button ', async () => {
     expect(formNmItem.element.value).toBe('');
     expect(formKdItem.element.value).toBe('');
     expect(formAgeItem.element.value).toBe('');
+  });
+
+  it('Detecting table that contain lists of item after create new item', async () => {
     // });
     // detecting text in table
     // table-master-item-row-0-column-0
@@ -75,7 +86,35 @@ describe('Click submit button ', async () => {
     expect(table_kd_item.text()).equal(kd_item);
     expect(table_nm_item.text()).equal(nm_item);
     expect(table_age_item.text()).equal(age_item);
+    // record in state must be 1
     expect(Master_items.value.length).equal(1);
-    // });
+    
   });
+  // variable to update item
+  const kd_item_update = faker.datatype.string(5);
+  const nm_item_update = faker.datatype.string(15);
+  const age_item_update = faker.datatype.number({ max: 12 }) + "";
+  // testing to edit item
+  it('Testing edit item', async() => {
+    // detecting edit button
+    const btnEdit = wrapper.find('#btn-edit-row-0');
+    // click btn edit
+    await btnEdit.trigger('click');
+    // wait for a little while, we hope the component finished fill the form
+    await new Promise((res) => {
+      setTimeout(() => {
+          res()
+      }, 4000);
+    })
+    // wait dom updated
+    await flushPromises()
+    // detecting form must be equal
+    expect(formNmItem.element.value).toBe(nm_item);
+    expect(formKdItem.element.value).toBe(kd_item);
+    expect(formAgeItem.element.value).toBe(age_item);
+    // update form
+
+    
+  })
+
 });
