@@ -1,7 +1,6 @@
 import { closeModalOrDialog } from "./launchForm";
 
 export const keyPress = function (e) {
-  e.preventDefault()
   // the escape button
   if (e.keyCode == 27) {
     closeModalOrDialog();
@@ -13,7 +12,6 @@ export const keyPress = function (e) {
 };
 
 export const keyPressWoutEnter = function (e) {
-  e.preventDefault()
   // the escape button
   if (e.keyCode == 27) {
     closeModalOrDialog();

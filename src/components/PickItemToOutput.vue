@@ -17,7 +17,7 @@
                     :disabled="isParentEditMode"
                 />
                 <datalist id="item">
-                    <option @select="handleItem(item.item_id)" v-for="item in itemAvailable" :key="item.item_id" :value="item.kd_item + '* '+item.nm_item" />
+                    <option @select="handleItem(item.item_id)" v-for="item in listOfItem" :key="item.item_id" :value="item.kd_item + '* '+item.nm_item" />
                 </datalist>
 
                 </div>
@@ -100,7 +100,7 @@ import Button from "@/components/elements/Button.vue";
 import TableVue from "./elements/Table.vue";
 import { ref, defineEmits, defineProps, onMounted, watch } from 'vue';
 import { getItemIdByKdItem, getItemById } from "../composables/MasterItems";
-import { getStockById, itemThatAvailable, getAvailableDateByItem } from "../composables/StockMaster"
+import { getStockById, itemThatAvailable, getAvailableDateByItem, ListStock } from "../composables/StockMaster"
 import Select from "./elements/Forms/Select.vue";
 
 const props = defineProps({
@@ -128,6 +128,9 @@ const itemAvilabelDate = ref([])
 const currentStockMaster = ref(null)
 // available stock that can take to quantity output
 const quantityAvailableStockMaster = ref(null)
+
+const stock = new ListStock()
+const listOfItem = stock.getItemThatAvailable()
 
 const handleItem = async (e) => {
     if(e.target.value) {
@@ -244,9 +247,13 @@ watch([props], async () => {
 // jika
 
 onMounted( async () => {
-    if(!props.isParentEditMode) {
-      itemAvailable.value = await itemThatAvailable()
-    }
+    // if(!props.isParentEditMode) {
+    // //   itemAvailable.value = await itemThatAvailable()
+    // //   const stockE  = await stockToOutput()
+    // //   itemAvailable = await stockE.getItemThatAvailable()
+    // //   stock = stockE
+    // } 
+    console.log(stock.getItemThatAvailable)
 })
 
 </script>

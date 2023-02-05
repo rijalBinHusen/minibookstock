@@ -71,25 +71,6 @@ export const createStock = async (
   return insertedRecord;
 };
 
-// export const gettingStartedRecord = async () => {
-//   // empty state
-//   Stock_masters.value = [];
-//   // initiate idb
-//   const stockdb = await useIdb(store);
-//   // get all items
-//   const stocks = await stockdb.getItems();
-//   // set state
-//   for (const stock of stocks) {
-//     // map stock
-//     const stockMapped = await documentsMapper(stock);
-//     // push to state
-//     Stock_masters.value.unshift(stockMapped);
-//   }
-//   // }
-//   // return;
-//   wasGetStockThatAvailable.value = false;
-// };
-
 export const removeStockById = async (id) => {
   // initiate idb
   const stockdb = await useIdb(store);
@@ -99,12 +80,6 @@ export const removeStockById = async (id) => {
   await stockdb.removeItem(id);
   return;
 };
-
-// // // export const
-// // export const getLastRecord = async () => {
-// //   const lastRec = await getRecordOrderByIdDescLimit(table, 1);
-// //   return lastRec[0];
-// // };
 
 export const getStockById = async (id) => {
   // initiate idb
@@ -217,7 +192,7 @@ export const changeAvailableStock = async (id_stock) => {
   const available =
     findRec?.quantity + stockTaken.allFinished - stockTaken.allTaken;
   // isTaken value
-  const isTaken = Number(findRec?.quantity) != available ? true : false;
+  const isTaken = Number(findRec?.quantity) != available;
   // if > 0
   if (available >= 0) {
     // new item
@@ -519,40 +494,35 @@ export const getSummaryStockMaster = async () => {
   return result;
 };
 
-class StockToOutput {
-  #state = [];
-  constructor(arrOfStock) {
-    // looping arrofstock
-    arrOfStock.forEach((rec) => {
-      this.#state.push(
-        new Stock(
-          rec?.available,
-          rec?.available_end,
-          rec?.icoming_parent_id,
-          rec?.id,
-          rec?.isTaken,
-          rec?.item_id,
-          rec?.kd_produksi,
-          rec?.product_created,
-          rec?.quantity
-        )
-      );
-    });
+export class ListStock {
+  #state = []
+  #isGetStockOnProcess = null;
+  constructor () {
+    this.getStock()
   }
-}
 
-export class StockMasterToOutput {
-  constructor() {
-    this.state = [];
-    this.getStock;
+  async getItemThatAvailable() {
+    // get the stock firstt
+    await this.getStock()
+    // is item taken while looping all record
+    let isItemTaken = [];
+    // result of item
+    let result = [];
+    for (const stock of this.#state) {
+      if (stock?.available > 0 && !isItemTaken.includes(stock?.item_id)) {
+        isItemTaken.push(stock?.item_id);
+        result.push(stock);
+      }
+    }
+    return result;
   }
 
   async getAvailableDateByItem(item_id) {
-    // get all item that available
-    await this.getStock();
+    // get the stock firstt
+    await this.getStock()
     // will contain the result
     const result = [];
-    this.state.forEach((stock) => {
+    this.#state.forEach((stock) => {
       // if availabel and item_id == item_id
       if (stock?.item_id == item_id && stock?.available > 0) {
         // product create as number
@@ -571,53 +541,75 @@ export class StockMasterToOutput {
         });
       }
     });
-    // sorting the result
-    return result.sort(
-      (a, b) => a['origin_product_created'] - b['origin_product_created']
-    );
-    // return result;
   }
 
-  async getItemThatAvailable() {
-    // get stock
-    // get item that available not null
-    await this.getStock();
-    // is item taken while looping all record
-    let isItemTaken = [];
-    // result of item
-    let result = [];
-    for (const stock of this.state) {
-      if (stock?.available > 0 && !isItemTaken.includes(stock?.item_id)) {
-        const item = await getItemById(stock?.item_id);
-        isItemTaken.push(stock?.item_id);
-        result.push({
-          item_id: stock?.item_id,
-          kd_item: item?.kd_item,
-          nm_item: item?.nm_item,
-        });
-      }
-    }
-    return result;
+  async getQuantityStock(stockId) {
+    // get the stock firstt
+    await this.getStock()
+    // find record
+    const stock = this.#state.find((stock) => stock?.id === stockId)
+    // return
+    return stock?.quantity
   }
+
+  async getAvailableStock(stockId) {
+    // get the stock firstt
+    await this.getStock()
+    // find record
+    const stock = this.#state.find((stock) => stock?.id === stockId)
+    // return
+    return stock?.available
+  }
+
+  async pickStockByStockId(stockId, yourNumber) {
+    // get the stock firstt
+    await this.getStock()
+    // find index
+    const indx = this.#state.findIndex((stock) => stock?.id === stockId)
+    // record
+    const rec = this.#state[indx]
+    // create new quantity
+    const available = rec?.available - yourNumber
+    // if available >= 0
+    if(available >=0 ) {
+      // update state
+      this.#state[indx] = { ...rec, available }
+      return
+    }
+    alert("Stock tidak cukup")
+  }
+
+  // pickStockByItemId(itemId, yourNumber) {
+
+  // }
 
   async getStock() {
-    // get stock that available from db
-    // initiate idb
+    // if the state not null
+    if(this.#state.length) {
+      this.#isGetStockOnProcess = false;
+      return;
+    }
+    // call this function again when the function is on process
+    if(this.#isGetStockOnProcess) {
+      setTimeout(() => {
+        this.getStock()
+      }, 1000)
+    }
+    // set tthe process as true
+    this.#isGetStockOnProcess = true;
+    // initiate db
     const stockdb = await useIdb(store);
+    // stockGet
+    let resultStockMapped = []
     // stock that available
-    const stockAvailable = await stockdb.getItemsByKeyGreaterThan(
-      'quantity',
-      0
-    );
+    const stockAvailable = await stockdb.getItemsByKeyGreaterThan('quantity', 0);
     for (const stock of stockAvailable) {
       // map stock
       const stockMapped = await documentsMapper(stock);
       // push to state
-      this.state.push(stockMapped);
+      resultStockMapped.unshift(stockMapped);
     }
-
-    // return
-    return;
+    this.#state = resultStockMapped;
   }
 }
 
