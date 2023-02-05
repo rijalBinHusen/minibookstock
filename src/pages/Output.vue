@@ -159,6 +159,7 @@ const handleButton = async (operation, document) => {
         await markAsUnFinished(document);
       }
     }
+    // onsole.log('handle button, id: '+ document)
     return;
   }
 

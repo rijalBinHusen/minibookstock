@@ -16,6 +16,8 @@ export const useIdb = async (storeName) => {
     const nextId = sum?.lastUpdated ? generateId(sum?.lastUpdated?.lastId) : generateId(storeName + "_22030000")
     // record to set
     const record = { ...value, id: nextId, created: new Date().getTime() }
+    // record to logs 
+    await addLog(storeName, 'create', nextId, record);
     // setItem
     await setItem(nextId, record)
     // update summary
@@ -42,7 +44,7 @@ export const useIdb = async (storeName) => {
         // return result;
       })
       .then(function () {
-        // console.log("Iteration has completed, last iterated pair:");
+        // onsole.log("Iteration has completed, last iterated pair:");
         return result;
       })
       .catch(function (err) {
@@ -80,7 +82,7 @@ export const useIdb = async (storeName) => {
         // return result;
       })
       .then(function () {
-        // console.log("Iteration has completed, last iterated pair:");
+        // onsole.log("Iteration has completed, last iterated pair:");
         return result;
       })
       .catch(function (err) {
@@ -90,17 +92,20 @@ export const useIdb = async (storeName) => {
   };
 
   const updateItem = async (key, keyValueToUpdate) => {
+    // onsole.log('local forage update item', key)
     // get item first
     const item = await getItem(key);
     // new item
     const newItem = { ...item, ...keyValueToUpdate };
-    await addLog(storeName, 'beforeupdate', key, item);
     // record to log
-    await addLog(storeName, 'update', key, { ...keyValueToUpdate });
+    const isNotDuplicate = await addLog(storeName, 'update', key, { ...keyValueToUpdate });
     // then set item
-    await setItem(key, newItem);
+    if(isNotDuplicate) {
+      await setItem(key, newItem);
+      return true
+    }
     // return
-    return;
+    return false;
   };
 
   const getItemsByKeyValue = async (keySearch, valueSearch) => {
@@ -110,7 +115,7 @@ export const useIdb = async (storeName) => {
         // Resulting key/value pair -- this callback
         // will be executed for every item in the
         // database.
-        // console.log([key, value]);
+        // onsole.log([key, value]);
         if (value[keySearch] == valueSearch) {
           // save to result
           result.push(value);
@@ -133,7 +138,7 @@ export const useIdb = async (storeName) => {
         // Resulting key/value pair -- this callback
         // will be executed for every item in the
         // database.
-        // console.log([key, value]);
+        // onsole.log([key, value]);
         if (value[keySearch] > greaterThanValue) {
           // save to result
           result.push(value);
@@ -161,7 +166,7 @@ export const useIdb = async (storeName) => {
         // Resulting key/value pair -- this callback
         // will be executed for every item in the
         // database.
-        // console.log([key, value]);
+        // onsole.log([key, value]);
         if (
           value[key1Search] == value1Search &&
           value[key2Search] == value2Search
@@ -191,7 +196,7 @@ export const useIdb = async (storeName) => {
         // Resulting key/value pair -- this callback
         // will be executed for every item in the
         // database.
-        // console.log([key, value]);
+        // onsole.log([key, value]);
         if (
           value[keySearch] >= greaterOrEqualThanValue &&
           value[keySearch] <= LowerOrEqualThanValue
@@ -220,7 +225,7 @@ export const useIdb = async (storeName) => {
         // return result;
       })
       .then(function () {
-        // console.log("Iteration has completed, last iterated pair:");
+        // onsole.log("Iteration has completed, last iterated pair:");
         return result;
       })
       .catch(function (err) {

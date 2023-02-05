@@ -69,6 +69,7 @@ export const createOutput = async (
     if (stock?.isAvailableBy(quantity)) {
       // insert to idb
       const recordInserted = await outputdb.createItem(record);
+      // onsole.log('inserted', recordInserted)
       // map record
       const recordMapped = await outputTransactionMapped(recordInserted);
       // push to state
@@ -147,7 +148,7 @@ export const removeOutputById = async (id) => {
 export const getOutputById = async (id) => {
   // initiate db
   const outputdb = await useIdb(store);
-  // console.log(res[0]);
+  // onsole.log(res[0]);
   const findStock = await outputdb.getItem(id);
   return findStock
     ? findStock
@@ -161,19 +162,25 @@ export const getOutputById = async (id) => {
 };
 
 export const updateOutputById = async (id, keyValueToUpdate) => {
+  // onsole.log('update output by id: ', id)
   // initiate db
   const outputdb = await useIdb(store);
   // update in db
-  await outputdb.updateItem(id, keyValueToUpdate);
+  const isUpdated = await outputdb.updateItem(id, keyValueToUpdate);
   // get record in db
-  const newRec = await outputdb.getItem(id);
-  // map new Rec
-  const newRecMapped = await outputTransactionMapped(newRec);
-  // update in state
-  Output_transaction.value = Output_transaction.value.map((item) => {
-    return item?.id == id ? newRecMapped : item;
-  });
-  return;
+  if(isUpdated) {
+    const newRec = await outputdb.getItem(id);
+    // map new Rec
+    const newRecMapped = await outputTransactionMapped(newRec);
+    // update in state
+    Output_transaction.value = Output_transaction.value.map((item) => {
+      return item?.id == id ? newRecMapped : item;
+    });
+    return true
+  }
+  alert('Terjadi kesalahan, mohon refresh aplikasi')
+  console.log('record not updated')
+  return false;
 };
 
 // export const getStockWithoutParent = () => {
@@ -212,6 +219,7 @@ export const outputTransactionMapped = async (doc) => {
 };
 
 export const markAsFinished = async (id) => {
+  // onsole.log(' mark as finished ',id)
   // get record
   const findRec = await getOutputById(id);
   // get stock master id
@@ -219,7 +227,7 @@ export const markAsFinished = async (id) => {
   // update quantity stock
   await changeQuantityStock(masterId, -Number(findRec?.quantity));
   // mark in db output as finished
-  await updateOutputById(id, { isFinished: true });
+  return updateOutputById(id, { isFinished: true });
 };
 
 export const getAllDataToBackup = async () => {

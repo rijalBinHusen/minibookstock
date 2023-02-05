@@ -324,10 +324,8 @@ export const changeQuantityStock = async (id_stock, yourNumberPlusOrMinus) => {
   // decrement or increment quantity
   const quantity = findRec?.quantity + yourNumberPlusOrMinus;
   // available_end ate, if quantity 0 set to now, else next year
-  const keyValueToUpdate = {
-    quantity,
-    available_end: quantity == 0 ? time() : getNextYearTime(),
-  };
+  const available_end = quantity == 0 ? time() : getNextYearTime();
+  const keyValueToUpdate = { quantity, available_end };
   // update stock
   await updateStockById(id_stock, keyValueToUpdate);
   return;
