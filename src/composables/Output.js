@@ -59,34 +59,31 @@ export const createOutput = async (
     isFinished: false,
     customer,
   };
-  // check available stock
-  const stock = new StockInformation(stock_master_id);
-  // is stock exists
-  const isStockExists = stock?.isExists;
+  // get stock by id first
+  const stock = await getStockById(stock_master_id);
   // if stock master is Exists
-  if (isStockExists) {
-    // save to database if available >= quantity
-    if (stock?.isAvailableBy(quantity)) {
-      // insert to idb
-      const recordInserted = await outputdb.createItem(record);
-      // onsole.log('inserted', recordInserted)
-      // map record
-      const recordMapped = await outputTransactionMapped(recordInserted);
-      // push to state
-      Output_transaction.value.unshift(recordMapped);
-      // change available stock
-      await changeAvailableStock(stock_master_id);
-      // return the record
-      return recordInserted;
-    }
+  // save to database if available >= quantity
+  if (stock?.id && stock?.available >= quantity) {
+    // insert to idb
+    const recordInserted = await outputdb.createItem(record);
+    // onsole.log('inserted', recordInserted)
+    // map record
+    const recordMapped = await outputTransactionMapped(recordInserted);
+    // push to state
+    Output_transaction.value.unshift(recordMapped);
+    // change available stock
+    await changeAvailableStock(stock_master_id);
+    // return the record
+    return recordInserted;
+  }
+  // if stock exists show alert
+  if (stock?.itemId) {
     // get item of stock
     const itemInfo = await getItemById(stock?.itemId);
     // else alert
     subscribeConfirmDialog('alert', `Stock ${itemInfo?.nm_item} tidak cukup`);
-    return;
   }
-  // else alert
-  subscribeConfirmDialog('alert', 'Stock tidak ditemukan');
+  return false;
 };
 
 // export const gettingStartedRecord = () => {
@@ -168,7 +165,7 @@ export const updateOutputById = async (id, keyValueToUpdate) => {
   // update in db
   const isUpdated = await outputdb.updateItem(id, keyValueToUpdate);
   // get record in db
-  if(isUpdated) {
+  if (isUpdated) {
     const newRec = await outputdb.getItem(id);
     // map new Rec
     const newRecMapped = await outputTransactionMapped(newRec);
@@ -176,10 +173,10 @@ export const updateOutputById = async (id, keyValueToUpdate) => {
     Output_transaction.value = Output_transaction.value.map((item) => {
       return item?.id == id ? newRecMapped : item;
     });
-    return true
+    return true;
   }
-  alert('Terjadi kesalahan, mohon refresh aplikasi')
-  console.log('record not updated')
+  alert('Terjadi kesalahan, mohon refresh aplikasi');
+  console.log('record not updated');
   return false;
 };
 

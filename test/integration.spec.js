@@ -185,6 +185,44 @@ for (let i = 0; i < 1; i++) {
   // end of incoming
   // output
 
+  const quantityOutputGreater = faker.datatype.number({
+    min: stock_quantity + 1000,
+  });
+
+  // create output greter than stock, must be fail
+  // create output lower than stock
+  describe(`create output ${quantityOutputGreater} more than stock ${stock_quantity}, it must be false`, () => {
+    it('Should not create output transaction', async () => {
+      // waiting proses create item and write to indexeddb
+      const newItemIdReturned = await createOutput(
+        '029384',
+        '092834',
+        1,
+        '09834',
+        variableSaved.newStockId,
+        quantityOutputGreater,
+        'any'
+      );
+      // expecting the returned id equal to false
+      expect(newItemIdReturned).equal(false);
+    });
+    // create output with stock master not exists
+    it('Should not create output transaction', async () => {
+      // waiting proses create item and write to indexeddb
+      const newItemIdReturned = await createOutput(
+        '029384',
+        '092834',
+        1,
+        '09834',
+        'loremIpsunDolor',
+        stock_quantity,
+        'any'
+      );
+      // expecting the returned id equal to false
+      expect(newItemIdReturned).equal(false);
+    });
+  });
+
   const output_paper = faker.datatype.string(20);
   const output_date_model = faker.date.past(1);
   const output_date = output_date_model.getTime();

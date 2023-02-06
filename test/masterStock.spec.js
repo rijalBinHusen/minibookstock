@@ -35,7 +35,45 @@ describe('create master stock', () => {
   });
 });
 
-// create output
+const quantityOutputGreater = faker.datatype.number({
+  min: quantityStock + 1000,
+});
+
+// create output greter than stock, must be fail
+// create output lower than stock
+describe(`create output ${quantityOutputGreater} more than stock ${quantityStock}, it must be false`, () => {
+  it('Should not create output transaction', async () => {
+    // waiting proses create item and write to indexeddb
+    const newItemIdReturned = await createOutput(
+      '029384',
+      '092834',
+      1,
+      '09834',
+      newItemId,
+      quantityOutputGreater,
+      'any'
+    );
+    // expecting the returned id equal to false
+    expect(newItemIdReturned).equal(false);
+  });
+  // create output with stock master not exists
+  it('Should not create output transaction', async () => {
+    // waiting proses create item and write to indexeddb
+    const newItemIdReturned = await createOutput(
+      '029384',
+      '092834',
+      1,
+      '09834',
+      'loremIpsunDolor',
+      quantityOutputGreater,
+      'any'
+    );
+    // expecting the returned id equal to false
+    expect(newItemIdReturned).equal(false);
+  });
+});
+
+// create output lower than stock
 describe('create output', () => {
   it('Should create output transaction', async () => {
     // waiting proses create item and write to indexeddb
