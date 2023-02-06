@@ -13,7 +13,7 @@
               <span class="label-text">Tanggal</span>
             </label>
             <date-picker
-              id="date-picker"
+              id="date-picker-incoming"
               class="input input-outline input-primary input-sm"
               v-model="date"
             ></date-picker>
@@ -39,6 +39,7 @@
             placeholder="Nomor dokumen"
             tipe="primary"
             :value="paper_id"
+            id="paper-id"
           />
           <Input
             label="Yang menyerahkan"
@@ -47,6 +48,7 @@
             placeholder="Yang menyerahkan"
             tipe="primary"
             :value="diserahkan"
+            id="diserahkan"
           />
           <Input
             label="Penerima"
@@ -55,6 +57,7 @@
             placeholder="Penerima"
             tipe="primary"
             :value="diterima"
+            id="penerima"
           />
         </div>
 
@@ -83,6 +86,7 @@
             primary
             :value="isEditMode ? 'Update' : 'Submit'"
             small
+            id="submit-incoming"
           />
           <span v-else> {{ message }} </span>
         </div>
