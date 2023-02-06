@@ -1,6 +1,6 @@
 import { flushPromises, mount } from '@vue/test-utils';
 import { faker } from '@faker-js/faker';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import {
   useJurnalProdukKeluar,
   useJurnalProdukMasuk,
@@ -11,25 +11,29 @@ import {
   getItemById,
 } from '../composables/MasterItems';
 import IncomingForm from './IncomingForm.vue';
+import { createStore } from "vuex"
+import mainStore from "../store/index"
 
 // create value for mocking jurnal produk masuk
 describe('create jurnal produk massuk', () => {
   it('Should create new record', async () => {
     const jurnalName = faker.datatype.string(12);
+    const jurnalName2 = faker.datatype.string(13);
     // initiate func
     const jurnalProdukMasuk = useJurnalProdukMasuk();
     // waiting proses create record and write to indexeddb
     // const newItemIdReturned =
     await jurnalProdukMasuk.createJurnalProdukMasuk(jurnalName);
+    await jurnalProdukMasuk.createJurnalProdukMasuk(jurnalName2);
     // // find the object from indexeddb by id
     // const getData = await getItemById(newItemIdReturned);
     // // expecting data that we got match with original record
     // expect(getData.kd_item).equal(record.kd_item);
     // check state
-    expect(jurnalProdukMasuk.Jurnal_produk_masuk.value.length).equal(1);
+    expect(jurnalProdukMasuk.Jurnal_produk_masuk.value.length).equal(2);
     // state [0] must be equal jurnalName
     expect(jurnalProdukMasuk.Jurnal_produk_masuk.value[0]?.nama_jurnal).equal(
-      jurnalName
+      jurnalName2
     );
   });
 });
@@ -59,8 +63,22 @@ describe('create master item', () => {
 });
 
 describe('Create new incoming product', () => {
+  // Mocking the vuex store
+  const store = createStore({
+    state() {
+      return {
+        form: null,
+        dialogMessage: null,
+        dialogType: null,
+      }
+    }
+  })
   // mount the component
-  const wrapper = mount(IncomingForm);
+  const wrapper = mount(IncomingForm, {
+    global: {
+      plugins: [store]
+    }
+  });
   // catch all form element
   const datePicker = wrapper.find('#date-picker-incoming');
   const shift = wrapper.find('#shift');
@@ -100,6 +118,12 @@ describe('Create new incoming product', () => {
     penerima.trigger('keyup.alt');
     // get all option in type
     const typeDocOptions = wrapper.find('#type').findAll('option');
+    const jurl = useJurnalProdukMasuk()
+    await jurl.gettingJurnalProdukMasukRecord()
+    expect(jurl.Jurnal_produk_masuk.value.length).toBe(2)
+    console.log(typeDocOptions)
+    // expect the option > 0
+    expect(typeDocOptions.length).equal(2)
     // set type value
     await typeDocOptions.at(1).setSelected();
     // wait until dom updated
@@ -108,7 +132,8 @@ describe('Create new incoming product', () => {
     expect(paper.element.value).toBe(varPaper);
     expect(diserahkan.element.value).toBe(varDiserahkan);
     expect(penerima.element.value).toBe(varPenerima);
-    expect(typeDoc.element.value).toBe(typeDocOptions[0]);
+    // expect the select element
+    expect(wrapper.find('option:checked')).toBe(typeDocOptions[1]);
 
     // fill the product componet 3x
     // all product in list must be equal
