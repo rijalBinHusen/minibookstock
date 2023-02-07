@@ -11,12 +11,12 @@ import {
   getItemById,
 } from '../composables/MasterItems';
 import IncomingForm from './IncomingForm.vue';
-import { createStore } from "vuex"
-import mainStore from "../store/index"
+import { createStore } from 'vuex';
+import mainStore from '../store/index';
 
 // create value for mocking jurnal produk masuk
-describe('create jurnal produk massuk', () => {
-  it('Should create new record', async () => {
+describe('create new record stock income', () => {
+  it('Should create new record produk masuk', async () => {
     const jurnalName = faker.datatype.string(12);
     const jurnalName2 = faker.datatype.string(13);
     // initiate func
@@ -25,10 +25,6 @@ describe('create jurnal produk massuk', () => {
     // const newItemIdReturned =
     await jurnalProdukMasuk.createJurnalProdukMasuk(jurnalName);
     await jurnalProdukMasuk.createJurnalProdukMasuk(jurnalName2);
-    // // find the object from indexeddb by id
-    // const getData = await getItemById(newItemIdReturned);
-    // // expecting data that we got match with original record
-    // expect(getData.kd_item).equal(record.kd_item);
     // check state
     expect(jurnalProdukMasuk.Jurnal_produk_masuk.value.length).equal(2);
     // state [0] must be equal jurnalName
@@ -36,10 +32,8 @@ describe('create jurnal produk massuk', () => {
       jurnalName2
     );
   });
-});
-// create value for mocking master item
-describe('create master item', () => {
-  it('Should create new item', async () => {
+  // create value for mocking master item
+  it('Should create new master item item', async () => {
     for (let i = 0; i < 10; i++) {
       const kdItem = faker.datatype.string(12);
       const nmItem = faker.datatype.string(10);
@@ -60,36 +54,38 @@ describe('create master item', () => {
     // state length must be 10
     expect(Master_items.value.length).equal(10);
   });
-});
 
-describe('Create new incoming product', () => {
-  // Mocking the vuex store
-  const store = createStore({
-    state() {
-      return {
-        form: null,
-        dialogMessage: null,
-        dialogType: null,
-      }
-    }
-  })
-  // mount the component
-  const wrapper = mount(IncomingForm, {
-    global: {
-      plugins: [store]
-    }
-  });
-  // catch all form element
-  const datePicker = wrapper.find('#date-picker-incoming');
-  const shift = wrapper.find('#shift');
-  const typeDoc = wrapper.find('#type');
-  const paper = wrapper.find('#form-paper-id');
-  const diserahkan = wrapper.find('#form-diserahkan');
-  const penerima = wrapper.find('#form-penerima');
-  const submit = wrapper.find('#submit-incoming');
-  const productCrud = wrapper.find('#stock_master');
+  it('Create new incoming product', async () => {
+    // Mocking the vuex store
+    const store = createStore({
+      state() {
+        return {
+          form: null,
+          dialogMessage: null,
+          dialogType: null,
+        };
+      },
+    });
+    // mount the component with the vuex store as plugins
+    const wrapper = mount(IncomingForm, {
+      global: {
+        plugins: [store],
+      },
+    });
+    // getting all jurnal produk masuk first
+    const jrnl = useJurnalProdukMasuk();
+    await jrnl.gettingJurnalProdukMasukRecord();
+    // catch all form element
+    const datePicker = wrapper.find('#date-picker-incoming');
+    const shift = wrapper.find('#shift');
+    const typeDoc = wrapper.find('#type');
+    const paper = wrapper.find('#form-paper-id');
+    const diserahkan = wrapper.find('#form-diserahkan');
+    const penerima = wrapper.find('#form-penerima');
+    const submit = wrapper.find('#submit-incoming');
+    const productCrud = wrapper.find('#stock_master');
+    // });
 
-  it('detecting all form that we need', () => {
     // detecting all form element must be exists
     expect(datePicker.exists()).toBe(true);
     expect(shift.exists()).toBe(true);
@@ -99,9 +95,9 @@ describe('Create new incoming product', () => {
     expect(penerima.exists()).toBe(true);
     expect(submit.exists()).toBe(true);
     expect(productCrud.exists()).toBe(true);
-  });
+    // the length of state jurnal produk masuk length must be 2
+    expect(jrnl.Jurnal_produk_masuk.value.length).toBe(2);
 
-  it('Fill the form and value must be equal', async () => {
     // variable to insert to form
     const varPaper = faker.datatype.string(30);
     const varDiserahkan = faker.datatype.string(30);
@@ -110,20 +106,15 @@ describe('Create new incoming product', () => {
     // set paper and trigger keyup so the variable setted to ref variable
     paper.setValue(varPaper);
     paper.trigger('keyup.alt');
-    // set diserahkan and trigger keyup so the variable setted to ref variable
+    // fill diserahkan and trigger keyup so the variable setted to ref variable
     diserahkan.setValue(varDiserahkan);
     diserahkan.trigger('keyup.alt');
-    // set paper and trigger keyup so the variable setted to ref variable
+    // fill paper and trigger keyup so the variable setted to ref variable
     penerima.setValue(varPenerima);
-    penerima.trigger('keyup.alt');
-    // get all option in type
     const typeDocOptions = wrapper.find('#type').findAll('option');
-    const jurl = useJurnalProdukMasuk()
-    await jurl.gettingJurnalProdukMasukRecord()
-    expect(jurl.Jurnal_produk_masuk.value.length).toBe(2)
-    console.log(typeDocOptions)
-    // expect the option > 0
-    expect(typeDocOptions.length).equal(2)
+
+    // expect the option must be 3, with the null option
+    expect(typeDocOptions.length).equal(3);
     // set type value
     await typeDocOptions.at(1).setSelected();
     // wait until dom updated
@@ -133,7 +124,9 @@ describe('Create new incoming product', () => {
     expect(diserahkan.element.value).toBe(varDiserahkan);
     expect(penerima.element.value).toBe(varPenerima);
     // expect the select element
-    expect(wrapper.find('option:checked')).toBe(typeDocOptions[1]);
+    expect(typeDoc.find('option:checked').element.value).toBe(
+      jrnl.Jurnal_produk_masuk.value[0]?.id
+    );
 
     // fill the product componet 3x
     // all product in list must be equal
