@@ -19,40 +19,42 @@
 </template>
 
 <script setup>
-import Loader from "./Loader.vue";
-import IncomingForm from "../../form/IncomingForm.vue";
-import VehiclesForm from "../../form/VehiclesForm.vue";
-import OutputForm from "../../form/OutputForm.vue";
-import { useStore } from 'vuex'
-import { computed, onMounted, onBeforeUnmount } from "vue";
-import { keyPressWoutEnter } from '@/composables/keyEvent.js'
+import Loader from './Loader.vue';
+import IncomingForm from '../../form/IncomingForm.vue';
+import VehiclesForm from '../../form/VehiclesForm.vue';
+import OutputForm from '../../form/OutputForm.vue';
+import { useStore } from 'vuex';
+import { computed, onMounted, onBeforeUnmount } from 'vue';
+import { keyPressWoutEnter } from '@/composables/keyEvent.js';
 
-const store = useStore()
+const store = useStore();
 
 const closeModal = () => {
-  store.commit("form", false);
-  window.location.href = "#";
-}
+  store.commit('form', false);
+  window.location.href = '#';
+};
 
 const currentForm = computed(() => {
-  return store.state.form?.form
-})
+  return store.state.form?.form;
+});
 
 const forms = {
-  Loader, IncomingForm, VehiclesForm, OutputForm
-}
+  Loader,
+  IncomingForm,
+  VehiclesForm,
+  OutputForm,
+};
 
-onMounted(() => {
-  // dont listen any key when loader component is show
-  if(currentForm.value == 'Loader') {
-    return;
-  }
-  // listen the key that pressed
-    window.addEventListener('keydown', keyPressWoutEnter)
-})
+// onMounted(() => {
+//   // dont listen any key when loader component is show
+//   if(currentForm.value == 'Loader') {
+//     return;
+//   }
+//   // listen the key that pressed
+//     window.addEventListener('keydown', keyPressWoutEnter)
+// })
 
-onBeforeUnmount(() => {
-  window.removeEventListener('keydown', keyPressWoutEnter)
-})
-
+// onBeforeUnmount(() => {
+//   window.removeEventListener('keydown', keyPressWoutEnter)
+// })
 </script>

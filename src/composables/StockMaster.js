@@ -1,7 +1,7 @@
 import { ref } from 'vue';
 // item function
 import { getItemById, getItemIdByKdItem, createItem } from './MasterItems';
-import { loaderMessage } from './launchForm';
+import { loaderMessage, subscribeConfirmDialog } from './launchForm';
 // date formatter
 import {
   ddmmyyyy,
@@ -570,5 +570,37 @@ export class StockToOutput {
       }
       return rec;
     });
+  }
+
+  pickStockByItemAndQty(item_id, yourQuantity) {
+    const dateAvailable = this.getAvailableDateByItem(item_id);
+    const result = [];
+    let quantityLeft = yourQuantity;
+    dateAvailable.forEach((stock) => {
+      if (quantityLeft > 0) {
+        // get available first
+        const available = this.getAvailableStock(stock.id);
+        console.log('available stock', available);
+        // new available
+        // available - yourQuantity (50 - 100)
+        const availableAfterPick = available - quantityLeft;
+        // quantity
+        const quantityOutput =
+          availableAfterPick >= 0 ? quantityLeft : available;
+        // set quantity left
+        quantityLeft = quantityLeft - quantityOutput;
+        console.log('quantity left: ', quantityLeft);
+        result.push({ stock_master_id: stock?.id, quantity: quantityOutput });
+      }
+    });
+    if (quantityLeft > 0) {
+      // get item name
+      const itemDetails = this.#localStock.find(
+        (rec) => rec?.item_id == item_id
+      );
+      // show on modal element
+      alert(`Stock ${itemDetails?.item_name} kurang dari ketersediaan!`);
+    }
+    return result;
   }
 }

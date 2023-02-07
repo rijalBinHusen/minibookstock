@@ -27,6 +27,7 @@ import SlowMoving from './pages/SlowMoving.vue';
 import SummaryStockMaster from './pages/SummaryStockMaster.vue';
 import Transaction from './pages/Transaction.vue';
 import FooterVue from './components/Footer.vue';
+import { getStockThatAvailable } from './composables/StockMaster';
 
 export default {
   name: 'App',
@@ -73,6 +74,7 @@ export default {
         this.dialogActive = false;
       }
     });
+    getStockThatAvailable();
   },
 };
 </script>
