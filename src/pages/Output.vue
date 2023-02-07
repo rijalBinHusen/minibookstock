@@ -127,6 +127,8 @@ import {
   getRecordByDate,
   markAsUnFinished,
 } from '../composables/Output';
+import { getStockThatAvailable } from '../composables/StockMaster';
+import { onMounted } from 'vue';
 
 const handleButton = async (operation, document) => {
   // if operation === remove
@@ -169,4 +171,8 @@ const handleButton = async (operation, document) => {
   //     return;
   // }
 };
+
+onMounted(() => {
+  getStockThatAvailable();
+});
 </script>

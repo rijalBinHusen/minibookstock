@@ -494,35 +494,40 @@ export const getSummaryStockMaster = async () => {
   return result;
 };
 
-export class ListStock {
-  #state = []
-  #isGetStockOnProcess = null;
-  constructor () {
-    this.getStock()
+export class StockToOutput {
+  #localStock = [];
+  constructor() {
+    // if state null
+    if (!Stock_masters.value.length) {
+      alert(
+        'Stock belum tersedia, silahkan mengunjungi stock master untuk mengambil data dari database'
+      );
+      return false;
+    }
+    this.#localStock = Stock_masters.value;
   }
 
-  async getItemThatAvailable() {
-    // get the stock firstt
-    await this.getStock()
-    // is item taken while looping all record
+  itemThatAvailable() {
+    // get item that available not null
     let isItemTaken = [];
     // result of item
     let result = [];
-    for (const stock of this.#state) {
+    for (const stock of this.#localStock) {
       if (stock?.available > 0 && !isItemTaken.includes(stock?.item_id)) {
         isItemTaken.push(stock?.item_id);
-        result.push(stock);
+        result.push({
+          item_id: stock?.item_id,
+          kd_item: stock?.kd_item,
+          nm_item: stock?.item_name,
+        });
       }
     }
     return result;
   }
 
-  async getAvailableDateByItem(item_id) {
-    // get the stock firstt
-    await this.getStock()
-    // will contain the result
+  getAvailableDateByItem(item_id) {
     const result = [];
-    this.#state.forEach((stock) => {
+    this.#localStock.forEach((stock) => {
       // if availabel and item_id == item_id
       if (stock?.item_id == item_id && stock?.available > 0) {
         // product create as number
@@ -541,156 +546,29 @@ export class ListStock {
         });
       }
     });
-  }
-
-  async getQuantityStock(stockId) {
-    // get the stock firstt
-    await this.getStock()
-    // find record
-    const stock = this.#state.find((stock) => stock?.id === stockId)
-    // return
-    return stock?.quantity
-  }
-
-  async getAvailableStock(stockId) {
-    // get the stock firstt
-    await this.getStock()
-    // find record
-    const stock = this.#state.find((stock) => stock?.id === stockId)
-    // return
-    return stock?.available
-  }
-
-  async pickStockByStockId(stockId, yourNumber) {
-    // get the stock firstt
-    await this.getStock()
-    // find index
-    const indx = this.#state.findIndex((stock) => stock?.id === stockId)
-    // record
-    const rec = this.#state[indx]
-    // create new quantity
-    const available = rec?.available - yourNumber
-    // if available >= 0
-    if(available >=0 ) {
-      // update state
-      this.#state[indx] = { ...rec, available }
-      return
-    }
-    alert("Stock tidak cukup")
-  }
-
-  // pickStockByItemId(itemId, yourNumber) {
-
-  // }
-
-  async getStock() {
-    // if the state not null
-    if(this.#state.length) {
-      this.#isGetStockOnProcess = false;
-      return;
-    }
-    // call this function again when the function is on process
-    if(this.#isGetStockOnProcess) {
-      setTimeout(() => {
-        this.getStock()
-      }, 1000)
-    }
-    // set tthe process as true
-    this.#isGetStockOnProcess = true;
-    // initiate db
-    const stockdb = await useIdb(store);
-    // stockGet
-    let resultStockMapped = []
-    // stock that available
-    const stockAvailable = await stockdb.getItemsByKeyGreaterThan('quantity', 0);
-    for (const stock of stockAvailable) {
-      // map stock
-      const stockMapped = await documentsMapper(stock);
-      // push to state
-      resultStockMapped.unshift(stockMapped);
-    }
-    this.#state = resultStockMapped;
-  }
-}
-
-export class Stock {
-  constructor(
-    available,
-    available_end,
-    icoming_parent_id,
-    id,
-    isTaken,
-    item_id,
-    kd_produksi,
-    product_created,
-    quantity
-  ) {
-    this.available = available;
-    this.available_end = available_end;
-    this.icoming_parent_id = icoming_parent_id;
-    this.id = id;
-    this.isTaken = isTaken;
-    this.item_id = item_id;
-    this.kd_produksi = kd_produksi;
-    this.product_created = product_created;
-    this.quantity = quantity;
-  }
-}
-
-export class StockInformation {
-  constructor(idStock) {
-    // id stock must be string
-    if (typeof idStock !== 'string') return;
-    this.idStock = idStock;
-    this.stockDetails = null;
-    this.getStock();
-  }
-
-  async availableStock() {
-    await this.getStock();
-    return this.stockDetails.available;
-  }
-
-  async isAvailableBy(yourNumber) {
-    await this.getStock();
-    return this.stockDetails?.available >= yourNumber;
-  }
-
-  async isStockTaken() {
-    await this.getStock();
-    return this.stockDetails.isTaken;
-  }
-
-  async isExists() {
-    await this.getStock();
-    return Boolean(this.stockDetails.id);
-  }
-
-  async itemId() {
-    await this.getStock();
-    return this.stockDetails.item_id;
-  }
-
-  async itemName() {
-    await this.getStock();
-    const item = await getItemById(this.stockDetails.item_id);
-    return item?.nm_item;
-  }
-
-  async getStock() {
-    // if stock details not null or id stock null
-    if (this.stockDetails || !this.idStock) return;
-    const stock = await getStockById(this.idStock);
-    this.stockDetails = new Stock(
-      stock?.available,
-      stock?.available_end,
-      stock?.icoming_parent_id,
-      stock?.id,
-      stock?.isTaken,
-      stock?.item_id,
-      stock?.kd_produksi,
-      stock?.product_created,
-      stock?.quantity
+    // sorting the result
+    return result.sort(
+      (a, b) => a['origin_product_created'] - b['origin_product_created']
     );
+    // return result;
+  }
+
+  getAvailableStock(stockId) {
+    const findStock = this.#localStock.find((rec) => rec?.id == stockId);
+
+    return findStock?.available;
+  }
+
+  pickAvailableStock(stockId, yourNumber) {
+    this.#localStock = this.#localStock.map((rec) => {
+      if (rec?.id == stockId) {
+        if (rec?.available - yourNumber >= 0) {
+          return { ...rec, available: rec?.available - yourNumber };
+        } else {
+          alert('Ketersediaan stock tidak cukup');
+        }
+      }
+      return rec;
+    });
   }
 }

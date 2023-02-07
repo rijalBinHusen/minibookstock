@@ -8,7 +8,6 @@ import {
   getStockById,
   changeAvailableStock,
   changeQuantityStock,
-  StockInformation,
 } from './StockMaster';
 // import item function
 import { getItemById } from './MasterItems';
@@ -180,22 +179,12 @@ export const updateOutputById = async (id, keyValueToUpdate) => {
   return false;
 };
 
-// export const getStockWithoutParent = () => {
-//   gettingStartedRecord();
-//   const stock = Output_transaction.value.filter(
-//     (stock) => !stock?.icoming_parent_id
-//   );
-//   return stock;
-// };
-
 export const outputTransactionMapped = async (doc) => {
   // const result = [];
   // // if the state null
   if (!doc) {
     return;
   }
-  // Output_transaction.value.forEach((doc) => {
-  // for (const doc of Output_transaction.value) {
   // get master stock
   const master = await getStockById(doc?.stock_master_id);
   // get item
@@ -350,24 +339,33 @@ export const markAsUnFinished = async (id) => {
 };
 
 export const changeQuantityOutput = async (id, yourNumberNewQuantity) => {
-  // get the original output
-  const origin = await getOutputById(id);
-  // get stock details
-  const stock = new StockInformation(origin?.stock_master_id);
-  // check available stock
-  // if available >= quantity update output
-  if (stock?.isAvailableBy(yourNumberNewQuantity)) {
-    // update output
-    await updateOutputById(id, { quantity: yourNumberNewQuantity });
-    // change available stock
-    await changeAvailableStock(origin.stock_master_id);
-    return;
+  try {
+    // get the original output
+    const origin = await getOutputById(id);
+    // get stock details
+    const stock = await getStockById(origin?.stock_master_id);
+    // check available stock
+    // if available >= quantity update output
+    // total available stock
+    const totalAvailable = origin?.quantity + stock?.available;
+    if (totalAvailable >= yourNumberNewQuantity) {
+      // update output
+      await updateOutputById(id, { quantity: yourNumberNewQuantity });
+      // change available stock
+      await changeAvailableStock(origin.stock_master_id);
+      return;
+    }
+    // show on modal element
+    subscribeConfirmDialog(
+      'alert',
+      `${stock?.itemName} kurang dari ketersediaan!`
+    );
+    // error exection
+    throw 'Stock tidak cukup';
+  } catch (err) {
+    alert('Terjadi kesalahan:', err);
+    console.log(err);
   }
-
-  subscribeConfirmDialog(
-    'alert',
-    `${stock?.itemName} kurang dari ketersediaan!`
-  );
 };
 
 export const getOutputByDate = async (date, shift) => {

@@ -307,7 +307,7 @@ for (let i = 0; i < 1; i++) {
   });
   const availableStockAfterUpdateOutput = stock_quantity - new_output_quantity;
   describe(`Update quantity output as ${new_output_quantity}, available now ${stock_quantity} must be ${availableStockAfterUpdateOutput} after this.`, () => {
-    it(`Quantity output must be equal`, async () => {
+    it(`Quantity output must be equal ${new_output_quantity}`, async () => {
       //  find rec that we're change
       const updateOutput = await changeQuantityOutput(
         variableSaved.newOutputId,
@@ -365,6 +365,10 @@ for (let i = 0; i < 1; i++) {
       const output = await markAsUnFinished(variableSaved.newOutputId);
       // expect
       expect(output).not.equal(false);
+      // get all output finished
+      const allOutput = await getTotalStockTaken(variableSaved.newStockId);
+      // expect output finished 0
+      expect(allOutput.allFinished).equal(0);
     });
   });
 
@@ -379,7 +383,7 @@ for (let i = 0; i < 1; i++) {
   });
 
   // remove output
-  describe('Mark output as unfinished', () => {
+  describe('Remove output', () => {
     it('Should return not null', async () => {
       // waiting proses
       const output = await removeOutputById(variableSaved.newOutputId);

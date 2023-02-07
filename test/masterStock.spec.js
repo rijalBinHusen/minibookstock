@@ -4,7 +4,7 @@ import { describe, it, expect } from 'vitest';
 import {
   createStock,
   getStockById,
-  changeQuantityStock,
+  StockToOutput,
 } from '../src/composables/StockMaster';
 import {
   createOutput,
@@ -139,5 +139,37 @@ describe(`Quantity ${quantityStock} must decrement by ${quantityOutput}`, () => 
     // expecting available must 90 -5 = 85
     expect(findRec.quantity).equal(quantityStock - quantityOutput);
     expect(findRec.available).equal(quantityStock - quantityOutput);
+  });
+});
+describe(`Testing class stock to output`, () => {
+  it(`It must be iniate stock output`, () => {
+    // initiate stock
+    const stock = new StockToOutput();
+    // the return must be not false
+    expect(stock).not.equal(false);
+    // get item that available
+    const itemThatAvailable = stock.itemThatAvailable();
+    // console.log('item that available:', itemThatAvailable);
+    // expect state must be not null
+    expect(itemThatAvailable.length).not.equal(0);
+    // dateAvailable
+    const dateAvailable = stock.getAvailableDateByItem(
+      itemThatAvailable[0]?.item_id
+    );
+    // console.log('date available: ', dateAvailable);
+    // must be return not null
+    expect(dateAvailable.length).not.equal(0);
+    // available stock
+    const available = stock.getAvailableStock(dateAvailable[0]?.id);
+    // console.log('available stock:', available);
+    // expect
+    expect(available).not.equal(0);
+    // pick stock
+    const numbertoPick = faker.datatype.number({ max: available });
+    // console.log('number to pick: ', numbertoPick);
+    stock.pickAvailableStock(dateAvailable[0]?.id, numbertoPick);
+    const availableAfterPick = stock.getAvailableStock(dateAvailable[0]?.id);
+    expect(availableAfterPick).equal(available - numbertoPick);
+    // console.log('available after pick: ', availableAfterPick);
   });
 });
