@@ -9,10 +9,10 @@ import {
   createItem,
   Master_items,
   getItemById,
+  gettingStartedRecord as getAllItems,
 } from '../composables/MasterItems';
 import IncomingForm from './IncomingForm.vue';
 import { createStore } from 'vuex';
-import mainStore from '../store/index';
 
 // create value for mocking jurnal produk masuk
 describe('create new record stock income', () => {
@@ -75,6 +75,13 @@ describe('create new record stock income', () => {
     // getting all jurnal produk masuk first
     const jrnl = useJurnalProdukMasuk();
     await jrnl.gettingJurnalProdukMasukRecord();
+    // get all item in database
+    await getAllItems();
+    // expect master item state mustbe not 0
+    expect(Master_items.value.length).not.equal(0);
+
+    // await dom updated
+    await flushPromises();
     // catch all form element
     const datePicker = wrapper.find('#date-picker-incoming');
     const shift = wrapper.find('#shift');
@@ -84,8 +91,17 @@ describe('create new record stock income', () => {
     const penerima = wrapper.find('#form-penerima');
     const submit = wrapper.find('#submit-incoming');
     const productCrud = wrapper.find('#stock_master');
+    // incoming product crud form
+    const formQty = wrapper.find('#form-input-incoming-quantity');
+    const formItem = wrapper.find('#form-input-incoming-item');
+    const formKdProd = wrapper.find('#form-input-incoming-kd-produksi');
+    const formSubmitProd = wrapper.find('#submit-incoming-item');
     // });
-
+    // await new Promise((res) => {
+    //   setTimeout(() => {
+    //     res();
+    //   }, 4000);
+    // });
     // detecting all form element must be exists
     expect(datePicker.exists()).toBe(true);
     expect(shift.exists()).toBe(true);
@@ -95,6 +111,10 @@ describe('create new record stock income', () => {
     expect(penerima.exists()).toBe(true);
     expect(submit.exists()).toBe(true);
     expect(productCrud.exists()).toBe(true);
+    expect(formQty.exists()).toBe(true);
+    expect(formKdProd.exists()).toBe(true);
+    expect(formSubmitProd.exists()).toBe(true);
+    expect(formItem.exists()).toBe(true);
     // the length of state jurnal produk masuk length must be 2
     expect(jrnl.Jurnal_produk_masuk.value.length).toBe(2);
 
@@ -128,10 +148,53 @@ describe('create new record stock income', () => {
       jrnl.Jurnal_produk_masuk.value[0]?.id
     );
 
-    // fill the product componet 3x
+    // variable to input item
+    const varQty = faker.datatype.number({ min: 10 }) + '';
+    const varKdProd = faker.datatype.string(6);
+
+    // create new product incoming
+    // fill the form
+    // get all option of item
+    const items = wrapper.find('#item').findAll('option');
+    // console.log(items);
+    // fill the item from and trigger key up
+    // console.log(items[0].element.value);
+    const varItem = items[0].element.value;
+    formItem.setValue(varItem);
+    await formItem.trigger('keyup.alt');
+
+    // waiting until the component set the item
+    await new Promise((res) => {
+      setTimeout(() => {
+        res();
+      }, 5000);
+    });
+    // waiting until dom updated
+    await flushPromises();
+    // fill the quantity form and trigger key up
+    formQty.setValue(varQty);
+    formQty.trigger('keyup.alt');
+    // fill kode produksi form and trigger key up
+    formKdProd.setValue(varKdProd);
+    formKdProd.trigger('keyup.alt');
     // all product in list must be equal
+    expect(formItem.element.value).equal(varItem);
+    expect(formKdProd.element.value).equal(varKdProd);
+    expect(formQty.element.value).equal(varQty);
+    // trigger submit
+    await formSubmitProd.trigger('click');
+    // waiting until item component finished submit the product
+    await new Promise((res) => {
+      setTimeout(() => {
+        res();
+      }, 5000);
+    });
+    // wait until dom updated
+    await flushPromises();
+    // detect form must be null
+    expect(formItem.element.value).equal('');
   });
   // click submit button
   // the stock master state length must be equal 3
   // the incoming state length must be equal 1
-});
+}, 20000);
