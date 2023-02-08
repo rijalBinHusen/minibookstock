@@ -574,6 +574,7 @@ export class StockToOutput {
 
   pickStockByItemAndQty(item_id, yourQuantity) {
     const dateAvailable = this.getAvailableDateByItem(item_id);
+    console.log('date available: ', dateAvailable);
     const result = [];
     let quantityLeft = yourQuantity;
     dateAvailable.forEach((stock) => {

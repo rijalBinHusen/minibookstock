@@ -225,8 +225,11 @@ const handleCreateOutput = async () => {
       customer.value
     );
     // change order quantity if it picked from item order, this will return (order - yournumber)
-    if (stock.id.length > 3) {
-      const orderQuantity = await changeOrderValue(stock.id, -stock.quantity);
+    if (stock?.orderId > 3) {
+      const orderQuantity = await changeOrderValue(
+        stock?.orderId,
+        -stock.quantity
+      );
       // if order quantity === 0
       // remove item order id from salesorder.childitem
       if (orderQuantity === 0) {
@@ -305,6 +308,7 @@ const handleSOrder = async (salesOrderId) => {
       if (!itemOrder?.id) {
         return;
       }
+      console.info(itemOrder);
       const stock = new StockToOutput();
       //   // get stock master by item id, this will return [{ id, product_created }, .....]
       //   const dateStockMaster = await getAvailableDateByItem(itemOrder.item_id);
@@ -314,66 +318,15 @@ const handleSOrder = async (salesOrderId) => {
         itemOrder.item_id,
         itemOrder.order
       );
-      console.log('item order', itemOrder);
-      console.log('get stock to output', getStockToOutput);
+      // looping stock output
       getStockToOutput.forEach((stockToOut) => {
         handleStock('add', {
           id: itemOrder.id,
+          orderId: itemOrder?.id,
           stock_master_id: stockToOut.stock_master_id,
           quantity: stockToOut.quantity,
         });
       });
-      //   }
-      //   // get stockMasterById, this will return { item_id, product_created, quantity, available}
-      //   const stockMaster = await getStockById(dateStockMaster[0]?.id);
-      //   // compare available stock master
-      //   // if available stock master > order
-      //   // or datestockmaster only availbale 1
-      //   if (
-      //     stockMaster.available >= itemOrder.order ||
-      //     dateStockMaster.length === 1
-      //   ) {
-      //     // put to item lists
-      //     // if the available stockMaster.available >= itemOrder.order alert it bro
-      //     if (stockMaster.available < itemOrder.order) {
-      //       const item = await getItemById(itemOrder.item_id);
-      //       alert(
-      //         `Permintaan item ${item.nm_item} sebanyak ${itemOrder.order} karton tidak cukup, stock hanya tersedia ${stockMaster.available} karton!`
-      //       );
-      //       handleStock('add', {
-
-      //         id: itemOrder.id,
-      //         stock_master_id: stockMaster?.id,
-      //         quantity: stockMaster.available,
-      //       });
-      //     } else {
-      //       handleStock('add', {
-      //         id: itemOrder.id,
-      //         stock_master_id: stockMaster?.id,
-      //         quantity: itemOrder.order,
-      //       });
-      //     }
-      //   } else {
-      //     // count the - quantity = sisa item order1
-      //     const quantity2 = itemOrder.order - stockMaster.available;
-      //     // put the available stock1
-      //     handleStock('add', {
-      //       id: itemOrder.id,
-      //       stock_master_id: stockMaster?.id,
-      //       quantity: stockMaster.available,
-      //     });
-      //     // search for available 2
-      //     // get stockMasterById, this will return { item_id, product_created, quantity}
-      //     const stockMaster2 = await getStockById(dateStockMaster[1]?.id);
-      //     // sisa item order2, if quantity3 >= 0 it means enough
-      //     const quantity3 = stockMaster2.available - quantity2;
-      //     // put the available stock2
-      //     handleStock('add', {
-      //       id: itemOrder.id + 1,
-      //       stock_master_id: stockMaster2?.id,
-      //       quantity: quantity3 >= 0 ? quantity2 : stockMaster2.available,
-      //     });
-      //   }
     }
   }
   // record sorder that picked
