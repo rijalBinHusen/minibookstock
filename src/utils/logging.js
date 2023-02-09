@@ -38,10 +38,10 @@ export const addLog = async (storeName, mode, key, value) => {
         res();
       }, 110)
     );
-    // return
     return true;
   } catch (err) {
     alert('Terjadi kesalahan pada sistem');
     console.log(err);
+    return false;
   }
 };

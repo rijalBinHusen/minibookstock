@@ -10,42 +10,33 @@ export const useIdb = async (storeName) => {
     storeName,
   });
   const createItem = async (value) => {
+    // get summary
+    const sum = await summary(storeName);
+    // generateID
+    const nextId = sum?.lastUpdated
+      ? generateId(sum?.lastUpdated?.lastId)
+      : generateId(storeName + '_22030000');
+    // record to set
+    const record = { ...value, id: nextId, created: new Date().getTime() };
     try {
-      // get summary
-      const sum = await summary(storeName);
-      // generateID
-      const nextId = sum?.lastUpdated
-        ? generateId(sum?.lastUpdated?.lastId)
-        : generateId(storeName + '_22030000');
-      // record to set
-      const record = { ...value, id: nextId, created: new Date().getTime() };
       // record to logs
-      const isDuplicateCall = await addLog(storeName, 'create', nextId, record);
-      if (!isDuplicateCall) {
+      const isLogWrited = await addLog(storeName, 'create', nextId, record);
+      if (isLogWrited) {
         // setItem
         await setItem(nextId, record);
         // update summary
         await sum.updateSummary(nextId);
       }
+      return record;
     } catch (err) {
       alert('Terjadi kesalahan ketika memasukkan data');
       console.log(err);
       return false;
-    } finally {
-      // return the whole record
-      return record;
     }
   };
 
   const setItem = async (key, value) => {
-    try {
-      await store.setItem(key, value);
-    } catch (err) {
-      alert('Terjadi kesalahan ketika menulis data');
-      return false;
-    } finally {
-      return true;
-    }
+    return store.setItem(key, value);
   };
 
   const getItem = (key) => {
@@ -124,12 +115,10 @@ export const useIdb = async (storeName) => {
       if (isNotDuplicate) {
         await setItem(key, newItem);
       }
+      return true;
     } catch (err) {
       console.error(err);
       return false;
-    } finally {
-      // return
-      return true;
     }
   };
 

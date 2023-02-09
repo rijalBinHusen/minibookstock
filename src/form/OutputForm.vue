@@ -13,7 +13,7 @@
               <span class="label-text">Tanggal</span>
             </label>
             <date-picker
-              id="date-picker"
+              id="date-picker-output"
               class="input input-outline input-primary input-sm"
               v-model="date"
             ></date-picker>
