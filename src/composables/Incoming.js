@@ -13,6 +13,7 @@ import { useIdb } from '../utils/localforage';
 import { useJurnalProdukMasuk } from './Setting_JurnalId';
 // output
 import { getTotalStockTaken } from './Output';
+import { loaderMessage } from './launchForm';
 
 // the state
 export const Incoming_transaction = ref([]);
@@ -32,7 +33,16 @@ export const dateRecordToShow = ref(new Date());
   catatan string
  */
 
-export const createIncoming = async ( stock_master_ids, paper_id, tanggal, shift, diterima, type, diserahkan, catatan ) => {
+export const createIncoming = async (
+  stock_master_ids,
+  paper_id,
+  tanggal,
+  shift,
+  diterima,
+  type,
+  diserahkan,
+  catatan
+) => {
   // initiate idb
   const incomedb = await useIdb(store);
   // initiate new record
@@ -131,33 +141,55 @@ export const updateIncomingById = async (id, keyValueToUpdate) => {
 //   return stock;
 // };
 
-export const incomingTransactionMapped = async () => {
+export const incomingTransactionForStockCard = async (
+  startDate,
+  finishDate,
+  itemId
+) => {
+  // result var
   const result = [];
-  // if the state null
-  if (!Incoming_transaction.value || !Incoming_transaction.value.length) {
-    return result;
-  }
-  // map all state
-  for (const income of Incoming_transaction.value) {
-    // map stock master by stock master ids
-    for (const id of income?.stock_master_ids) {
-      // get stock master by id
-      const stockMaster = await getStockById(id);
-      // get nm_item from based on stockMaster.item_id
-      const item = await getItemById(stockMaster?.item_id);
-      result.push({
-        id: income?.id,
-        tanggal: ddmmyyyy(income?.tanggal, '-'),
-        shift: income?.shift,
-        paper_id: income?.paper_id,
-        nm_item: item?.nm_item,
-        quantity: stockMaster?.quantity,
-        available: stockMaster?.available,
-        product_created: ddmmyyyy(stockMaster?.product_created, '-'),
-      });
+  // initiate db
+  const incomeDb = await useIdb(store);
+  // get record between date
+  const incomes =
+    await incomeDb.getItemsByKeyGreaterOrEqualThanAndLowerOrEqualThan(
+      'tanggal',
+      startDate,
+      finishDate
+    );
+  // looping record
+  for (let [index, income] of incomes.entries()) {
+    // show message
+    loaderMessage(
+      `Mengambil produk masuk, ${index + 1} dari ${incomes.length}`
+    );
+    // looping stock child
+    for (let stockId of income.stock_master_ids) {
+      // get stock info
+      const stockInfo = await getStockById(stockId);
+      // if item_id === itemI
+      if (stockInfo.item_id === itemId) {
+        const itemInfo = await getItemById(stockInfo.item_id);
+        const stockFinished = await getTotalStockTaken(stockId);
+        // map record
+        const stockToPush = {
+          unix_time: income.tanggal,
+          stock_id: stockId,
+          tanggal_transaksi: ddmmyyyy(income.tanggal),
+          nomor_dokumen: income.paper_id,
+          shift: income.shift,
+          mutasi: 'Masuk',
+          kode_item: itemInfo.kd_item,
+          nama_item: itemInfo.nm_item,
+          type: income.type,
+          tanggal_produk: ddmmyyyy(stockInfo.product_created),
+          quantity: stockInfo.quantity + stockFinished.allFinished,
+        };
+        // push to result
+        result.push(stockToPush);
+      }
     }
   }
-  return result;
 };
 
 export const getAllDataToBackup = async () => {
