@@ -15,6 +15,7 @@
             v-model="itemModel"
             list="item"
             :disabled="isParentEditMode"
+            id="input-item-output"
           />
           <datalist id="item">
             <option
@@ -273,7 +274,7 @@ watch([props], async () => {
     // if isEditMode.value.length > 5 it means we're edit record from output database
     if (isEditMode.value.length > 5) {
       const outputRec = await getOutputById(isEditMode.value);
-      quantityAvailableStockMaster.value = outputRec?.quantity;
+      quantityAvailableStockMaster.value = Number(outputRec?.quantity);
     } else {
       quantityAvailableStockMaster.value = props?.currentStockEdit?.quantity;
     }

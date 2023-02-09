@@ -44,6 +44,7 @@
             placeholder="Nama customer"
             tipe="primary"
             :value="customer"
+            id="customer"
           />
         </div>
 
