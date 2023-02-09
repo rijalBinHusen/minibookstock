@@ -1,7 +1,7 @@
 import localforage from 'localforage';
-import { addLog } from "./logging"
-import { summary } from "./summaryIdb"
-import { generateId } from "./GeneratorId"
+import { addLog } from './logging';
+import { summary } from './summaryIdb';
+import { generateId } from './GeneratorId';
 
 export const useIdb = async (storeName) => {
   // create instance
@@ -9,22 +9,24 @@ export const useIdb = async (storeName) => {
     name: 'my_report_stock',
     storeName,
   });
-  const createItem = async(value) => {
+  const createItem = async (value) => {
     // get summary
-    const sum = await summary(storeName)
+    const sum = await summary(storeName);
     // generateID
-    const nextId = sum?.lastUpdated ? generateId(sum?.lastUpdated?.lastId) : generateId(storeName + "_22030000")
+    const nextId = sum?.lastUpdated
+      ? generateId(sum?.lastUpdated?.lastId)
+      : generateId(storeName + '_22030000');
     // record to set
-    const record = { ...value, id: nextId, created: new Date().getTime() }
-    // record to logs 
+    const record = { ...value, id: nextId, created: new Date().getTime() };
+    // record to logs
     await addLog(storeName, 'create', nextId, record);
     // setItem
-    await setItem(nextId, record)
+    await setItem(nextId, record);
     // update summary
-    await sum.updateSummary(nextId)
+    await sum.updateSummary(nextId);
     // return the whole record
     return record;
-  }
+  };
 
   const setItem = async (key, value) => {
     await store.setItem(key, value);
@@ -37,7 +39,8 @@ export const useIdb = async (storeName) => {
 
   const getItemsLimit = async (limit) => {
     const result = [];
-    return store.iterate(function (value, key, iterationNumber) {
+    return store
+      .iterate(function (value, key, iterationNumber) {
         if (iterationNumber < limit && value && key) {
           result.push(value);
         }
@@ -93,19 +96,26 @@ export const useIdb = async (storeName) => {
 
   const updateItem = async (key, keyValueToUpdate) => {
     // onsole.log('local forage update item', key)
-    // get item first
-    const item = await getItem(key);
-    // new item
-    const newItem = { ...item, ...keyValueToUpdate };
-    // record to log
-    const isNotDuplicate = await addLog(storeName, 'update', key, { ...keyValueToUpdate });
-    // then set item
-    if(isNotDuplicate) {
-      await setItem(key, newItem);
-      return true
+    try {
+      // get item first
+      const item = await getItem(key);
+      // new item
+      const newItem = { ...item, ...keyValueToUpdate };
+      // record to log
+      const isNotDuplicate = await addLog(storeName, 'update', key, {
+        ...keyValueToUpdate,
+      });
+      // then set item
+      if (isNotDuplicate) {
+        await setItem(key, newItem);
+      }
+    } catch (err) {
+      console.error(err);
+      return false;
+    } finally {
+      // return
+      return true;
     }
-    // return
-    return false;
   };
 
   const getItemsByKeyValue = async (keySearch, valueSearch) => {

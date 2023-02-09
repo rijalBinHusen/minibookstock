@@ -114,6 +114,7 @@ import {
   Stock_masters,
 } from '../composables/StockMaster';
 import Select from './elements/Forms/Select.vue';
+import { getOutputById } from '../composables/Output';
 
 const props = defineProps({
   isParentEditMode: String,
@@ -192,10 +193,13 @@ const handleSubmit = async () => {
     );
     return;
   }
+  let quantityToOutput = isEditMode.value
+    ? Number(quantity.value) - quantityAvailableStockMaster.value
+    : Number(quantity.value);
   // variable new record
   const record = {
     stock_master_id: currentStockMaster.value,
-    quantity: Number(quantity.value),
+    quantity: quantity.value,
   };
   // is edit mode
   if (isEditMode.value) {
@@ -206,8 +210,9 @@ const handleSubmit = async () => {
   else {
     // send event to parent
     emit('addStock', record);
+    // set quantity stock
+    stock.pickAvailableStock(currentStockMaster.value, quantityToOutput);
   }
-  stock.pickAvailableStock(currentStockMaster.value, Number(quantity.value));
   // reset the form after submit
   resetForm();
   isEditMode.value = null;
@@ -251,22 +256,29 @@ watch([props], async () => {
     const stockMaster = await getStockById(
       props?.currentStockEdit?.stock_master_id
     );
+    // set editmode
+    isEditMode.value = props?.currentStockEdit?.id;
     // get item
     const itemDetails = await getItemById(stockMaster['item_id']);
     // set quantity
     // console.log(props?.currentStockEdit)
     quantity.value = props?.currentStockEdit?.quantity;
-    // set item modedl
+    // set item model
     itemModel.value = itemDetails.kd_item + '* ' + itemDetails.nm_item;
     // set item id
     item.value = itemDetails.id;
     // waiting item to input text
     await handleItem({ target: { value: itemModel.value } });
+    // set quantity available stock master
+    // if isEditMode.value.length > 5 it means we're edit record from output database
+    if (isEditMode.value.length > 5) {
+      const outputRec = await getOutputById(isEditMode.value);
+      quantityAvailableStockMaster.value = outputRec?.quantity;
+    } else {
+      quantityAvailableStockMaster.value = props?.currentStockEdit?.quantity;
+    }
     // set stock master using this way
-    quantityAvailableStockMaster.value = props?.currentStockEdit?.quantity;
     hadleStockMaster(stockMaster.id);
-    // set editmode
-    isEditMode.value = props?.currentStockEdit?.id;
   }
 });
 

@@ -504,7 +504,7 @@ export class StockToOutput {
       );
       return false;
     }
-    this.#localStock = Stock_masters.value;
+    this.#localStock = JSON.parse(JSON.stringify(Stock_masters.value));
   }
 
   itemThatAvailable() {
@@ -560,28 +560,62 @@ export class StockToOutput {
   }
 
   pickAvailableStock(stockId, yourNumber) {
-    this.#localStock = this.#localStock.map((rec) => {
-      if (rec?.id == stockId) {
-        if (rec?.available - yourNumber >= 0) {
-          return { ...rec, available: rec?.available - yourNumber };
-        } else {
-          alert('Ketersediaan stock tidak cukup');
-        }
+    // console.log('your number to pick', yourNumber);
+    // find index record first
+    const indexRecord = this.#localStock.findIndex(
+      (rec) => rec?.id === stockId
+    );
+    if (indexRecord > -1) {
+      // get the record by index
+      const record = this.#localStock[indexRecord];
+      // initiate new available stock
+      const newAvailableStock = record?.available - yourNumber;
+      // if new available >= 0 update state
+      if (newAvailableStock >= 0) {
+        this.#localStock[indexRecord] = {
+          ...record,
+          available: newAvailableStock,
+        };
+        return true;
       }
-      return rec;
-    });
+      alert('Ketersediaan stock tidak cukup');
+      return false;
+    }
+    alert('Stock tidak ditemukan');
+    return false;
+  }
+
+  isAvailablePickedByNumber(stockId, yourNumber) {
+    // find index record first
+    const indexRecord = this.#localStock.findIndex(
+      (rec) => rec?.id === stockId
+    );
+    if (indexRecord > -1) {
+      // get the record by index
+      const record = { ...this.#localStock[indexRecord] };
+      // initiate new available stock
+      const newAvailableStock = record?.available - yourNumber;
+      // if new available >= 0
+      if (newAvailableStock >= 0) {
+        return true;
+      }
+      alert('Ketersediaan stock tidak cukup');
+      return false;
+    }
+    alert('Stock tidak ditemukan');
+    return false;
   }
 
   pickStockByItemAndQty(item_id, yourQuantity) {
     const dateAvailable = this.getAvailableDateByItem(item_id);
-    console.log('date available: ', dateAvailable);
+    // onsole.log('date available: ', dateAvailable);
     const result = [];
     let quantityLeft = yourQuantity;
     dateAvailable.forEach((stock) => {
       if (quantityLeft > 0) {
         // get available first
         const available = this.getAvailableStock(stock.id);
-        console.log('available stock', available);
+        // onsole.log('available stock', available);
         // new available
         // available - yourQuantity (50 - 100)
         const availableAfterPick = available - quantityLeft;
@@ -590,7 +624,7 @@ export class StockToOutput {
           availableAfterPick >= 0 ? quantityLeft : available;
         // set quantity left
         quantityLeft = quantityLeft - quantityOutput;
-        console.log('quantity left: ', quantityLeft);
+        // onsole.log('quantity left: ', quantityLeft);
         result.push({ stock_master_id: stock?.id, quantity: quantityOutput });
       }
     });

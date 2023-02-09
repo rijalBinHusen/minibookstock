@@ -225,7 +225,7 @@ const handleCreateOutput = async () => {
       customer.value
     );
     // change order quantity if it picked from item order, this will return (order - yournumber)
-    if (stock?.orderId > 3) {
+    if (stock?.orderId) {
       const orderQuantity = await changeOrderValue(
         stock?.orderId,
         -stock.quantity
@@ -308,7 +308,7 @@ const handleSOrder = async (salesOrderId) => {
       if (!itemOrder?.id) {
         return;
       }
-      console.info(itemOrder);
+
       const stock = new StockToOutput();
       //   // get stock master by item id, this will return [{ id, product_created }, .....]
       //   const dateStockMaster = await getAvailableDateByItem(itemOrder.item_id);
