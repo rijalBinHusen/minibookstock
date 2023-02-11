@@ -28,6 +28,7 @@ import SummaryStockMaster from './pages/SummaryStockMaster.vue';
 import Transaction from './pages/Transaction.vue';
 import FooterVue from './components/Footer.vue';
 import { getStockThatAvailable } from './composables/StockMaster';
+import { CheckMigration } from './utils/databaseMigration';
 
 export default {
   name: 'App',
@@ -75,6 +76,7 @@ export default {
       }
     });
     getStockThatAvailable();
+    CheckMigration();
   },
 };
 </script>

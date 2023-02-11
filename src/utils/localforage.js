@@ -3,7 +3,7 @@ import { addLog } from './logging';
 import { summary } from './summaryIdb';
 import { generateId } from './GeneratorId';
 
-export const useIdb = async (storeName) => {
+export const useIdb = (storeName) => {
   // create instance
   const store = localforage.createInstance({
     name: 'my_report_stock',
