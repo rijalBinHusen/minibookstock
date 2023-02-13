@@ -33,8 +33,12 @@ const handleBackup = async () => {
   launchForm('Loader', false);
   // will contain all result
   const result = [];
+  // get database version
+  const dbVersion = useIdb('database_version');
+  const getDbVersion = await dbVersion.getItems();
+  result.push({ store: 'database_version', data: getDbVersion });
   // summary db
-  const summary = await useIdb('summary');
+  const summary = useIdb('summary');
   // get all items summary
   const summary_items = await summary.getItems();
   // push summary to result
@@ -48,7 +52,7 @@ const handleBackup = async () => {
       } record.`
     );
     // initiate db
-    const dbCurrentTable = await useIdb(sum.id);
+    const dbCurrentTable = useIdb(sum.id);
     // get all items
     const allItems = await dbCurrentTable.getItems();
     // push to result

@@ -1,13 +1,13 @@
-import { useIdb } from "../utils/localforage";
+import { useIdb } from '../utils/localforage';
 
-const store = "item_orders";
+const store = 'item_orders';
 
 export const createItemOrder = async (item_id, order) => {
-  const db = await useIdb(store);
+  const db = useIdb(store);
   // initiate new record
   const record = { item_id, order };
   // save to indexeddb
-  const recordInserted = await db.setItem(nextId, record);
+  const recordInserted = await db.createItem(record);
   //  return next id
   return recordInserted?.id;
 };
@@ -29,9 +29,9 @@ export const getItemOrderById = async (id) => {
   return findSalesOrder
     ? findSalesOrder
     : {
-        id: "Not found",
-        item_id: "Not found",
-        order: "Not found",
+        id: 'Not found',
+        item_id: 'Not found',
+        order: 'Not found',
       };
 };
 
