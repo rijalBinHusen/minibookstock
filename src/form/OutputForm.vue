@@ -320,9 +320,9 @@ const handleSOrder = async (salesOrderId) => {
         itemOrder.order
       );
       // looping stock output
-      getStockToOutput.forEach((stockToOut) => {
+      getStockToOutput.forEach((stockToOut, index) => {
         handleStock('add', {
-          id: itemOrder.id,
+          id: itemOrder.id + index,
           orderId: itemOrder?.id,
           stock_master_id: stockToOut.stock_master_id,
           quantity: stockToOut.quantity,
