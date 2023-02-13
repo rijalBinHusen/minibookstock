@@ -236,7 +236,7 @@ const handleCreateOutput = async () => {
       if (orderQuantity === 0) {
         for (const SOrder of salesOrderPicked.value) {
           if (SOrder) {
-            await removeChildItemsOrder(SOrder, stock.id);
+            await removeChildItemsOrder(SOrder, stock?.orderId);
           }
         }
       }
