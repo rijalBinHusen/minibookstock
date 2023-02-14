@@ -50,7 +50,7 @@ export const createStock = async (
   // because the state is not null, even though the state just contain new record, not all stock
   await getStockThatAvailable();
   // initiate idb
-  const stockdb = await useIdb(store);
+  const stockdb = useIdb(store);
   // get last id
   // initiate new record
   const record = {
@@ -73,7 +73,7 @@ export const createStock = async (
 
 export const removeStockById = async (id) => {
   // initiate idb
-  const stockdb = await useIdb(store);
+  const stockdb = useIdb(store);
   // remove from state
   Stock_masters.value = Stock_masters.value.filter((rec) => rec.id !== id);
   // remove from idb
@@ -83,7 +83,7 @@ export const removeStockById = async (id) => {
 
 export const getStockById = async (id) => {
   // initiate idb
-  const stockdb = await useIdb(store);
+  const stockdb = useIdb(store);
   //
   const findStock = await stockdb.getItem(id);
   return findStock
@@ -99,17 +99,18 @@ export const getStockById = async (id) => {
 
 export const updateStockById = async (id, keyValueToUpdate) => {
   // initiate idb
-  const stockdb = await useIdb(store);
+  const stockdb = useIdb(store);
   // update database
   await stockdb.updateItem(id, keyValueToUpdate);
   // get new record
   const newRec = await stockdb.getItem(id);
-  // map new rec
-  const newRecMapped = await documentsMapper(newRec);
-  // update state
-  Stock_masters.value = Stock_masters.value.map((rec) =>
-    rec?.id === id ? newRecMapped : rec
-  );
+  const findIndexRec = Stock_masters.value.findIndex((rec) => rec?.id === id);
+  if (findIndexRec > -1) {
+    // map new rec
+    const newRecMapped = await documentsMapper(newRec);
+    // update state
+    Stock_masters.value.splice(findIndexRec, 1, newRecMapped);
+  }
   //saveData();
   return;
 };
@@ -183,7 +184,7 @@ export const getAvailableDateByItem = async (item_id) => {
 
 export const changeAvailableStock = async (id_stock) => {
   // initiate idb
-  const stockdb = await useIdb(store);
+  const stockdb = useIdb(store);
   // get the record
   const findRec = await stockdb.getItem(id_stock);
   // get all taken in output transaction
@@ -219,7 +220,7 @@ export const markStockAsTaken = async (id) => {
 
 export const getAllDataToBackup = async () => {
   // initiate idb
-  const stockdb = await useIdb(store);
+  const stockdb = useIdb(store);
   // get all data
   const allData = await stockdb.getItems();
   // return the result
@@ -293,7 +294,7 @@ export const getSTockByIdInState = (idStock) => {
 
 export const changeQuantityStock = async (id_stock, yourNumberPlusOrMinus) => {
   // initiate idb
-  const stockdb = await useIdb(store);
+  const stockdb = useIdb(store);
   // get the record
   const findRec = await stockdb.getItem(id_stock);
   // decrement or increment quantity
@@ -308,7 +309,7 @@ export const changeQuantityStock = async (id_stock, yourNumberPlusOrMinus) => {
 
 export const getStockByIdForIncomingForm = async (id) => {
   // initiate idb
-  const stockdb = await useIdb(store);
+  const stockdb = useIdb(store);
   // get all output
   const allOutput = await getTotalStockTaken(id);
   // find stock
@@ -325,7 +326,7 @@ export const getStockByIdForIncomingForm = async (id) => {
 
 export const getStockMasterByItemId = async (item_id) => {
   // initiate idb
-  const stockdb = await useIdb(store);
+  const stockdb = useIdb(store);
   // get data from db based on item id
   const allStock = await stockdb.getItemsByKeyValue('item_id', item_id);
   // return all stock
@@ -347,7 +348,7 @@ export const getStockThatAvailable = async () => {
   Stock_masters.value = [];
   // get stock that available from db
   // initiate idb
-  const stockdb = await useIdb(store);
+  const stockdb = useIdb(store);
   // stock that available
   const stockAvailable = await stockdb.getItemsByKeyGreaterThan('quantity', 0);
   for (const [index, stock] of stockAvailable.entries()) {

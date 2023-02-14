@@ -10,7 +10,6 @@ import {
   closeModalOrDialog,
 } from '../composables/launchForm';
 
-const store = 'database_version';
 const currentVersion = 1;
 
 // function to migration to 1
@@ -49,12 +48,15 @@ class DatabaseVersion {
   }
 
   async setVersion(yourVersion) {
-    await this.#db.setItem(this.#keyDocument, yourVersion);
+    await this.#db.setItem(this.#keyDocument, {
+      id: this.#keyDocument,
+      version: yourVersion,
+    });
   }
 
   async getCurrentDatabaseVersion() {
-    const num = await this.#db.getItem(this.#keyDocument);
-    return num;
+    const ver = await this.#db.getItem(this.#keyDocument);
+    return ver?.version;
   }
 }
 

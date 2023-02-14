@@ -44,7 +44,7 @@ export const createIncoming = async (
   catatan
 ) => {
   // initiate idb
-  const incomedb = await useIdb(store);
+  const incomedb = useIdb(store);
   // initiate new record
   const record = {
     stock_master_ids,
@@ -72,7 +72,7 @@ export const gettingStartedRecord = async () => {
   // dapatkan last used
   if (!Incoming_transaction.value.length) {
     // initiate idb
-    const incomedb = await useIdb(store);
+    const incomedb = useIdb(store);
     // get all item
     const item = await incomedb.getItems();
     Incoming_transaction.value = item ? item : [];
@@ -82,7 +82,7 @@ export const gettingStartedRecord = async () => {
 
 export const removeIncomingById = async (id) => {
   // initiate idb
-  const incomedb = await useIdb(store);
+  const incomedb = useIdb(store);
   // remove from state
   Incoming_transaction.value = Incoming_transaction.value.filter(
     (rec) => rec.id !== id
@@ -103,7 +103,7 @@ export const getIncomingById = async (id) => {
   let findIncome = false;
   if (id) {
     // initiate idb
-    const incomedb = await useIdb(store);
+    const incomedb = useIdb(store);
     // find stock
     findIncome = await incomedb.getItem(id);
   }
@@ -122,11 +122,17 @@ export const getIncomingById = async (id) => {
 
 export const updateIncomingById = async (id, keyValueToUpdate) => {
   // initiate idb
-  const incomedb = await useIdb(store);
-  // update the state
-  Incoming_transaction.value = Incoming_transaction.value.map((item) => {
-    return item?.id == id ? { ...item, ...keyValueToUpdate } : item;
-  });
+  const incomedb = useIdb(store);
+  const findIndexRec = Incoming_transaction.value.findIndex(
+    (rec) => rec?.id === id
+  );
+  if (findIndexRec > -1) {
+    const record = Incoming_transaction.value[findIndexRec];
+    Incoming_transaction.value.splice(findIndexRec, 1, {
+      ...record,
+      ...keyValueToUpdate,
+    });
+  }
   // update in idb
   await incomedb.updateItem(id, keyValueToUpdate);
   // saveData();
@@ -149,7 +155,7 @@ export const incomingTransactionForStockCard = async (
   // result var
   const result = [];
   // initiate db
-  const incomeDb = await useIdb(store);
+  const incomeDb = useIdb(store);
   // get record between date
   const incomes =
     await incomeDb.getItemsByKeyGreaterOrEqualThanAndLowerOrEqualThan(
@@ -194,7 +200,7 @@ export const incomingTransactionForStockCard = async (
 
 export const getAllDataToBackup = async () => {
   // initiate idb
-  const incomedb = await useIdb(store);
+  const incomedb = useIdb(store);
   // get all data
   const allData = await incomedb.getItems();
   // return the result
@@ -203,7 +209,7 @@ export const getAllDataToBackup = async () => {
 
 export const getRecordByDate = async () => {
   // initiate idb
-  const incomedb = await useIdb(store);
+  const incomedb = useIdb(store);
   // get income by date
   Incoming_transaction.value = await incomedb.getItemsByKeyValue(
     'tanggal',
@@ -239,7 +245,7 @@ export const mapIncomingTransactionWoutItem = async () => {
 
 export const getIncomingByDate = async (date, shift) => {
   // initiate idb
-  const incomedb = await useIdb(store);
+  const incomedb = useIdb(store);
   // result
   let result = [];
   // use jurnal produk masuk
@@ -286,7 +292,7 @@ export const getIncomingByDate = async (date, shift) => {
 };
 
 export const getIncomeBetweenDate = async (date1, date2) => {
-  const incomedb = await useIdb(store);
+  const incomedb = useIdb(store);
   // get income by date
   const allIncomes =
     await incomedb.getItemsByKeyGreaterOrEqualThanAndLowerOrEqualThan(

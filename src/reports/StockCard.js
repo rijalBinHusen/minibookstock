@@ -38,7 +38,7 @@ export const stockCard = async (item_id, tanggal_start, tanggal_finished) => {
     tempRes.push({
       unix_time: incomingInfo?.tanggal,
       stock_id: stock?.id,
-      tanggal: ddmmyyyy(incomingInfo?.tanggal, '-'),
+      tanggal_transaksi: ddmmyyyy(incomingInfo?.tanggal, '-'),
       nomor_dokumen: incomingInfo?.paper_id,
       shift: incomingInfo?.shift,
       mutasi: 'Masuk',

@@ -46,7 +46,7 @@ export const createOutput = async (
   customer
 ) => {
   // initiate db
-  const outputdb = await useIdb(store);
+  const outputdb = useIdb(store);
   // initiate new record
   const record = {
     tanggal: ymdTime(tanggal),
@@ -98,7 +98,7 @@ export const getRecordByDate = async () => {
   // empty the state
   Output_transaction.value = [];
   // initiate db
-  const outputdb = await useIdb(store);
+  const outputdb = useIdb(store);
   // get record by date
   const records = await outputdb.getItemsByKeyValue(
     'tanggal',
@@ -124,7 +124,7 @@ export const removeOutputById = async (id) => {
     }
   });
   // initiate db
-  const outputdb = await useIdb(store);
+  const outputdb = useIdb(store);
   // get record first
   const record = await outputdb.getItem(id);
   // saveData();
@@ -143,7 +143,7 @@ export const removeOutputById = async (id) => {
 
 export const getOutputById = async (id) => {
   // initiate db
-  const outputdb = await useIdb(store);
+  const outputdb = useIdb(store);
   // onsole.log(res[0]);
   const findStock = await outputdb.getItem(id);
   return findStock
@@ -160,18 +160,23 @@ export const getOutputById = async (id) => {
 export const updateOutputById = async (id, keyValueToUpdate) => {
   // onsole.log('update output by id: ', id)
   // initiate db
-  const outputdb = await useIdb(store);
+  const outputdb = useIdb(store);
   // update in db
   const isUpdated = await outputdb.updateItem(id, keyValueToUpdate);
   // get record in db
   if (isUpdated) {
     const newRec = await outputdb.getItem(id);
-    // map new Rec
-    const newRecMapped = await outputTransactionMapped(newRec);
+    // find index on state
+    const findIndexRec = Output_transaction.value.findIndex(
+      (rec) => rec?.id === id
+    );
     // update in state
-    Output_transaction.value = Output_transaction.value.map((item) => {
-      return item?.id == id ? newRecMapped : item;
-    });
+    if (findIndexRec > -1) {
+      // map new Rec
+      const newRecMapped = await outputTransactionMapped(newRec);
+      Output_transaction.value.splice(findIndexRec, 1, newRecMapped);
+    }
+
     return true;
   }
   alert('Terjadi kesalahan, mohon refresh aplikasi');
@@ -227,7 +232,7 @@ export const getAllDataToBackup = async () => {
 
 export const getTotalStockTaken = async (id_stock_master) => {
   // initiate db
-  const outputdb = await useIdb(store);
+  const outputdb = useIdb(store);
   // get all Stock master that taken
   const allOutput = await outputdb.getItemsByKeyValue(
     'stock_master_id',
@@ -258,7 +263,7 @@ export const getRecordIsFinishedFalse = async () => {
   // empty the state
   Output_transaction.value = [];
   // initiate db
-  const outputdb = await useIdb(store);
+  const outputdb = useIdb(store);
   // get record by date
   const records = await outputdb.getItemsByKeyValue('isFinished', false);
 
@@ -280,7 +285,7 @@ export const getOutputByStockMasterId = async (stock_master_id) => {
   // variable that will contain result
   const result = [];
   // initiate db
-  const outputdb = await useIdb(store);
+  const outputdb = useIdb(store);
   // get record by date
   const allOutput = await outputdb.getItemsByKeyValue(
     'stock_master_id',
@@ -312,7 +317,7 @@ export const getOutputByStockMasterId = async (stock_master_id) => {
       result.push({
         unix_time: outStock.tanggal,
         stock_id: stock_master_id,
-        tanggal: ddmmyyyy(outStock.tanggal, '-'),
+        tanggal_transaksi: ddmmyyyy(outStock.tanggal, '-'),
         nomor_dokumen: outStock.nomor_so,
         shift: outStock.shift,
         mutasi: 'Keluar',
@@ -370,7 +375,7 @@ export const changeQuantityOutput = async (id, yourNumberNewQuantity) => {
 
 export const getOutputByDate = async (date, shift) => {
   // initiate db
-  const outputdb = await useIdb(store);
+  const outputdb = useIdb(store);
   // get record by date
   const records = await outputdb.getItemByTwoKeyValue(
     'tanggal',

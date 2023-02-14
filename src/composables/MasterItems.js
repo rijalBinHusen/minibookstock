@@ -7,8 +7,14 @@ import { useIdb } from '../utils/localforage';
 // the state
 export const Master_items = ref([]);
 
-export const createItem = async (kd_item, nm_item, division, last_used, age_item) => {
-  const dbitems = await useIdb(store);
+export const createItem = async (
+  kd_item,
+  nm_item,
+  division,
+  last_used,
+  age_item
+) => {
+  const dbitems = useIdb(store);
   // initiate new record
   // sort: summaryRecord?.sort ? summaryRecord?.sort + 1 : 1,
   const record = { kd_item, nm_item, division, last_used, age_item };
@@ -23,7 +29,7 @@ export const createItem = async (kd_item, nm_item, division, last_used, age_item
 export const gettingStartedRecord = async () => {
   if (!Master_items.value.length) {
     // using idb function
-    const dbitems = await useIdb(store);
+    const dbitems = useIdb(store);
     // get all item
     const rec = await dbitems.getItemsLimit(199);
     // console.log(rec);
@@ -50,7 +56,7 @@ export const gettingStartedRecord = async () => {
 
 export const getItemById = async (id) => {
   // using idb function
-  const dbitems = await useIdb(store);
+  const dbitems = useIdb(store);
   // console.log(res[0]);
   // const findItem = Master_items.value.find((rec) => rec?.id == id);
   // get item
@@ -66,20 +72,24 @@ export const getItemById = async (id) => {
 
 export const updateItemById = async (id, keyValueToUpdate) => {
   // using idb function
-  const dbitems = await useIdb(store);
+  const dbitems = useIdb(store);
   // update data in db
   await dbitems.updateItem(id, keyValueToUpdate);
+  const findIndexRec = Master_items.value.findIndex((rec) => rec?.id === id);
   // update state
-  Master_items.value = Master_items.value.map((item) => {
-    return item?.id == id ? { ...item, ...keyValueToUpdate } : item;
-  });
-  // saveData();
+  if (findIndexRec > -1) {
+    const record = Master_items.value[findIndexRec];
+    Master_items.value.splice(findIndexRec, 1, {
+      ...record,
+      ...keyValueToUpdate,
+    });
+  }
   return;
 };
 
 export const getItemIdByKdItem = async (kd_item) => {
   // using idb function
-  const dbitems = await useIdb(store);
+  const dbitems = useIdb(store);
   // const findItem = Master_items.value.find((rec) => rec?.kd_item == kd_item);
   // get from db
   const getOne = await dbitems.findOneItemByKeyValue('kd_item', kd_item);
@@ -93,7 +103,7 @@ export const getItemIdByKdItem = async (kd_item) => {
 
 export const getAllDataToBackup = async () => {
   // using idb function
-  const dbitems = await useIdb(store);
+  const dbitems = useIdb(store);
   // get all data
   // const allData = localStorage.getItem(store)
   const allData = await dbitems.getItems();
