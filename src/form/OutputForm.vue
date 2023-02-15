@@ -91,7 +91,7 @@ import SelectShift from '../components/parts/SelectShift.vue';
 import SelectTypeDocument from '../components/parts/SelectTypeDocument.vue';
 import InputSalesOrder from '../components/InputSalesOrder.vue';
 import { ref, onMounted, computed, watch } from 'vue';
-import { closeModalOrDialog } from '../composables/launchForm';
+import { closeModalOrDialog } from '../utils/launchForm';
 import { useStore } from 'vuex';
 import {
   getItemById,
@@ -259,7 +259,7 @@ const handleUpdateOutput = async () => {
     }
   }
   const newRec = {
-    date: date.value,
+    tanggal: date.value,
     type: type.value,
     shift: shift.value,
     nomor_so: nomor_so.value,

@@ -2,7 +2,7 @@ import { ref } from 'vue';
 // import { getItemById } from "./MasterItems";
 import { ymdTime, ddmmyyyy } from '../utils/dateFormat';
 // store name
-const store = 'output_transaction';
+export const store = 'output_transaction';
 // import set parent function for stock master
 import {
   getStockById,
@@ -14,7 +14,7 @@ import { getItemById } from './MasterItems';
 // import idb
 import { useIdb } from '../utils/localforage';
 import { useJurnalProdukKeluar } from './Setting_JurnalId';
-import { subscribeConfirmDialog } from './launchForm';
+import { subscribeConfirmDialog } from '../utils/launchForm';
 
 // the state
 export const Output_transaction = ref([]);

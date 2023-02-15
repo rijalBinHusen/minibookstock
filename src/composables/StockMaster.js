@@ -1,7 +1,7 @@
 import { ref } from 'vue';
 // item function
 import { getItemById, getItemIdByKdItem, createItem } from './MasterItems';
-import { loaderMessage, subscribeConfirmDialog } from './launchForm';
+import { loaderMessage } from '../utils/launchForm';
 // date formatter
 import {
   ddmmyyyy,
@@ -12,7 +12,7 @@ import {
   JSToExcelDate,
 } from '../utils/dateFormat';
 // store name
-const store = 'stock_master';
+export const store = 'stock_master';
 // incoming function
 import { createIncoming, getIncomingById } from './Incoming';
 // conver excel date to javascript date
@@ -43,7 +43,8 @@ export const createStock = async (
   item_id,
   kd_produksi,
   product_created,
-  quantity
+  quantity,
+  available_start
 ) => {
   // retrieve all available stock,
   // if we push new record without retrieve all stock first, the function wil never do the intruction
@@ -59,7 +60,7 @@ export const createStock = async (
     product_created,
     quantity: Number(quantity),
     available: Number(quantity),
-    available_start: ymdTime(),
+    available_start,
   };
   // save to indexeddb
   const insertedRecord = await stockdb.createItem(record);

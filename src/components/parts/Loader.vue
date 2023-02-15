@@ -6,7 +6,7 @@
 </template>
 
 <script setup>
-import { loaderMessageToShow } from "../../composables/launchForm"
+import { loaderMessageToShow } from "../../utils/launchForm"
 </script>
 
 <style scoped>

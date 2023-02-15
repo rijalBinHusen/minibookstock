@@ -37,7 +37,7 @@
 import Button from "../components/elements/Button.vue";
 import Datatable from "../components/parts/Datatable.vue";
 import { getSummaryStockMaster } from "../composables/StockMaster"
-import { launchForm, closeModalOrDialog, subscribeConfirmDialog } from "../composables/launchForm";
+import { launchForm, closeModalOrDialog, subscribeConfirmDialog } from "../utils/launchForm";
 import { onMounted, ref } from "vue";
 import ExportToXls from "../utils/ExportToXls";
 import { full } from "../utils/dateFormat";

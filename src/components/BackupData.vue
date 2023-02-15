@@ -17,9 +17,9 @@ import {
   launchForm,
   closeModalOrDialog,
   loaderMessage,
-} from '../composables/launchForm';
+} from '../utils/launchForm';
 // import function to export text to file and download it
-import { startExport } from '../composables/ExportAsFile';
+import { startExport } from '../utils/ExportAsFile';
 // import date time formater
 import { full } from '../utils/dateFormat';
 import { useIdb } from '../utils/localforage';

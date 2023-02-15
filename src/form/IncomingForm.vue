@@ -107,7 +107,7 @@ import {
   updateIncomingById,
   removeIncomingById,
 } from '../composables/Incoming';
-import { closeModalOrDialog } from '../composables/launchForm';
+import { closeModalOrDialog } from '../utils/launchForm';
 import { useStore } from 'vuex';
 import { getItemByIdInState } from '../composables/MasterItems';
 import { ddmmyyyy, ymdTime } from '../utils/dateFormat';
@@ -273,7 +273,8 @@ const handleCreateIncoming = async () => {
       stock?.item_id,
       stock?.kd_produksi,
       stock?.product_created,
-      stock?.quantity
+      stock?.quantity,
+      date.value.getTime()
     );
     eachIdStock.push(insertStock.id);
   }
@@ -309,7 +310,8 @@ const handleUpdateIncoming = async () => {
         stock?.item_id,
         stock?.kd_produksi,
         stock?.product_created,
-        stock?.quantity
+        stock?.quantity,
+        date.value.getTime()
       );
       // push it
       insertedStock.push(insertStock.id);
@@ -324,6 +326,7 @@ const handleUpdateIncoming = async () => {
         item_id: stock?.item_id,
         kd_produksi: stock?.kd_produksi,
         product_created: stock?.product_created,
+        available_start: date.value.getTime()
       });
       // the update stock push too
       insertedStock.push(stock?.id);

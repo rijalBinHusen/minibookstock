@@ -38,7 +38,7 @@
   import Button from "../components/elements/Button.vue";
   import Datatable from "../components/parts/Datatable.vue";
   import { getSlowMovingItems } from "../composables/StockMaster"
-  import { launchFormAndsubscribeMutation, launchForm, closeModalOrDialog } from "../composables/launchForm";
+  import { launchFormAndsubscribeMutation, launchForm, closeModalOrDialog } from "../utils/launchForm";
   import { onMounted, ref } from "vue";
   import ExportToXls from "../utils/ExportToXls";
   import { full } from "../utils/dateFormat";

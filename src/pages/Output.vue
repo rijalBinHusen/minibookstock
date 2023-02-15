@@ -117,7 +117,7 @@ import Button from '../components/elements/Button.vue';
 import {
   launchFormAndsubscribeMutation,
   subscribeConfirmDialog,
-} from '../composables/launchForm';
+} from '../utils/launchForm';
 import {
   getRecordIsFinishedFalse,
   Output_transaction,

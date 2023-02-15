@@ -38,7 +38,7 @@
   import Button from "../components/elements/Button.vue";
   import Datatable from "../components/parts/Datatable.vue";
   import { getStockThatAvailable, Stock_masters } from "../composables/StockMaster"
-  import { launchFormAndsubscribeMutation, launchForm, closeModalOrDialog } from "../composables/launchForm";
+  import { launchFormAndsubscribeMutation, launchForm, closeModalOrDialog } from "../utils/launchForm";
   import { onMounted, } from "vue";
   import { startExportMaster } from '../reports/StockMaster';
   // id: stock?.id,

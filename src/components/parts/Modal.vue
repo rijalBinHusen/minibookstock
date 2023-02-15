@@ -24,8 +24,7 @@ import IncomingForm from '../../form/IncomingForm.vue';
 import VehiclesForm from '../../form/VehiclesForm.vue';
 import OutputForm from '../../form/OutputForm.vue';
 import { useStore } from 'vuex';
-import { computed, onMounted, onBeforeUnmount } from 'vue';
-import { keyPressWoutEnter } from '@/composables/keyEvent.js';
+import { computed } from 'vue';
 
 const store = useStore();
 
@@ -44,17 +43,4 @@ const forms = {
   VehiclesForm,
   OutputForm,
 };
-
-// onMounted(() => {
-//   // dont listen any key when loader component is show
-//   if(currentForm.value == 'Loader') {
-//     return;
-//   }
-//   // listen the key that pressed
-//     window.addEventListener('keydown', keyPressWoutEnter)
-// })
-
-// onBeforeUnmount(() => {
-//   window.removeEventListener('keydown', keyPressWoutEnter)
-// })
 </script>

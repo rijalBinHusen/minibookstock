@@ -44,7 +44,7 @@
 import { computed, onMounted, onBeforeUnmount } from 'vue';
 import { useStore } from 'vuex';
 import Button from './elements/Button.vue';
-import { keyPress } from '@/composables/keyEvent.js';
+import { keyPress } from '@/utils/keyEvent.js';
 
 const store = useStore();
 // If the type of dialog is confirm

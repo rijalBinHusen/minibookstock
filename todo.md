@@ -95,3 +95,54 @@ parameter yang dibutuhkan fungsi
 - Membuat item output dapat diedit sehingga user tidak perlu menghapus item jika terjadi ketidak sesuaian
 
 [ ] Menambahkan tombol close pada confirm dialog
+
+
+✍️ Catatan Rilis :
+✅ **Versi 0** 
+    - Master item
+    - Produk masuk
+    - Produk keluar
+
+✅ **Versi 1**
+    - Stock master
+    - Summary stock
+    - Transaksi
+    - Sales orders
+    - Slow moving
+
+    ✅ **Versi 1.1**
+        - Perbaikan kesalahan difitur stock master
+  
+🙏 **Versi 2**
+    - Menu buku stock
+    🙏 **Versi 2.1** 
+        - Quantity produk masuk dapat diklick 
+          untuk memunculkan daftar transaksi
+    🙏 **Versi 2.2** 
+        - Quantity produk keluar dapat diklik 
+          untuk memunculkan daftar transaksi
+
+🙏 **Versi 3**
+    - Migrasi produk keluar,
+      Dari per item menjadi per kendaraan.
+    🙏 **Versi 3.1** 
+      - Checkbox untuk produk selesai muat
+      - Tombol *Muat lagi* jika ada produk belum muat
+    🙏 **Versi 3.2**
+      - Memisahkan kendaraan register, muat, dan selesai
+    🙏 **Versi 3.3**
+      - Quantity coret DO pada produk
+      - Menu khusus menampilkan produk coret DO
+    🙏 **Versi 3.4**
+      - Quantity muat harian pada produk
+  
+🙏 **Versi 4**
+    - Menu loading dock
+    🙏 **Versi 4.1**
+      - Form loading dock pada kendaraan
+
+🙏 **Versi 5**
+    - Menu daftar tally checker
+    🙏 **Versi 5.1**
+      - Menghubungkan nama tally ke loading dock
+      - Form nama tally pada produk keluar

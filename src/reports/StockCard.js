@@ -8,7 +8,7 @@ import {
   getTotalStockTaken,
 } from '../composables/Output';
 import ExportToXls from '../utils/ExportToXls';
-import { loaderMessage } from '../composables/launchForm';
+import { loaderMessage } from '../utils/launchForm';
 import { useIdb } from '../utils/localforage';
 
 export const stockCard = async (item_id, tanggal_start, tanggal_finished) => {

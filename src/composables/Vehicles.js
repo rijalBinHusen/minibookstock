@@ -1,19 +1,19 @@
-import { summary } from "../utils/summaryIdb";
-import { ref } from "vue";
+import { summary } from '../utils/summaryIdb';
+import { ref } from 'vue';
 // import { getItemById } from "./MasterItems";
-import { ymdTime, ddmmyyyy } from "../utils/dateFormat";
+import { ymdTime, ddmmyyyy } from '../utils/dateFormat';
 // store name
-const store = "vehicles";
+const store = 'vehicles';
 // generator id
-import { generateId } from "../utils/GeneratorId";
+import { generateId } from '../utils/GeneratorId';
 // import set parent function for stock master
-import { setStockParent, getStockById } from "./StockMaster";
+import { setStockParent, getStockById } from './StockMaster';
 // master item function
-import { getItemById } from "./MasterItems";
+import { getItemById } from './MasterItems';
 // import localforage function
-import { useIdb } from "../utils/localforage";
+import { useIdb } from '../utils/localforage';
 // import typep jurnal
-import { useJurnalProdukMasuk } from "./Setting_JurnalId";
+import { useJurnalProdukMasuk } from './Setting_JurnalId';
 
 // the state
 export const vehicles = ref([]);
@@ -35,6 +35,90 @@ export const dateRecordToShow = ref(new Date());
 }
  */
 
+class Vehicle {
+  constructor(
+    id,
+    tanggal,
+    shift,
+    nomor_do,
+    nomor_so,
+    register,
+    start,
+    finished,
+    plat_no,
+    customer
+  ) {
+    this.id = id;
+    this.nomor_do = nomor_do;
+    this.nomor_so = nomor_so;
+    this.register = register;
+    this.start = start;
+    this.finished = finished;
+    this.plat_no = plat_no;
+    this.customer = customer;
+    this.tanggal = tanggal;
+    this.shift = shift;
+  }
+}
+
+class Vechicles {
+  #state = [];
+  #db = useIdb('vehilces');
+  constructor() {}
+
+  async createVehicle(
+    tanggal,
+    shift,
+    nomor_do,
+    nomor_so,
+    register,
+    start,
+    finished,
+    plat_no,
+    customer
+  ) {
+    if (
+      !nomor_do &&
+      !nomor_so &&
+      !register &&
+      !start &&
+      !finished &&
+      !plat_no &&
+      !customer &&
+      !tanggal &&
+      !shift
+    ) {
+      return false;
+    }
+    const newRec = await this.#db.createItem({
+      tanggal,
+      shift,
+      nomor_do,
+      register,
+      start,
+      finished,
+      plat_no,
+      customer,
+    });
+    if (newRec) {
+      this.#state.push(
+        new Vehicle(
+          newRec?.id,
+          tanggal,
+          shift,
+          nomor_do,
+          nomor_so,
+          register,
+          start,
+          finished,
+          plat_no,
+          customer
+        )
+      );
+    }
+  }
+}
+
 export const createVehilces = async (
   output_transaction_ids,
   nomor_do,
@@ -52,7 +136,7 @@ export const createVehilces = async (
   // generate next id
   const nextId = summaryRecord?.lastUpdated
     ? generateId(summaryRecord?.lastUpdated?.lastId)
-    : generateId("VEHICLE_TR22030000");
+    : generateId('VEHICLE_TR22030000');
   // initiate new record
   const record = {
     created: new Date().getTime(),
@@ -113,13 +197,13 @@ export const getVehicleById = async (id) => {
   return findVehicle
     ? findVehicle
     : {
-        nomor_do: "Not found",
-        nomor_so: "Not found",
-        register: "Not found",
-        start: "Not found",
-        finished: "Not found",
-        plat_no: "Not found",
-        customer: "Not found",
+        nomor_do: 'Not found',
+        nomor_so: 'Not found',
+        register: 'Not found',
+        start: 'Not found',
+        finished: 'Not found',
+        plat_no: 'Not found',
+        customer: 'Not found',
       };
 };
 
@@ -179,7 +263,7 @@ export const getRecordByDate = async () => {
   const db = await useIdb(store);
   // get income by date
   vehicles.value = await db.getItemsByKeyValue(
-    "tanggal",
+    'tanggal',
     ymdTime(dateRecordToShow.value)
   );
   // return

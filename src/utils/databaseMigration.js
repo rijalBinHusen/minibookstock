@@ -8,7 +8,7 @@ import {
   loaderMessage,
   launchForm,
   closeModalOrDialog,
-} from '../composables/launchForm';
+} from './launchForm';
 
 const currentVersion = 1;
 
