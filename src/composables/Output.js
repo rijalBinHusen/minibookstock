@@ -373,7 +373,7 @@ export const changeQuantityOutput = async (id, yourNumberNewQuantity) => {
   }
 };
 
-export const getOutputByDate = async (date, shift) => {
+export const getOutputByDateByShift = async (date, shift) => {
   // initiate db
   const outputdb = useIdb(store);
   // get record by date

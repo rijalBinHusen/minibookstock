@@ -29,6 +29,7 @@ import Transaction from './pages/Transaction.vue';
 import FooterVue from './components/Footer.vue';
 import { getStockThatAvailable } from './composables/StockMaster';
 import { CheckMigration } from './utils/databaseMigration';
+import BookStock from "./pages/BookStock/index.vue"
 
 export default {
   name: 'App',
@@ -61,6 +62,7 @@ export default {
     SlowMoving,
     SummaryStockMaster,
     Transaction,
+    BookStock
   },
   mounted() {
     // subscribe mutation to know when modal or dialog trigger to activate it

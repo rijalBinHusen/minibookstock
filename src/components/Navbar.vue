@@ -111,7 +111,7 @@ const navs = [
   { name: 'Incoming', title: 'produk masuk', icon: 'dice-d6' },
   // { name: "Vehicles", title: "Kendaraan", icon: "truck-moving" },
   { name: 'Output', title: 'produk keluar', icon: 'shopping-cart' },
-  // { name: "Exporter", title: "Exporter", icon: "file-download" },
+  { name: "BookStock", title: "Buku stock", icon: "book" },
 ];
 
 const dropdownNavs = [

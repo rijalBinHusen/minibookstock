@@ -248,6 +248,30 @@ export const useIdb = (storeName) => {
       });
   };
 
+  const getItemsGreatEqualLowEqual = async (key1, greaterValue1, key2, lowerValue2) => {
+    let result = [];
+    return store
+      .iterate(function (value) {
+        // Resulting key/value pair -- this callback
+        // will be executed for every item in the
+        // database.
+        // onsole.log([key, value]);
+        const isCondition = value[key1] >= greaterValue1 && value[key2] <= lowerValue2
+        if (isCondition) {
+          // save to result
+          result.push(value);
+        }
+      })
+      .then(function () {
+        // return result
+        return result;
+      })
+      .catch(function (err) {
+        // This code runs if there were any errors
+        console.log(err);
+      });
+  }
+
   return {
     setItem,
     getItem,
@@ -262,5 +286,6 @@ export const useIdb = (storeName) => {
     getItemsByKeyGreaterOrEqualThanAndLowerOrEqualThan,
     getItemsThatValueIncludes,
     createItem,
+    getItemsGreatEqualLowEqual
   };
 };

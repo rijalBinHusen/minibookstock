@@ -243,7 +243,7 @@ export const mapIncomingTransactionWoutItem = async () => {
   return result;
 };
 
-export const getIncomingByDate = async (date, shift) => {
+export const getIncomingByDateByShift = async (date, shift) => {
   // initiate idb
   const incomedb = useIdb(store);
   // result

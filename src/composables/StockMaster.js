@@ -641,3 +641,9 @@ export class StockToOutput {
     return result;
   }
 }
+
+export const getStockForBookStock = async (date) => {
+  const db = useIdb(store)
+  const stock = await db.getItemsGreatEqualLowEqual('available_end', date, 'available_start', date)
+  return stock
+}
