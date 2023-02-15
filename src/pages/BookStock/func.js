@@ -6,10 +6,10 @@ import {
 } from "../../composables/Output";
 import { useIdb } from "../../utils/localforage";
 import { ymdTime } from "../../utils/dateFormat";
-import { ref } from "vue";
+import { ref, reactive } from "vue";
 
 // state
-export let state = [];
+export let state = reactive([]);
 // date to show
 export const date = ref(new Date());
 
@@ -128,7 +128,7 @@ class Stock {
 }
 
 export async function getBookStock() {
-  const dateTime = ymdTime(date);
+  const dateTime = ymdTime(date.value);
   // function to get stock master >= date to show && <= date to show
   const getStocks = await getStockForBookStock(dateTime);
 
@@ -263,7 +263,7 @@ export async function getBookStock() {
       );
     }
   });
-  state = finalStock;
+  state.values = finalStock;
   console.log(finalStock);
 
   // let groupStockByItemId = []
