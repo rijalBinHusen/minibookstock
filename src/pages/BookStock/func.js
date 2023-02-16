@@ -9,7 +9,7 @@ import { ymdTime } from "../../utils/dateFormat";
 import { ref, reactive } from "vue";
 
 // state
-export let state = reactive([]);
+export let state = [];
 // date to show
 export const date = ref(new Date());
 
@@ -33,7 +33,8 @@ class Stock {
     outputShift1,
     outputShift2,
     outputShift3,
-    outputShift4
+    outputShift4,
+    itemName
   ) {
     this.id = id;
     this.available = available;
@@ -57,10 +58,13 @@ class Stock {
     this.stockAwalShift1 = 0;
     this.stockAwalShift2 = 0;
     this.stockAwalShift3 = 0;
+    this.itemName = itemName
+    this.setStockAwal()
   }
 
   addQuantity(yourNumber) {
     this.quantity = this.quantity + yourNumber;
+    this.setStockAwal()
   }
 
   addIncome(shift, yourNumber) {
@@ -100,62 +104,61 @@ class Stock {
   }
 
   setStockAwal() {
-    this.stockAwalShift1 =
-      this.quantity +
-      this.outputShift1 +
-      this.outputShift2 +
-      this.outputShift3 +
-      this.outputShift4 -
-      this.incomeShift1 -
-      this.incomeShift2 -
-      this.incomeShift3 -
-      this.incomeShift4;
-    this.stockAwalShift2 =
-      this.quantity +
-      this.outputShift2 +
-      this.outputShift3 +
-      this.outputShift4 -
-      this.incomeShift2 -
-      this.incomeShift3 -
-      this.incomeShift4;
-    this.stockAwalShift3 =
-      this.quantity +
-      this.outputShift3 +
-      this.outputShift4 -
-      this.incomeShift3 -
-      this.incomeShift4;
+    this.setStockAwalShift1()
+    this.setStockAwalShift2()
+    this.setStockAwalShift3()
+  }
+  setStockAwalShift1 () {
+    const output = this.outputShift1 + this.outputShift2 + this.outputShift3 + this.outputShift4;
+    const income = this.incomeShift1 + this.incomeShift2 + this.incomeShift3 + this.incomeShift4;
+    this.stockAwalShift1 = this.quantity + output - income;
+  }
+  setStockAwalShift2 () {
+    const output = this.outputShift2 + this.outputShift3 + this.outputShift4;
+    const income = this.incomeShift2 + this.incomeShift3 + this.incomeShift4;
+    this.stockAwalShift2 = this.quantity + output - income;
+  }
+  setStockAwalShift3 () {
+    const output = this.outputShift3 + this.outputShift4;
+    const income = this.incomeShift3 + this.incomeShift4;
+    this.stockAwalShift3 = this.quantity + output - income;
   }
 }
-
+1
 export async function getBookStock() {
   const dateTime = ymdTime(date.value);
   // function to get stock master >= date to show && <= date to show
   const getStocks = await getStockForBookStock(dateTime);
 
-  const stocks = getStocks.map(
-    (rec) =>
-      new Stock(
-        rec?.id,
-        rec?.available,
-        rec?.available_start,
-        rec?.available_end,
-        rec?.created,
-        rec?.icoming_parent_id,
-        rec?.isTaken,
-        rec?.item_id,
-        rec?.kd_produksi,
-        rec?.product_created,
-        rec?.quantity,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      )
-  );
+  const stocks = []
+  for  (let rec of getStocks) {
+    const itemDB = useIdb('items')
+    const itemInfo = await itemDB.findOneItemByKeyValue('id', rec?.item_id)
+    stocks.push(
+        new Stock(
+            rec?.id,
+            rec?.available,
+            rec?.available_start,
+            rec?.available_end,
+            rec?.created,
+            rec?.icoming_parent_id,
+            rec?.isTaken,
+            rec?.item_id,
+            rec?.kd_produksi,
+            rec?.product_created,
+            rec?.quantity,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            itemInfo?.nm_item
+        )
+    )
+    }
 
   const incomeDB = useIdb(storeIncoming);
   const incomes = await incomeDB.getItemsByKeyValue(
@@ -213,29 +216,30 @@ export async function getBookStock() {
     );
     if (findRec) {
       findRec?.addQuantity(rec?.quantity);
-      if (findRec?.incomeShift1) {
-        findRec?.addIncome(1, findRec?.incomeShift1);
+
+      if (rec?.incomeShift1) {
+        findRec?.addIncome(1, rec?.incomeShift1);
       }
-      if (findRec?.incomeShift2) {
-        findRec?.addIncome(2, findRec?.incomeShift2);
+      if (rec?.incomeShift2) {
+        findRec?.addIncome(2, rec?.incomeShift2);
       }
-      if (findRec?.incomeShift3) {
-        findRec?.addIncome(3, findRec?.incomeShift3);
+      if (rec?.incomeShift3) {
+        findRec?.addIncome(3, rec?.incomeShift3);
       }
-      if (findRec?.incomeShift4) {
-        findRec?.addIncome(4, findRec?.incomeShift4);
+      if (rec?.incomeShift4) {
+        findRec?.addIncome(4, rec?.incomeShift4);
       }
-      if (findRec?.outputShift1) {
-        findRec?.addIncome(1, findRec?.outputShift1);
+      if (rec?.outputShift1) {
+        findRec?.addOutput(1, rec?.outputShift1);
       }
-      if (findRec?.outputShift2) {
-        findRec?.addIncome(2, findRec?.outputShift2);
+      if (rec?.outputShift2) {
+        findRec?.addOutput(2, rec?.outputShift2);
       }
-      if (findRec?.outputShift3) {
-        findRec?.addIncome(3, findRec?.outputShift3);
+      if (rec?.outputShift3) {
+        findRec?.addOutput(3, rec?.outputShift3);
       }
-      if (findRec?.outputShift4) {
-        findRec?.addIncome(4, findRec?.outputShift4);
+      if (rec?.outputShift4) {
+        findRec?.addOutput(4, rec?.outputShift4);
       }
     } else {
       finalStock.push(
@@ -258,13 +262,14 @@ export async function getBookStock() {
           rec?.outputShift1,
           rec?.outputShift2,
           rec?.outputShift3,
-          rec?.outputShift4
+          rec?.outputShift4,
+          rec?.itemName
         )
       );
     }
   });
-  state.values = finalStock;
-  console.log(finalStock);
+  state = finalStock;
+//   onsole.log('stocks',stocks);
 
   // let groupStockByItemId = []
 
