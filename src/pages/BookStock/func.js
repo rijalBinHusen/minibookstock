@@ -6,7 +6,7 @@ import {
 } from "../../composables/Output";
 import { useIdb } from "../../utils/localforage";
 import { ymdTime } from "../../utils/dateFormat";
-import { ref, reactive } from "vue";
+import { ref } from "vue";
 
 // state
 export let state = [];
@@ -34,7 +34,8 @@ class Stock {
     outputShift2,
     outputShift3,
     outputShift4,
-    itemName
+    itemName,
+    itemKode,
   ) {
     this.id = id;
     this.available = available;
@@ -58,7 +59,9 @@ class Stock {
     this.stockAwalShift1 = 0;
     this.stockAwalShift2 = 0;
     this.stockAwalShift3 = 0;
+    this.stockAwalShift4 = 0
     this.itemName = itemName
+    this.itemKode = itemKode
     this.setStockAwal()
   }
 
@@ -107,6 +110,7 @@ class Stock {
     this.setStockAwalShift1()
     this.setStockAwalShift2()
     this.setStockAwalShift3()
+    this.setStockAwalShift4()
   }
   setStockAwalShift1 () {
     const output = this.outputShift1 + this.outputShift2 + this.outputShift3 + this.outputShift4;
@@ -122,6 +126,11 @@ class Stock {
     const output = this.outputShift3 + this.outputShift4;
     const income = this.incomeShift3 + this.incomeShift4;
     this.stockAwalShift3 = this.quantity + output - income;
+  }
+  setStockAwalShift4 () {
+    const output = this.outputShift4;
+    const income = this.incomeShift4;
+    this.stockAwalShift4 = this.quantity + output - income;
   }
 }
 1
@@ -155,7 +164,8 @@ export async function getBookStock() {
             0,
             0,
             0,
-            itemInfo?.nm_item
+            itemInfo?.nm_item,
+            itemInfo?.kd_item
         )
     )
     }
@@ -263,7 +273,8 @@ export async function getBookStock() {
           rec?.outputShift2,
           rec?.outputShift3,
           rec?.outputShift4,
-          rec?.itemName
+          rec?.itemName,
+          rec?.itemKode
         )
       );
     }

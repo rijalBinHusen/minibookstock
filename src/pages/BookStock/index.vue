@@ -53,44 +53,48 @@ const renderTable = ref(false)
 const nowShift = ref(1)
 const showBtn = ref(false)
 
-watch([date], () => {
-  showBtn.value = true
+watch([date, nowShift], (newVal, oldVal) => {
+  // date
+  if(newVal[0] !== oldVal[0]) {
+    showBtn.value = true
+  }
+  // nowShift
+  if(newVal[1] !== oldVal[1]) {
+    reRenderTable()
+  }
 })
 
 const headsTable =['Kode item', 'Nama item', 'Stock awal', 'Masuk', 'keluar', 'Stock akhir']
 
 const rowTable = computed(() => {
-  let res = [ 'item_id', 'itemName' ]
-
   if(nowShift.value == 1 ) {
-    res = res.concat(['stockAwalShift1', 'incomeShift1', 'outputShift1', 'stockAwalShift2'])
+    return ['itemKode', 'itemName', 'stockAwalShift1', 'incomeShift1', 'outputShift1', 'stockAwalShift2']
   } 
   
   else if(nowShift.value == 2) {
-    res = res.concat(['stockAwalShift2', 'incomeShift2', 'outputShift2', 'stockAwalShift3'])
+    return ['itemKode', 'itemName', 'stockAwalShift2', 'incomeShift2', 'outputShift2', 'stockAwalShift3']
   }
 
   else if(nowShift.value == 3) {
-    res = res.concat(['stockAwalShift3', 'incomeShift3', 'outputShift3', 'quantity'])
+    return ['itemKode', 'itemName', 'stockAwalShift3', 'incomeShift3', 'outputShift3', 'stockAwalShift4']
   }
 
   else if(nowShift.value == 4) {
-    res = res.concat(['quantity', 'incomeShift4', 'outputShift4', 'quantity'])
+    return ['itemKode', 'itemName', 'stockAwalShift4', 'incomeShift4', 'outputShift4', 'quantity']
   }
-  return res
 })
 
 const reRenderTable = () => {
   renderTable.value = false
   setTimeout(() => {
     renderTable.value = true
-  }, 400)
+  }, 150)
 }
 
 const getRecord = async () => {
   showBtn.value = false
-  reRenderTable()
   await getBookStock()
+  reRenderTable()
 }
 
 onMounted(() => {
