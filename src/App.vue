@@ -9,6 +9,7 @@
   <Modal v-if="formActive" />
   <Confirm v-if="dialogActive" />
   <FooterVue />
+  <!-- <Toast /> -->
 </template>
 
 <script>
@@ -30,6 +31,7 @@ import FooterVue from './components/Footer.vue';
 import { getStockThatAvailable } from './composables/StockMaster';
 import { CheckMigration } from './utils/databaseMigration';
 import BookStock from "./pages/BookStock/index.vue"
+import Toast from './components/parts/Toast.vue';
 
 export default {
   name: 'App',
@@ -62,7 +64,8 @@ export default {
     SlowMoving,
     SummaryStockMaster,
     Transaction,
-    BookStock
+    BookStock,
+    // Toast
   },
   mounted() {
     // subscribe mutation to know when modal or dialog trigger to activate it

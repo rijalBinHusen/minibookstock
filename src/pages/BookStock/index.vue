@@ -93,6 +93,7 @@ const reRenderTable = () => {
 
 const getRecord = async () => {
   showBtn.value = false
+  renderTable.value = false
   await getBookStock()
   reRenderTable()
 }

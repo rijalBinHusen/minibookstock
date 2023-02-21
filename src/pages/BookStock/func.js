@@ -188,6 +188,8 @@ export async function getBookStock() {
     }
   }
 
+  console.log(incomes)
+
   const outputDB = useIdb(storeOutput);
   const outputMoreThanDate = await outputDB.getItemsByKeyGreaterThan(
     "tanggal",
@@ -213,7 +215,7 @@ export async function getBookStock() {
     const findRec = stocks.find(
       (recLvl2) => recLvl2?.id === rec?.stock_master_id
     );
-    if (findRec) {
+    if (findRec && rec?.isFinished) {
       findRec.addOutput(rec?.shift, rec?.quantity);
     }
   });
@@ -279,7 +281,9 @@ export async function getBookStock() {
       );
     }
   });
-  state = finalStock;
+  state = finalStock.sort(
+    (a, b) => a['itemKode'] - b['itemKode']
+  );;
 //   onsole.log('stocks',stocks);
 
   // let groupStockByItemId = []
