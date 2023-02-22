@@ -109,9 +109,9 @@ const title = ref('Book of stock');
 
 const navs = [
   { name: 'Incoming', title: 'produk masuk', icon: 'dice-d6' },
+  { name: "BookStock", title: "Buku stock", icon: "book" },
   // { name: "Vehicles", title: "Kendaraan", icon: "truck-moving" },
   { name: 'Output', title: 'produk keluar', icon: 'shopping-cart' },
-  { name: "BookStock", title: "Buku stock", icon: "book" },
 ];
 
 const dropdownNavs = [

@@ -5,14 +5,17 @@ import {
   store as storeOutput,
 } from "../../composables/Output";
 import { useIdb } from "../../utils/localforage";
-import { ymdTime } from "../../utils/dateFormat";
+import { ddmmyyyy, ymdTime } from "../../utils/dateFormat";
 import { ref } from "vue";
 import { getItemById } from "../../composables/MasterItems"
+import {  } from "../../components/parts/Toast.vue"
+import ExportToXls from "../../utils/ExportToXls"
 
 // state
 export let state = [];
 // date to show
 export const date = ref(new Date());
+export let nowShift = ref(1)
 
 class Stock {
   constructor(
@@ -133,8 +136,27 @@ class Stock {
     const income = this.incomeShift4;
     this.stockAwalShift4 = this.quantity + output - income;
   }
+  getRecordToPrint() {
+    return {
+      "Kode item": this.itemKode,
+      "Nama item": this.itemName,
+      "Stock awal 1": this.stockAwalShift1,
+      "Produk masuk 1": this.incomeShift1,
+      "Produk keluar 1": this.outputShift1,
+      "Stock awal 2": this.stockAwalShift2,
+      "Produk masuk 2": this.incomeShift2,
+      "Produk keluar 2": this.outputShift2,
+      "Stock awal 3": this.stockAwalShift3,
+      "Produk masuk 3": this.incomeShift3,
+      "Produk keluar 3": this.outputShift3,
+      "Stock awal 4": this.stockAwalShift4,
+      "Produk masuk 4": this.incomeShift4,
+      "Produk keluar 4": this.outputShift4,
+      "Stock akhir": this.quantity
+    }
+  }
 }
-1
+
 export async function getBookStock() {
   const dateTime = ymdTime(date.value);
   // function to get stock master >= date to show && <= date to show
@@ -170,6 +192,8 @@ export async function getBookStock() {
     )
     }
 
+  const findBrio = stocks.filter((rec) => rec?.itemKode === '1TPTTNTRBC-11--')
+  console.log(findBrio)
   const incomeDB = useIdb(storeIncoming);
   const incomes = await incomeDB.getItemsByKeyValue(
     "tanggal",
@@ -299,18 +323,11 @@ export async function getBookStock() {
       if (x > y) {
         return 1;
       }
-  });;
-//   onsole.log('stocks',stocks);
-
-  // let groupStockByItemId = []
-
-  // stocks.forEach((recLevel1) => {
-  //     const findIndex = groupStockByItemId.findIndex((recLevel2) => recLevel2?.item_id == recLevel1?.item_id)
-  //     if(findIndex > -1) {
-  //         groupStockByItemId[findIndex].quantity = groupStockByItemId[findIndex].quantity + recLevel1.quantity
-  //     } else {
-  //         groupStockByItemId.push(recLevel1)
-  //     }
-  // })
+  });
 }
-//
+
+export const printStock = () => {
+  const stockToPrint = state.map((rec) => rec?.getRecordToPrint())
+  
+  ExportToXls(stockToPrint, `Buku stock tanggal ${ddmmyyyy(date.value, '-')}`)
+}

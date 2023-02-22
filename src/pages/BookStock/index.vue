@@ -12,11 +12,12 @@
         ></date-picker>
       </div>
       <SelectShift class="ml-2 mr-2 w-24" :shift="nowShift" @selectedShift="nowShift = $event" />
-      <div v-if="showBtn" class="form-control ml-2">
+      <div class="form-control ml-2">
         <label class="label">
-          <span class="label-text">[]</span>
+          <span class="label-text">Aksi</span>
         </label>
         <Button
+          v-if="showBtn" 
           primary
           value="Tampilkan"
           type="button"
@@ -24,6 +25,16 @@
           class="ml-2"
           @trig="getRecord"
           id="button-show-record-book-of-stock"
+        />
+        <Button
+          v-if="!showBtn && renderTable"
+          primary
+          value="Export"
+          type="button"
+          small
+          class="ml-2"
+          @trig="printStock"
+          id="button-export-record-book-of-stock"
         />
       </div>
     </span>
@@ -41,7 +52,7 @@
 
 <script setup>
 import { onMounted, ref, watch, computed } from "vue";
-import { getBookStock, state, date } from "./func"
+import { getBookStock, state, date, nowShift, printStock  } from "./func"
 import Datatable from "../../components/parts/Datatable.vue";
 import datePicker from "vue3-datepicker"
 import Button from "../../components/elements/Button.vue"
@@ -49,7 +60,6 @@ import SelectShift from "../../components/parts/SelectShift.vue"
 
 const renderTable = ref(false)
 
-const nowShift = ref(1)
 const showBtn = ref(false)
 
 watch([date, nowShift], (newVal, oldVal) => {

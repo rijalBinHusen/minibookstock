@@ -62,6 +62,7 @@ export const createStock = async (
     available: Number(quantity),
     available_start,
     isTaken: false,
+    available_end: getNextYearTime()
   };
   // save to indexeddb
   const insertedRecord = await stockdb.createItem(record);
