@@ -1,16 +1,9 @@
 import { useIdb } from './localforage';
-import {
-  getStockThatAvailable,
-  Stock_masters,
-  changeAvailableStock,
-} from '../composables/StockMaster';
-import {
-  loaderMessage,
-  launchForm,
-  closeModalOrDialog,
-} from './launchForm';
+import { getStockThatAvailable, Stock_masters, changeAvailableStock, updateStockById } from '../composables/StockMaster';
+import { loaderMessage, launchForm, closeModalOrDialog } from './launchForm';
+import { getNextYearTime } from './dateFormat';
 
-const currentVersion = 1;
+const currentVersion = 2;
 
 // function to migration to 1
 async function migrationToV1() {
@@ -36,6 +29,35 @@ async function migrationToV1() {
     );
 
     await changeAvailableStock(stock?.id);
+  }
+}
+
+// function to migration to 2
+async function migrationToV2() {
+  // launch loader
+  launchForm('Loader');
+  // in this migration we're only need to get stock quantity > 1.
+  // we will add available_end value in each stock that not contain it.
+  await getStockThatAvailable();
+  // waiting for 3 second until the state complete
+  await new Promise((res) => {
+    setTimeout(() => {
+      res();
+    }, 3000);
+  });
+
+  for (let [index, stock] of Stock_masters.value.entries()) {
+    // show messsage to loader
+    loaderMessage(
+      `Melakukan migrasi stock master ${index + 1} dari ${
+        Stock_masters.value.length
+      }`
+    );
+    
+    if(!stock?.available_end) {
+      await updateStockById(stock?.id, { available_end: getNextYearTime() })
+    }
+    // 
   }
 }
 
@@ -70,6 +92,13 @@ export async function CheckMigration() {
   if (nothing || nowVersion < 1) {
     await migrationToV1();
     await dbVersion.setVersion(1);
+    CheckMigration();
+    return;
+  }
+  
+  if (nowVersion < 2) {
+    await migrationToV2();
+    await dbVersion.setVersion(2);
     CheckMigration();
     return;
   }

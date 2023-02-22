@@ -191,9 +191,6 @@ export async function getBookStock() {
         )
     )
     }
-
-  const findBrio = stocks.filter((rec) => rec?.itemKode === '1TPTTNTRBC-11--')
-  console.log(findBrio)
   const incomeDB = useIdb(storeIncoming);
   const incomes = await incomeDB.getItemsByKeyValue(
     "tanggal",
