@@ -1,4 +1,4 @@
-import { getStockForBookStock } from "../../composables/StockMaster";
+import { getStockForBookStock, getStockById } from "../../composables/StockMaster";
 import { store as storeIncoming } from "../../composables/Incoming";
 import {
   getTotalStockTaken,
@@ -7,6 +7,7 @@ import {
 import { useIdb } from "../../utils/localforage";
 import { ymdTime } from "../../utils/dateFormat";
 import { ref } from "vue";
+import { getItemById } from "../../composables/MasterItems"
 
 // state
 export let state = [];
@@ -141,8 +142,7 @@ export async function getBookStock() {
 
   const stocks = []
   for  (let rec of getStocks) {
-    const itemDB = useIdb('items')
-    const itemInfo = await itemDB.findOneItemByKeyValue('id', rec?.item_id)
+    const itemInfo = await getItemById(rec?.item_id)
     stocks.push(
         new Stock(
             rec?.id,
@@ -177,18 +177,27 @@ export async function getBookStock() {
   );
   for (let incomeLevel1 of incomes) {
     for (let stockMasterId of incomeLevel1.stock_master_ids) {
+      const stockMasterDetails = await getStockById(stockMasterId)
       const findRec = stocks.find((rec) => rec?.id === stockMasterId);
+      const stockTaken = await getTotalStockTaken(stockMasterId);
+      const allQty = stockMasterDetails.quantity + stockTaken.allTaken
       if (findRec) {
-        const stockTaken = await getTotalStockTaken(stockMasterId);
         findRec.addIncome(
           incomeLevel1?.shift,
-          findRec?.quantity + stockTaken.allTaken
+          allQty
         );
+      } else {
+        const itemInfo = await getItemById(stockMasterDetails?.item_id)
+        const stockToPush = new Stock(
+          stockMasterId, stockMasterDetails?.available, stockMasterDetails?.available_start, 
+          stockMasterDetails?.available_end, stockMasterDetails?.created, incomeLevel1?.id,
+          stockMasterDetails?.isTaken, stockMasterDetails?.item_id, stockMasterDetails?.kd_produksi,
+          stockMasterDetails?.product_created, allQty, 0, 0, 0, 0, 0, 0, 0, 0, itemInfo?.nm_item, itemInfo?.kd_item)
+        stockToPush.addIncome(incomeLevel1?.shift, allQty)
+        stocks.push(stockToPush)
       }
     }
   }
-
-  console.log(incomes)
 
   const outputDB = useIdb(storeOutput);
   const outputMoreThanDate = await outputDB.getItemsByKeyGreaterThan(
@@ -281,9 +290,16 @@ export async function getBookStock() {
       );
     }
   });
-  state = finalStock.sort(
-    (a, b) => a['itemKode'] - b['itemKode']
-  );;
+  state = finalStock.sort(function (a, b) {
+    let x = a['itemKode'];
+    let y = b['itemKode'];
+      if (x < y) {
+        return -1;
+      }
+      if (x > y) {
+        return 1;
+      }
+  });;
 //   onsole.log('stocks',stocks);
 
   // let groupStockByItemId = []

@@ -61,6 +61,7 @@ export const createStock = async (
     quantity: Number(quantity),
     available: Number(quantity),
     available_start,
+    isTaken: false,
   };
   // save to indexeddb
   const insertedRecord = await stockdb.createItem(record);

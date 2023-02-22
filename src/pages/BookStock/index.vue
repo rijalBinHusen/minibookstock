@@ -12,12 +12,11 @@
         ></date-picker>
       </div>
       <SelectShift class="ml-2 mr-2 w-24" :shift="nowShift" @selectedShift="nowShift = $event" />
-      <div class="form-control ml-2">
+      <div v-if="showBtn" class="form-control ml-2">
         <label class="label">
           <span class="label-text">[]</span>
         </label>
         <Button
-          v-if="showBtn"
           primary
           value="Tampilkan"
           type="button"
