@@ -59,6 +59,15 @@ async function migrationToV2() {
     }
     // 
   }
+
+  // changing the error summary
+  const summaryDB = useIdb("summary")
+  summaryDB.setItem("incoming_transaction", {"id":"incoming_transaction","lastId":"INCOMING_TR23090100","total":406})
+  summaryDB.setItem("item_orders", {"id":"item_orders","lastId":"ITEM_ORDER_TR23090100","total":4045})
+  summaryDB.setItem("items", {"id":"items","lastId":"ITM23080001","total":49})
+  summaryDB.setItem("output_transaction", {"id":"output_transaction","lastId":"OUTPUT_TR23090100","total":6552})
+  summaryDB.setItem("sales_orders", {"id":"sales_orders","lastId":"SO_23090100","total":1654})
+  summaryDB.setItem("stock_master", {"id":"stock_master","lastId":"STOCK_MASTER_23090100","total":933})
 }
 
 class DatabaseVersion {
