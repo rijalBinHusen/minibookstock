@@ -27,6 +27,7 @@ export const addLog = async (storeName, mode, key, value) => {
     const idLog = dtime + countOfLoggerAtATime + '';
     // record to log
     await logging.setItem(idLog, {
+      id: idLog,
       mode,
       time: dtime,
       store: storeName,

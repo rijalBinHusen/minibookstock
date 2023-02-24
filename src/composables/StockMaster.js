@@ -193,8 +193,7 @@ export const changeAvailableStock = async (id_stock) => {
   // get all taken in output transaction
   const stockTaken = await getTotalStockTaken(id_stock);
   // full quantity (quantity now + stock all finished) - all taken in output
-  const available =
-    findRec?.quantity + stockTaken.allFinished - stockTaken.allTaken;
+  const available = findRec?.quantity + stockTaken.allFinished - stockTaken.allTaken;
   // isTaken value
   const isTaken = Number(findRec?.quantity) != available;
   // if > 0
@@ -295,13 +294,16 @@ export const getSTockByIdInState = (idStock) => {
   return Stock_masters.value.find((rec) => rec?.id === idStock);
 };
 
-export const changeQuantityStock = async (id_stock, yourNumberPlusOrMinus) => {
+export const changeQuantityStock = async (id_stock) => {
   // initiate idb
   const stockdb = useIdb(store);
   // get the record
   const findRec = await stockdb.getItem(id_stock);
+  // get all output
+  const quantityFinished = await getTotalStockTaken(id_stock)
+  const quantityOrigin = findRec?.available + quantityFinished.allTaken
   // decrement or increment quantity
-  const quantity = findRec?.quantity + yourNumberPlusOrMinus;
+  const quantity = quantityOrigin - quantityFinished.allFinished;
   // available_end ate, if quantity 0 set to now, else next year
   const available_end = quantity == 0 ? time() : getNextYearTime();
   const keyValueToUpdate = { quantity, available_end };

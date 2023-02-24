@@ -35,9 +35,10 @@ const handleExportLogs = async () => {
   const acivitylog = useIdb('logs');
   // get all items acivitylog
   const log_items = await acivitylog.getItemsByKeyGreaterThan('time', date.value.getTime());
+  const objToBackup = { store: sum.id, data: log_items }
   // // export all data as file
   await startExport(
-    log_items,
+    objToBackup,
     'Log aktivitas aplikasi FIFO mulai ' + full(date.value) + '.json'
   );
   // close the loader

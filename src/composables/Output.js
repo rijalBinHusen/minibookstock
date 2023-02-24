@@ -215,10 +215,11 @@ export const markAsFinished = async (id) => {
   const findRec = await getOutputById(id);
   // get stock master id
   const masterId = findRec?.stock_master_id;
-  // update quantity stock
-  await changeQuantityStock(masterId, -Number(findRec?.quantity));
   // mark in db output as finished
-  return updateOutputById(id, { isFinished: true });
+  await updateOutputById(id, { isFinished: true });
+  // update quantity stock
+  await changeQuantityStock(masterId);
+  return;
 };
 
 export const getAllDataToBackup = async () => {
@@ -337,10 +338,11 @@ export const markAsUnFinished = async (id) => {
   const findRec = await getOutputById(id);
   // get stock master id
   const masterId = findRec?.stock_master_id;
-  // update quantity stock
-  await changeQuantityStock(masterId, Number(findRec?.quantity));
   // mark in db output as finished
   await updateOutputById(id, { isFinished: false });
+  // update quantity stock
+  await changeQuantityStock(masterId);
+  return;
 };
 
 export const changeQuantityOutput = async (id, yourNumberNewQuantity) => {
