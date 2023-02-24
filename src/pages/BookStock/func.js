@@ -236,7 +236,7 @@ export async function getBookStock() {
     const findRec = stocks.find(
       (recLv2) => recLv2?.id === rec?.stock_master_id
     );
-    if (findRec) {
+    if (findRec && rec?.isFinished) {
       findRec.addQuantity(rec?.quantity);
     }
   });
