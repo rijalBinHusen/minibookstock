@@ -1,6 +1,6 @@
 <template>
   <div>
-    <span class="flex items-center justify-center">
+    <span v-if="renderTable" class="flex items-center justify-center">
       <div class="form-control ml-2">
         <label for="date-picker" class="label">
           <span class="label-text">Tanggal</span>

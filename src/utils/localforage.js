@@ -13,7 +13,7 @@ export const useIdb = (storeName) => {
     // get summary
     const sum = await summary(storeName);
     // generateID
-    const nextId = sum?.lastUpdated
+    const nextId = sum?.lastUpdated && sum?.lastUpdated?.lastId
       ? generateId(sum?.lastUpdated?.lastId)
       : generateId(storeName + '_22030000');
     // record to set

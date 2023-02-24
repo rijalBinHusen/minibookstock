@@ -23,7 +23,7 @@ async function migrationToV1() {
   for (let [index, stock] of Stock_masters.value.entries()) {
     // show messsage to loader
     loaderMessage(
-      `Melakukan migrasi stock master ${index + 1} dari ${
+      `Melakukan migrasi ke versi 1, stock master ${index + 1} dari ${
         Stock_masters.value.length
       }`
     );
@@ -49,7 +49,7 @@ async function migrationToV2() {
   for (let [index, stock] of Stock_masters.value.entries()) {
     // show messsage to loader
     loaderMessage(
-      `Melakukan migrasi stock master ${index + 1} dari ${
+      `Melakukan migrasi ke versi 2, stock master ${index + 1} dari ${
         Stock_masters.value.length
       }`
     );
@@ -62,12 +62,41 @@ async function migrationToV2() {
 
   // changing the error summary
   const summaryDB = useIdb("summary")
-  summaryDB.setItem("incoming_transaction", {"id":"incoming_transaction","lastId":"INCOMING_TR23090100","total":406})
-  summaryDB.setItem("item_orders", {"id":"item_orders","lastId":"ITEM_ORDER_TR23090100","total":4045})
-  summaryDB.setItem("items", {"id":"items","lastId":"ITM23080001","total":49})
-  summaryDB.setItem("output_transaction", {"id":"output_transaction","lastId":"OUTPUT_TR23090100","total":6552})
-  summaryDB.setItem("sales_orders", {"id":"sales_orders","lastId":"SO_23090100","total":1654})
-  summaryDB.setItem("stock_master", {"id":"stock_master","lastId":"STOCK_MASTER_23090100","total":933})
+  const incoming = await summaryDB.getItem("incoming_transaction")
+  // if incoming null or incominglastid <=8
+  if(!incoming || (incoming?.lastId && incoming?.lastId.length <= 8 )) {
+    summaryDB.setItem("incoming_transaction", {"id":"incoming_transaction","lastId":"","total":406})
+  }
+
+  const itemOrders = await summaryDB.getItem("item_orders")
+  // if itemOrders null or itemOrderslastid <=8
+  if(!itemOrders || (itemOrders?.lastId && itemOrders?.lastId.length <= 8 )) {
+    summaryDB.setItem("item_orders", {"id":"item_orders","lastId":"","total":4045})
+  }
+  
+  const items = await summaryDB.getItem("items")
+  // if items null or itemslastid <=8
+  if(!items || (items?.lastId && items?.lastId.length <= 8 )) {
+    summaryDB.setItem("items", {"id":"items","lastId":"","total":49})
+  }
+
+  const outputs = await summaryDB.getItem("output_transaction")
+  // if outputs null or outputslastid <=8
+  if(!outputs || (outputs?.lastId && outputs?.lastId.length <= 8 )) {
+    summaryDB.setItem("output_transaction", {"id":"output_transaction","lastId":"","total":6552})
+  }
+
+  const salesOrders = await summaryDB.getItem("sales_orders")
+  // if salesOrders null or salesOrderslastid <=8
+  if(!salesOrders || (salesOrders?.lastId && salesOrders?.lastId.length <= 8 )) {
+    summaryDB.setItem("sales_orders", {"id":"sales_orders","lastId":"","total":1654})
+  }
+
+  const stockMasters = await summaryDB.getItem("stock_master")
+  // if stockMasters null or stockMasterslastid <=8
+  if(!stockMasters || (stockMasters?.lastId && stockMasters?.lastId.length <= 8 )) {
+    summaryDB.setItem("stock_master", {"id":"stock_master","lastId":"","total":933})
+  }
 }
 
 class DatabaseVersion {

@@ -70,7 +70,7 @@ class Stock {
   }
 
   addQuantity(yourNumber) {
-    this.quantity = this.quantity + yourNumber;
+    this.quantity = Number(this.quantity) + Number(yourNumber);
     this.setStockAwal()
   }
 
@@ -191,6 +191,7 @@ export async function getBookStock() {
         )
     )
     }
+
   const incomeDB = useIdb(storeIncoming);
   const incomes = await incomeDB.getItemsByKeyValue(
     "tanggal",
@@ -213,7 +214,7 @@ export async function getBookStock() {
           stockMasterId, stockMasterDetails?.available, stockMasterDetails?.available_start, 
           stockMasterDetails?.available_end, stockMasterDetails?.created, incomeLevel1?.id,
           stockMasterDetails?.isTaken, stockMasterDetails?.item_id, stockMasterDetails?.kd_produksi,
-          stockMasterDetails?.product_created, allQty, 0, 0, 0, 0, 0, 0, 0, 0, itemInfo?.nm_item, itemInfo?.kd_item)
+          stockMasterDetails?.product_created, stockMasterDetails?.quantity, 0, 0, 0, 0, 0, 0, 0, 0, itemInfo?.nm_item, itemInfo?.kd_item)
         stockToPush.addIncome(incomeLevel1?.shift, allQty)
         stocks.push(stockToPush)
       }
