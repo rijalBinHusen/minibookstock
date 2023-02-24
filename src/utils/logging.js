@@ -29,7 +29,7 @@ export const addLog = async (storeName, mode, key, value) => {
     await logging.setItem(idLog, {
       id: idLog,
       mode,
-      time: dtime,
+      time: dtime.toLocaleString(),
       store: storeName,
       idRecord: key,
       value: value,
