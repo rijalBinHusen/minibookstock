@@ -34,7 +34,7 @@ const handleExportLogs = async () => {
   // acivitylog db
   const acivitylog = useIdb('logs');
   // get all items acivitylog
-  const log_items = await acivitylog.getItemsByKeyGreaterThan('time', date.value.getTime());
+  const log_items = await acivitylog.getItemsByKeyGreaterThan('id', date.value.getTime());
   // // export all data as file
   await startExport(
     log_items,
