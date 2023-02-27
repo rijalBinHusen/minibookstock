@@ -65,15 +65,17 @@
               @keyup="searchWord($event.target.value, key)"
             />
           </td>
-          <slot name="td" :obj="r" :id="r.id"></slot>
           <td v-if="option"></td>
         </tr>
         <!--end ofsearch form-->
 
         <tr :id="id+'-row-'+index" class="hover" :key="r" v-for="(r, index) in showRow">
           <th v-if="no">{{ index + deData.startRow + 1 }}</th>
+          
           <td :id="id+'-row-'+index+'-column-'+index2" :key="r[key]" v-for="(key, index2) in keys">{{ r[key] }}</td>
-
+          
+          <slot name="td" :obj="r" :id="r.id"></slot>
+          
           <td v-if="option">
             <slot :prop="{ ...r, row: index }"></slot>
           </td>
