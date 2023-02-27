@@ -44,6 +44,7 @@
         'tanggal',
         'shift',
         'Nomor so',
+        'customer',
         'nama item',
         'tanggal produksi',
         'quantity',
@@ -52,6 +53,7 @@
         'tanggal',
         'shift',
         'nomor_so',
+        'customer',
         'nm_item',
         'product_created',
         'quantity',
@@ -61,51 +63,43 @@
       no
       id="table-output"
       option
-      v-slot:default="slotProps"
     >
-      <!-- if output is finished -->
-      <span v-if="slotProps.prop?.isFinished">
-        <Button
-          primary
-          value="Batal"
-          type="button"
-          small
-          class="ml-2"
-          :datanya="slotProps.prop.id"
-          @trig="handleButton('cancel', $event)"
-        />
-      </span>
-      <span v-else>
-        <Button
-          secondary
-          value="hapus"
-          type="button"
-          small
-          class="ml-2"
-          :datanya="slotProps.prop.id"
-          @trig="handleButton('remove', $event)"
-        />
-
-        <Button
-          primary
-          value="Edit"
-          type="button"
-          small
-          class="ml-2"
-          :datanya="slotProps.prop.id"
-          @trig="handleButton('edit', $event)"
-        />
-
-        <Button
-          accent
-          value="sudah muat"
-          type="button"
-          small
-          class="ml-2"
-          :datanya="slotProps.prop.id"
-          @trig="handleButton('finished', $event)"
-        />
-      </span>
+      <template #th>
+          <th>Tandai</th>
+      </template>
+      <template #td="{ obj }">
+          <span v-if="!obj.isFinished">
+              <input type="checkbox"
+              <input :id="obj.id" v-model="grouped" :value="obj.id" @input="push(obj.id, obj)" type="checkbox" />
+              <label :for="obj.id"> Group</label>
+          </span>
+          <p v-else>Unfinished</p>
+      </template>
+      <template #default = { prop }>
+        <!-- if output is finished -->
+        <span v-if="prop?.isFinished">
+          <Button
+            primary
+            value="Batal"
+            type="button"
+            small
+            class="ml-2"
+            :datanya="slotProps.prop.id"
+            @trig="handleCancel($event)"
+          />
+        </span>
+        <span v-else>
+          <Dropdown
+            text="options" 
+            :options="[
+                { method: handleRemove, text: 'Hapus', icon: 'pen', value: slotProps.prop.id},
+                { method: handleEdit, text: 'Edit', icon: 'trash', value: slotProps.prop.id},
+                { method: handleFinished, text: 'Selesai muat', icon: 'flag', value: slotProps.prop.id}
+              ]" 
+            accent small
+          />
+        </span>
+      </template>          
     </datatable>
   </div>
 </template>
@@ -127,46 +121,45 @@ import {
   getRecordByDate,
   markAsUnFinished,
 } from '../composables/Output';
+import Dropdown from '../components/elements/Dropdown.vue';
 
-const handleButton = async (operation, document) => {
-  // if operation === remove
-  if (['remove', 'finished', 'cancel'].includes(operation)) {
-    // delete message
-    let message = () => {
-      if (operation == 'remove') {
-        return 'Apakah anda yakin akan mengahapusnya?';
-      }
-      if (operation == 'finished') {
-        return 'Apakah kendaraan selesai muat?';
-      }
-      return 'Apakah output akan dibatalkan?';
-    };
+const handleEdit = async (document) => {
+  // function to launch form edit output product
+  launchFormAndsubscribeMutation('OutputForm', document, 'tunnelMessage');
+};
+
+const handleCancel = async (document) => {
+  // subscribe tunnel message
+  let res = await subscribeConfirmDialog('confirm', 'Apakah output akan dibatalkan?');
+
+  // if tunnel message send you true
+  // if res true, it mean the add new record or update while false, itt close the modal without add record
+  if(res) {
+    // mark as un finished
+    await markAsUnFinished(document);
+  }
+};
+
+const handleRemove = async (document) => {
     // subscribe tunnel message
-    let res = await subscribeConfirmDialog('confirm', message());
+    let res = await subscribeConfirmDialog('confirm', 'Apakah anda yakin akan mengahapusnya?');
+
+    // if tunnel message send you true
+    // if res true, it mean the add new record or update while false, itt close the modal without add record
+    // remove record from db
+    if(res) {
+      await removeOutputById(document);
+    }
+};
+
+const handleFinished = async (document) => {
+    // subscribe tunnel message
+    let res = await subscribeConfirmDialog('confirm', 'Apakah kendaraan selesai muat?');
 
     // if tunnel message send you true
     // if res true, it mean the add new record or update while false, itt close the modal without add record
     if (res) {
-      // if operation remove record
-      if (operation === 'remove') {
-        // remove record from db
-        await removeOutputById(document);
-      } else if (operation === 'finished') {
-        // mark as finished db
         await markAsFinished(document);
-      } else if (operation === 'cancel') {
-        // mark as un finished
-        await markAsUnFinished(document);
-      }
     }
-    // onsole.log('handle button, id: '+ document)
-    return;
-  }
-
-  // function to launch form to add income product
-  // if(['add', 'edit'].includes(operation)) {
-  launchFormAndsubscribeMutation('OutputForm', document, 'tunnelMessage');
-  //     return;
-  // }
 };
 </script>

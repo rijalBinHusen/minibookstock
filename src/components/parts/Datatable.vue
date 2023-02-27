@@ -43,6 +43,7 @@
             >
             {{ head }}
           </th>
+          <slot name="th"></slot>
           <th v-if="option" scope="col">Option</th>
         </tr>
       </thead>
@@ -64,6 +65,7 @@
               @keyup="searchWord($event.target.value, key)"
             />
           </td>
+          <slot name="td" :obj="r" :id="r.id"></slot>
           <td v-if="option"></td>
         </tr>
         <!--end ofsearch form-->

@@ -1,6 +1,6 @@
 import { ref } from 'vue';
 // import { getItemById } from "./MasterItems";
-import { ymdTime, ddmmyyyy } from '../utils/dateFormat';
+import { ymdTime, ddmmyyyy, dateMonth } from '../utils/dateFormat';
 // store name
 export const store = 'output_transaction';
 // import set parent function for stock master
@@ -197,7 +197,7 @@ export const outputTransactionMapped = async (doc) => {
   // return mapped record
   return {
     id: doc?.id,
-    tanggal: ddmmyyyy(doc?.tanggal, '-'),
+    tanggal: dateMonth(doc?.tanggal),
     shift: doc?.shift,
     customer: doc?.customer,
     nomor_so: doc?.nomor_so,
