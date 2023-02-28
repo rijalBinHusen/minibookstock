@@ -39,16 +39,9 @@
           id="button-belum-selesai-produk-keluar"
         />
       </div>
-      <div class="flex items-center justify-end">
-        <Button
-          primary
-          value="Selesai muat"
-          type="button"
-          small
-          class="ml-2"
-          @trig="getRecordIsFinishedFalse"
-          id="button-belum-selesai-produk-keluar"
-        />
+      <div v-if="grouped.length" class="flex items-center justify-end">
+        <!-- finished -->
+        <FinishedDropdown @send-date-and-shift="handleFinishedAll($event.date, $event.shift, $event.dateMonth)" />
       </div>
     <datatable
       :heads="[
@@ -81,7 +74,7 @@
       <template #td="{ obj }">
         <td>
           <span v-if="!obj.isFinished">
-            <input type="checkbox" :id="obj.id" v-model="grouped" />
+            <input type="checkbox" :value="obj.id" :id="obj.id" v-model="grouped" />
             <!-- <input :id="obj.id" v-model="grouped" :value="obj.id" @input="push(obj.id, obj)" type="checkbox" /> -->
             <!-- <label :for="obj.id"> Tandai</label> -->
           </span>
@@ -119,12 +112,12 @@
 
 <script setup>
 import datePicker from 'vue3-datepicker';
-import Datatable from '../components/parts/Datatable.vue';
-import Button from '../components/elements/Button.vue';
+import Datatable from '../../components/parts/Datatable.vue';
+import Button from '../../components/elements/Button.vue';
 import {
   launchFormAndsubscribeMutation,
   subscribeConfirmDialog,
-} from '../utils/launchForm';
+} from '../../utils/launchForm';
 import {
   getRecordIsFinishedFalse,
   Output_transaction,
@@ -133,15 +126,18 @@ import {
   dateRecordToShow,
   getRecordByDate,
   markAsUnFinished,
-} from '../composables/Output';
-import Dropdown from '../components/elements/Dropdown.vue';
+  updateOutputById,
+} from '../../composables/Output';
+import Dropdown from '../../components/elements/Dropdown.vue';
 import { ref } from 'vue';
+import FinishedDropdown from './FinishedDropdown.vue';
 
 const grouped = ref([])
 
 const handleAddAndEdit = async (document) => {
   // function to launch form edit output product
   launchFormAndsubscribeMutation('OutputForm', document, 'tunnelMessage');
+  resetGrouped()
 };
 
 const handleCancel = async (document) => {
@@ -154,6 +150,7 @@ const handleCancel = async (document) => {
     // mark as un finished
     await markAsUnFinished(document);
   }
+  resetGrouped()
 };
 
 const handleRemove = async (document) => {
@@ -166,6 +163,7 @@ const handleRemove = async (document) => {
     if(res) {
       await removeOutputById(document);
     }
+    resetGrouped()
 };
 
 const handleFinished = async (document) => {
@@ -177,5 +175,24 @@ const handleFinished = async (document) => {
     if (res) {
         await markAsFinished(document);
     }
+    resetGrouped()
 };
+
+const handleFinishedAll = async (date, shift, dateMonth) => {// subscribe tunnel message
+    let res = await subscribeConfirmDialog('confirm', `Apakah kendaraan selesai pada ${dateMonth} shift ${shift}?`);
+
+    // if tunnel message send you true
+    // if res true, it mean the add new record or update while false, itt close the modal without add record
+    if (res) {
+      for(let idRec of grouped.value) {
+        await updateOutputById(idRec, { tanggal: date, shift })
+        await markAsFinished(idRec);
+      }
+    }
+    resetGrouped()
+}
+
+const resetGrouped = () => {
+  grouped.value.length = 0
+}
 </script>
