@@ -95,6 +95,7 @@
         </span>
         <span v-else>
           <Dropdown
+            v-if="!grouped.includes(prop.id)"
             text="options" 
             :options="[
                 { method: handleAddAndEdit, text: 'Edit', icon: 'pen', value: prop.id},

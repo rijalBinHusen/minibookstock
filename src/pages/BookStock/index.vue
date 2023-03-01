@@ -1,43 +1,66 @@
 <template>
   <div>
-    <span v-if="renderTable" class="flex items-center justify-center">
-      <div class="form-control ml-2">
-        <label for="date-picker" class="label">
-          <span class="label-text">Tanggal</span>
-        </label>
-        <date-picker
-          id="date-picker"
-          class="input input-outline input-primary input-sm"
-          v-model="date"
-        ></date-picker>
-      </div>
-      <SelectShift class="ml-2 mr-2 w-24" :shift="nowShift" @selectedShift="nowShift = $event" />
-      <div class="form-control ml-2">
-        <label class="label">
-          <span class="label-text">Aksi</span>
-        </label>
+    <div v-if="renderTable" class="flex items-center mb-9">
+      <div class="flex flex-auto mt-7">
         <Button
-          v-if="showBtn" 
-          primary
-          value="Tampilkan"
-          type="button"
-          small
-          class="ml-2"
-          @trig="getRecord"
-          id="button-show-record-book-of-stock"
-        />
-        <Button
-          v-if="!showBtn && renderTable"
-          primary
-          value="Export"
-          type="button"
-          small
-          class="ml-2"
-          @trig="printStock"
-          id="button-export-record-book-of-stock"
-        />
+              primary
+              value="Compare Laporan"
+              type="button"
+              small
+              class="w-52 "
+          />
       </div>
-    </span>
+
+      <div class="flex flex-auto">
+        <div class="form-control ml-2 justify-self-center">
+          <label for="date-picker" class="label">
+            <span class="label-text">Tanggal</span>
+          </label>
+          <date-picker
+            id="date-picker"
+            class="input input-outline input-primary input-sm"
+            v-model="date"
+          ></date-picker>
+        </div>
+
+        <SelectShift class="ml-2 mr-2 w-24 justify-self-center" :shift="nowShift" @selectedShift="nowShift = $event" />
+
+        <div class="form-control ml-2 justify-self-center">
+          <label class="label">
+            <span class="label-text">Aksi</span>
+          </label>
+          <Button
+            v-if="showBtn" 
+            primary
+            value="Tampilkan"
+            type="button"
+            small
+            class="ml-2"
+            @trig="getRecord"
+            id="button-show-record-book-of-stock"
+          />
+          <Button
+            v-if="!showBtn && renderTable"
+            primary
+            value="Export"
+            type="button"
+            small
+            class="ml-2"
+            @trig="printStock"
+            id="button-export-record-book-of-stock"
+          />
+        </div>
+      </div>
+      <div class="flex-2 mt-7">
+        <Button
+              primary
+              value="Compare buku stock"
+              type="button"
+              small
+              class="w-52"
+          />
+      </div>
+    </div>
     <Datatable
       v-if="renderTable"
       :heads="headsTable"
