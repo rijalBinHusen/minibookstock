@@ -157,6 +157,10 @@ class Stock {
   }
 }
 
+export const compareWithReport = (rowObj, lengthRow) => {
+
+}
+
 export async function getBookStock() {
   const dateTime = ymdTime(date.value);
   // function to get stock master >= date to show && <= date to show
@@ -193,10 +197,7 @@ export async function getBookStock() {
     }
 
   const incomeDB = useIdb(storeIncoming);
-  const incomes = await incomeDB.getItemsByKeyValue(
-    "tanggal",
-    ymdTime(dateTime)
-  );
+  const incomes = await incomeDB.getItemsByKeyValue("tanggal", ymdTime(dateTime) );
   for (let incomeLevel1 of incomes) {
     for (let stockMasterId of incomeLevel1.stock_master_ids) {
       const stockMasterDetails = await getStockById(stockMasterId)

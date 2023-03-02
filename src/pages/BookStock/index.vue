@@ -2,12 +2,14 @@
   <div>
     <div v-if="renderTable" class="flex items-center mb-9">
       <div class="flex flex-auto mt-7">
+        <input accept=".xls, .ods" type="file" class="hidden" ref="file_pickerReport" @change="compareWithReport">
         <Button
               primary
               value="Compare Laporan"
               type="button"
               small
               class="w-52 "
+              @trig="file_pickerReport.click()"
           />
       </div>
 
@@ -80,6 +82,8 @@ import Datatable from "../../components/parts/Datatable.vue";
 import datePicker from "vue3-datepicker"
 import Button from "../../components/elements/Button.vue"
 import SelectShift from "../../components/parts/SelectShift.vue"
+import ReadExcel from "../../utils/ReadExcel";
+import { launchForm, loaderMessage } from "../../utils/launchForm";
 
 const renderTable = ref(false)
 
@@ -128,6 +132,31 @@ const getRecord = async () => {
   renderTable.value = false
   await getBookStock()
   reRenderTable()
+}
+
+const file_pickerReport = ref()
+const compareWithReport = async () => {
+  // if input null
+  if(!file_pickerReport.value.files[0]) {
+    return;
+  }
+  // bring up the loader
+  launchForm('Loader', false)
+  loaderMessage('Memabaca File Excel')
+  // get the first file on input element
+  const file = file_pickerReport.value.files[0]
+    // read file and convert to array
+    const result = await readExcel(file)
+    // set the sheetname, is the first sheet
+    let sheetName = result['sheetNames'][0]
+    // get all row in the sheet
+    let sheet = result['sheets'][sheetName]
+    // get the ref of column, it contain the begin and the last column row, e.g A1:F300
+    let infoRow = sheet["!ref"].split(":")
+    // get length of row, this will return 300
+    let lengthRow = +infoRow[1].match(/\d+/)[0]
+    // compare with bookstock
+    await compareWithReport(sheet, lengthRow)
 }
 
 onMounted(() => {
