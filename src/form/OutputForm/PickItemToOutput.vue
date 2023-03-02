@@ -103,19 +103,19 @@
 
 <script setup>
 // item, quantity, kode produksi, tanggal produksi, tanggal exp
-import Input from './elements/Forms/Input.vue';
+import Input from '../../components/elements/Forms/Input.vue';
 import Button from '@/components/elements/Button.vue';
-import TableVue from './elements/Table.vue';
+import TableVue from '../../components/elements/Table.vue';
 import { ref, defineEmits, defineProps, watch, onBeforeMount } from 'vue';
-import { getItemIdByKdItem, getItemById } from '../composables/MasterItems';
+import { getItemIdByKdItem, getItemById } from '../../composables/MasterItems';
 import {
   getStockById,
   StockToOutput,
   getStockThatAvailable,
   Stock_masters,
-} from '../composables/StockMaster';
-import Select from './elements/Forms/Select.vue';
-import { getOutputById } from '../composables/Output';
+} from '../../composables/StockMaster';
+import Select from '../../components/elements/Forms/Select.vue';
+import { getOutputById } from '../../composables/Output';
 
 const props = defineProps({
   isParentEditMode: String,

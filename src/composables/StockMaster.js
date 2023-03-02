@@ -613,8 +613,9 @@ export class StockToOutput {
   }
 
   pickStockByItemAndQty(item_id, yourQuantity) {
+    // console.log('your quantity: ', yourQuantity)
     const dateAvailable = this.getAvailableDateByItem(item_id);
-    // onsole.log('date available: ', dateAvailable);
+    // console.log('date available: ', dateAvailable);
     const result = [];
     let quantityLeft = yourQuantity;
     dateAvailable.forEach((stock) => {
@@ -632,6 +633,9 @@ export class StockToOutput {
         quantityLeft = quantityLeft - quantityOutput;
         // onsole.log('quantity left: ', quantityLeft);
         result.push({ stock_master_id: stock?.id, quantity: quantityOutput });
+        // decrement avaialable
+        this.pickAvailableStock(stock?.id, quantityOutput)
+        // console.log(this.getAvailableStock(stock?.id))
       }
     });
     if (quantityLeft > 0) {

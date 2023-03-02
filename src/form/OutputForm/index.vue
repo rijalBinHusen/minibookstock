@@ -84,39 +84,39 @@
 
 <script setup>
 import datePicker from 'vue3-datepicker';
-import Input from '../components/elements/Forms/Input.vue';
-import Button from '../components/elements/Button.vue';
-import PickItemToOutputVue from '../components/PickItemToOutput.vue';
-import SelectShift from '../components/parts/SelectShift.vue';
-import SelectTypeDocument from '../components/parts/SelectTypeDocument.vue';
-import InputSalesOrder from '../components/InputSalesOrder.vue';
+import Input from '../../components/elements/Forms/Input.vue';
+import Button from '../../components/elements/Button.vue';
+import PickItemToOutputVue from './PickItemToOutput.vue';
+import SelectShift from '../../components/parts/SelectShift.vue';
+import SelectTypeDocument from '../../components/parts/SelectTypeDocument.vue';
+import InputSalesOrder from '../../components/InputSalesOrder.vue';
 import { ref, onMounted, computed, watch } from 'vue';
-import { closeModalOrDialog } from '../utils/launchForm';
+import { closeModalOrDialog } from '../../utils/launchForm';
 import { useStore } from 'vuex';
 import {
   getItemById,
   gettingStartedRecord as getItems,
-} from '../composables/MasterItems';
-import { ddmmyyyy } from '../utils/dateFormat';
+} from '../../composables/MasterItems';
+import { ddmmyyyy } from '../../utils/dateFormat';
 import {
   StockToOutput,
   getAvailableDateByItem,
   getStockById,
-} from '../composables/StockMaster';
+} from '../../composables/StockMaster';
 import {
   createOutput,
   getOutputById,
   updateOutputById,
   changeQuantityOutput,
-} from '../composables/Output';
+} from '../../composables/Output';
 import {
   getSalesOrderById,
   removeChildItemsOrder,
-} from '../composables/SalesOrder';
+} from '../../composables/SalesOrder';
 import {
   getItemOrderById,
   changeOrderValue,
-} from '../composables/SalesOrderItem';
+} from '../../composables/SalesOrderItem';
 
 // vuex
 const store = useStore();
@@ -300,6 +300,9 @@ const handleSOrder = async (salesOrderId) => {
   nomor_so.value = salesOrderDetails.nomor_so;
   customer.value = salesOrderDetails.customer;
   // if sales order details has item order child || salesOrderDetails.childItemsOrder.length > 0
+  
+  const stock = new StockToOutput();
+
   if (salesOrderDetails.childItemsOrder.length > 0) {
     // get all item order by salesOrderDetails.childItemsOrder
     for (const idItemOrder of salesOrderDetails.childItemsOrder) {
@@ -309,8 +312,6 @@ const handleSOrder = async (salesOrderId) => {
       if (!itemOrder?.id) {
         return;
       }
-
-      const stock = new StockToOutput();
       //   // get stock master by item id, this will return [{ id, product_created }, .....]
       //   const dateStockMaster = await getAvailableDateByItem(itemOrder.item_id);
       //   if (!dateStockMaster.length) {

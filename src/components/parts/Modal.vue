@@ -22,7 +22,7 @@
 import Loader from './Loader.vue';
 import IncomingForm from '../../form/IncomingForm.vue';
 import VehiclesForm from '../../form/VehiclesForm.vue';
-import OutputForm from '../../form/OutputForm.vue';
+import OutputForm from '../../form/OutputForm/index.vue';
 import { useStore } from 'vuex';
 import { computed } from 'vue';
 
