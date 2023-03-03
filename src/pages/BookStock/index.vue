@@ -157,8 +157,12 @@ const compareExcelReport = async () => {
     let lengthRow = +infoRow[1].match(/\d+/)[0]
     // compare with bookstock
     await compareWithReport(sheet, lengthRow)
-    // closeModalOrDialog()
-    // console.log('result', sheet)
+
+    launchForm('ResultBookStockComparedShow', false)
+
+    file_pickerReport.reset()
+    // console.log(file_pickerReport.value.files = "")
+    
 }
 
 onMounted(() => {

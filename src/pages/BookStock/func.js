@@ -18,6 +18,9 @@ export let state = [];
 export const date = ref(new Date());
 export let nowShift = ref(1)
 
+// result
+export const excelReportResultCompared = ref([])
+
 class StockCompared {
   constructor (itemKode, itemName, stockAwal, lpb,  income, bom, other, retur, output, transfer, other2, akhir) {
     this.itemKode = itemKode
@@ -241,9 +244,21 @@ export const compareWithReport = (rowObj, lengthRow) => {
     }
   }
 
-  console.log('notCompared', recordNotCompared)
-  console.log('record matched', recordMatched)
-  console.log('record not matched', recordNotMached)
+  
+  // record matched
+  const recordMatchedMarker = new StockCompared('Stock sesuai', '', '', '','','','','','','','','')
+  excelReportResultCompared.value.push(recordMatchedMarker.getStockCompared())
+  excelReportResultCompared.value = excelReportResultCompared.value.concat(recordMatched)
+  
+  // record not matched
+  const recordNotMatchedMarker = new StockCompared('Stock tidak sesuai', '', '', '','','','','','','','','')
+  excelReportResultCompared.value.push(recordNotMatchedMarker.getStockCompared())
+  excelReportResultCompared.value = excelReportResultCompared.value.concat(recordNotMached)
+
+  // record not compared
+  const recordNotComparedMarker = new StockCompared('Stock tidak ditemukan', '', '', '','','','','','','','','')
+  excelReportResultCompared.value.push(recordNotComparedMarker.getStockCompared())
+  excelReportResultCompared.value = excelReportResultCompared.value.concat(recordNotCompared)
 }
 
 export async function getBookStock() {
