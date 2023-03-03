@@ -10,12 +10,48 @@ import { ref } from "vue";
 import { getItemById } from "../../composables/MasterItems"
 import {  } from "../../components/parts/Toast.vue"
 import ExportToXls from "../../utils/ExportToXls"
+import { loaderMessage } from "../../utils/launchForm";
 
 // state
 export let state = [];
 // date to show
 export const date = ref(new Date());
 export let nowShift = ref(1)
+
+class StockCompared {
+  constructor (itemKode, itemName, stockAwal, lpb,  income, bom, other, retur, output, transfer, other2, akhir) {
+    this.itemKode = itemKode
+    this.itemName = itemName
+    this.stockAwal = stockAwal
+    this.lpb = lpb
+    this.income = income
+    this.bom = bom
+    this.other = other
+    this.retur = retur
+    this.output = output
+    this.transfer = transfer
+    this.other2 = other2
+    this.akhir = akhir
+  }
+
+  getStockCompared () {
+    return {
+      "Item Id": this.itemKode,
+      "Nama Lengkap": this.itemName,
+      Unit: "Ctn",
+      Awal: this.stockAwal,
+      Lpb: this.lpb,
+      Transfer: this.income,
+      Bom: this.bom,
+      "Lain-lain": this.other,
+      Retur: this.retur,	
+      Pemakaian: this.output,
+      Transfer2:	this.transfer,
+      "Lain-lain 2"	: this.other2,
+      Akhir: this.akhir
+    }
+  }
+}
 
 class Stock {
   constructor(
@@ -155,10 +191,59 @@ class Stock {
       "Stock akhir": this.quantity
     }
   }
+  getRecordToCompare() {
+    const incomeTotal = this.incomeShift1 + this.incomeShift2 + this.incomeShift3 + this.incomeShift4
+    const outputTotal = this.incomeShift1 + this.incomeShift2 + this.incomeShift3 + this.incomeShift4
+
+    const setStockToClass = new StockCompared(
+      this.itemKode, this.itemName, this.stockAwalShift1, 0, incomeTotal, 0, 0, 0, outputTotal, 0, 0, this.quantity
+    )
+
+    return setStockToClass.getStockCompared()
+  }
 }
 
 export const compareWithReport = (rowObj, lengthRow) => {
+  
+  const recordNotCompared = []
+  const recordMatched = []
+  const recordNotMached = []
 
+  // looping
+  for(let i = 1; i <= lengthRow; i++) {
+    // message to loader
+    loaderMessage(`Membandingkan record ${i} dari ${lengthRow} `)
+
+    const kdItemExcel = rowObj["A"+i]?.v
+    const quantityExcel = rowObj["M"+i]?.v
+
+    const setStockToClass = new StockCompared(
+      kdItemExcel, rowObj["B"+i]?.v, rowObj["D"+i]?.v, rowObj["E"+i]?.v, rowObj["F"+i]?.v, rowObj["G"+i]?.v, rowObj["H"+i]?.v, rowObj["I"+i]?.v, rowObj["J"+i]?.v, rowObj["K"+i]?.v, rowObj["L"+i]?.v, rowObj["M"+i]?.v 
+    )
+
+    if(!isNaN(quantityExcel) && kdItemExcel) {
+      // find stock by kd_item
+      const findStock = state.find((rec) => rec?.itemKode === kdItemExcel)
+      if(findStock) {
+        // compare the quantity
+        if(findStock?.quantity == quantityExcel) {
+          recordMatched.push(findStock?.getRecordToCompare())
+          recordMatched.push(setStockToClass.getStockCompared())
+        } 
+        else {
+          recordNotMached.push(findStock?.getRecordToCompare())
+          recordNotMached.push(setStockToClass.getStockCompared())
+        }
+      }
+      else {
+        recordNotCompared.push(setStockToClass.getStockCompared())
+      }
+    }
+  }
+
+  console.log('notCompared', recordNotCompared)
+  console.log('record matched', recordMatched)
+  console.log('record not matched', recordNotMached)
 }
 
 export async function getBookStock() {

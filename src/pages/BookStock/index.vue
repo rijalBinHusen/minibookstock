@@ -2,7 +2,7 @@
   <div>
     <div v-if="renderTable" class="flex items-center mb-9">
       <div class="flex flex-auto mt-7">
-        <input accept=".xls, .ods" type="file" class="hidden" ref="file_pickerReport" @change="compareWithReport">
+        <input accept=".xls, .ods" type="file" class="hidden" ref="file_pickerReport" @change="compareExcelReport">
         <Button
               primary
               value="Compare Laporan"
@@ -77,13 +77,13 @@
 
 <script setup>
 import { onMounted, ref, watch, computed } from "vue";
-import { getBookStock, state, date, nowShift, printStock  } from "./func"
+import { getBookStock, state, date, nowShift, printStock, compareWithReport  } from "./func"
 import Datatable from "../../components/parts/Datatable.vue";
 import datePicker from "vue3-datepicker"
 import Button from "../../components/elements/Button.vue"
 import SelectShift from "../../components/parts/SelectShift.vue"
 import ReadExcel from "../../utils/ReadExcel";
-import { launchForm, loaderMessage } from "../../utils/launchForm";
+import { closeModalOrDialog, launchForm, loaderMessage } from "../../utils/launchForm";
 
 const renderTable = ref(false)
 
@@ -135,7 +135,7 @@ const getRecord = async () => {
 }
 
 const file_pickerReport = ref()
-const compareWithReport = async () => {
+const compareExcelReport = async () => {
   // if input null
   if(!file_pickerReport.value.files[0]) {
     return;
@@ -146,7 +146,7 @@ const compareWithReport = async () => {
   // get the first file on input element
   const file = file_pickerReport.value.files[0]
     // read file and convert to array
-    const result = await readExcel(file)
+    const result = await ReadExcel(file)
     // set the sheetname, is the first sheet
     let sheetName = result['sheetNames'][0]
     // get all row in the sheet
@@ -157,6 +157,8 @@ const compareWithReport = async () => {
     let lengthRow = +infoRow[1].match(/\d+/)[0]
     // compare with bookstock
     await compareWithReport(sheet, lengthRow)
+    // closeModalOrDialog()
+    // console.log('result', sheet)
 }
 
 onMounted(() => {
