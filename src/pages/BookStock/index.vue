@@ -182,17 +182,21 @@ const compareExcelBook = async () => {
     // read file and convert to array
     const result = await ReadExcel(file)
     // show all sheet in modal, await user select one of sheetname
-    const sheetName = await launchFormAndsubscribeMutation('SelectSheet', result['sheetNames'])
-    // get all row in the sheet
-    let sheet = result['sheets'][sheetName]
-    // get the ref of column, it contain the begin and the last column row, e.g A1:F300
-    let infoRow = sheet["!ref"].split(":")
-    // get length of row, this will return 300
-    let lengthRow = +infoRow[1].match(/\d+/)[0]
-    // compare with bookstock
-    await compareWithManualBookStock(sheet, lengthRow)
-
-    launchForm('ResultBookStockComparedShow', false)
+    const sheetName = await launchFormAndsubscribeMutation('SelectSheet', result['sheetNames'], 'tunnelMessage')
+    if(sheetName) {
+      // bring up the loader
+      launchForm('Loader', false)
+      // get all row in the sheet
+      let sheet = result['sheets'][sheetName]
+      // get the ref of column, it contain the begin and the last column row, e.g A1:F300
+      let infoRow = sheet["!ref"].split(":")
+      // get length of row, this will return 300
+      let lengthRow = +infoRow[1].match(/\d+/)[0]
+      // compare with bookstock
+      await compareWithManualBookStock(sheet, lengthRow)
+      
+      launchForm('ResultBookStockComparedShow', false)
+    }
     // value of ref and value of element
     filePickerBook.value.value = ""
     

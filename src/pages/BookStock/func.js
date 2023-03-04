@@ -280,6 +280,7 @@ export const compareWithReport = async (rowObj, lengthRow) => {
 }
 
 export const compareWithManualBookStock = async (rowObj, lengthRow) => {
+  console.log(rowObj, lengthRow)
   compareStockWith.value = "book"
   const stateToCompare = [...state]
   
@@ -326,15 +327,15 @@ export const compareWithManualBookStock = async (rowObj, lengthRow) => {
                                 && isStockOut2Matched && isStockIncome3Matched && isStockOut3Matched && isStockOut4Matched && isQuantityMatched
         if(isPassCondition) {
           recordMatched.push(findStock?.getRecordToPrint())
-          recordMatched.push(setStockToClass.get?.getRecordToPrint())
+          recordMatched.push(setStockToClass.getRecordToPrint())
         } 
         else {
           recordNotMached.push(findStock?.getRecordToPrint())
-          recordNotMached.push(setStockToClass.get?.getRecordToPrint())
+          recordNotMached.push(setStockToClass.getRecordToPrint())
         }
       }
       else {
-        recordNotCompared.push(setStockToClass.get?.getRecordToPrint())
+        recordNotCompared.push(setStockToClass.getRecordToPrint())
       }
       await new Promise((res) => { setTimeout(() => { res() }, 20); })
     }
@@ -343,22 +344,22 @@ export const compareWithManualBookStock = async (rowObj, lengthRow) => {
   
   // record not matched marker
   const recordNotMatchedMarker = new Stock('-', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "Stock tidak sesuai")
-  excelReportResultCompared.value.push(recordNotMatchedMarker.get?.getRecordToPrint())
+  excelReportResultCompared.value.push(recordNotMatchedMarker.getRecordToPrint())
   excelReportResultCompared.value = excelReportResultCompared.value.concat(recordNotMached)
   
   // record matched marker
   const recordMatchedMarker = new Stock('-', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "Stock sesuai")
-  excelReportResultCompared.value.push(recordMatchedMarker.get?.getRecordToPrint())
+  excelReportResultCompared.value.push(recordMatchedMarker.getRecordToPrint())
   excelReportResultCompared.value = excelReportResultCompared.value.concat(recordMatched)
 
   // record not compared marker
   const recordNotComparedMarker = new Stock('-', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "Stock tidak ditemukan")
-  excelReportResultCompared.value.push(recordNotComparedMarker.get?.getRecordToPrint())
+  excelReportResultCompared.value.push(recordNotComparedMarker.getRecordToPrint())
 
   // filter app stock that not exists in excel
   stateToCompare.forEach((stockToFilter) => {
-    const findInRecordNotMatched = recordNotMached.find((rec) => rec["Item Id"] === stockToFilter?.itemKode)
-    const findInRecordMatched = recordMatched.find((rec) => rec["Item Id"] === stockToFilter?.itemKode)
+    const findInRecordNotMatched = recordNotMached.find((rec) => rec["Kode item"] === stockToFilter?.itemKode)
+    const findInRecordMatched = recordMatched.find((rec) => rec["Kode item"] === stockToFilter?.itemKode)
     if(!findInRecordMatched && !findInRecordNotMatched) {
       excelReportResultCompared.value.push(stockToFilter?.getRecordToPrint())
     }

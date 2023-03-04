@@ -1,17 +1,18 @@
 <template>
-    <div>
-        <h2>Pilih sheet untuk dibandingkan</h2>
+    <div class="flex flex-col">
+        <h2 class="text-3xl mb-10">Pilih sheet buku stock untuk dibandingkan</h2>
         <span v-for="sheet of sheets" :key="sheet">
+            <input :value="sheet" v-model="selectedSheet" type="radio" name="sheet" :id="sheet" class="mr-2">
             <label :for="sheet">{{ sheet }}</label>
-            <input v-model="selectedSheet" type="checkbox" name="sheet" :id="sheet">
         </span>
         <Button
             type="button"
             @trig="handleSubmit"
             primary
-            value="Bandingkan"
+            value="Mulai"
             small
             id="button-select-sheet-submit"
+            class="w-32 mt-10"
           />
     </div>
 </template>
@@ -27,7 +28,7 @@ const selectedSheet = ref('')
 const sheets = store.state.form?.document
 
 const handleSubmit = () => {
-    store.commit('tunnelMessage', selectedSheet.value)
+    store.commit('tunnelMessage', selectedSheet.value.toString())
 }
 
 </script>

@@ -27,12 +27,12 @@ import ResultBookStockComparedShow from '../../pages/BookStock/ResultBookStockCo
 import SelectSheet from '../../pages/BookStock/SelectSheet.vue';
 import { useStore } from 'vuex';
 import { computed } from 'vue';
+import { closeModalOrDialog } from '../../utils/launchForm';
 
 const store = useStore();
 
 const closeModal = () => {
-  store.commit('form', false);
-  window.location.href = '#';
+  closeModalOrDialog()
 };
 
 const currentForm = computed(() => {
