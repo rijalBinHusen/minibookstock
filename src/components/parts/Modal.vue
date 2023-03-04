@@ -24,6 +24,7 @@ import IncomingForm from '../../form/IncomingForm.vue';
 import VehiclesForm from '../../form/VehiclesForm.vue';
 import OutputForm from '../../form/OutputForm/index.vue';
 import ResultBookStockComparedShow from '../../pages/BookStock/ResultBookStockComparedShow.vue';
+import SelectSheet from '../../pages/BookStock/SelectSheet.vue';
 import { useStore } from 'vuex';
 import { computed } from 'vue';
 
@@ -44,5 +45,6 @@ const forms = {
   VehiclesForm,
   OutputForm,
   ResultBookStockComparedShow,
+  SelectSheet,
 };
 </script>

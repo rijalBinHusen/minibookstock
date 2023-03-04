@@ -21,6 +21,8 @@ export let nowShift = ref(1)
 // result
 export const excelReportResultCompared = ref([])
 
+export const compareStockWith = ref("")
+
 class StockCompared {
   constructor (itemKode, itemName, stockAwal, lpb,  income, bom, other, retur, output, transfer, other2, akhir, source) {
     this.itemKode = itemKode
@@ -203,6 +205,7 @@ class Stock {
 }
 
 export const compareWithReport = async (rowObj, lengthRow) => {
+  compareStockWith.value = "report"
 
   const stateToCompare = [...state]
   
@@ -266,7 +269,7 @@ export const compareWithReport = async (rowObj, lengthRow) => {
   excelReportResultCompared.value = excelReportResultCompared.value.concat(recordNotCompared)
 
   // filter app stock that not exists in excel
-  const appStock = stateToCompare.forEach((stockToFilter) => {
+  stateToCompare.forEach((stockToFilter) => {
     const findInRecordNotMatched = recordNotMached.find((rec) => rec["Item Id"] === stockToFilter?.itemKode)
     const findInRecordMatched = recordMatched.find((rec) => rec["Item Id"] === stockToFilter?.itemKode)
     if(!findInRecordMatched && !findInRecordNotMatched) {
@@ -274,7 +277,93 @@ export const compareWithReport = async (rowObj, lengthRow) => {
     }
   })
 
-  console.log(appStock)
+}
+
+export const compareWithManualBookStock = async (rowObj, lengthRow) => {
+  compareStockWith.value = "book"
+  const stateToCompare = [...state]
+  
+  const recordNotCompared = []
+  const recordMatched = []
+  const recordNotMached = []
+
+  // looping
+  for(let i = 1; i <= lengthRow; i++) {
+    // message to loader
+    loaderMessage(`Membandingkan record ${i} dari ${lengthRow} `)
+
+    const kdItemExcel = rowObj["A"+i]?.v
+
+    const setStockToClass = new Stock(
+      i, 0, 0, 0, 0, 0, 0, 0, 0, 0, rowObj["B"+i]?.v, rowObj["E"+i]?.v, rowObj["H"+i]?.v, rowObj["K"+i]?.v, 0, 
+      rowObj["F"+i]?.v, rowObj["I"+i]?.v, rowObj["L"+i]?.v, rowObj["M"+i]?.v, rowObj["C"+i]?.v, kdItemExcel
+    )
+
+    if(kdItemExcel) {
+      // find stock by kd_item
+      const findStock = stateToCompare.find((rec) => rec?.itemKode === kdItemExcel)
+      if(findStock) {
+        // compare stock awal
+        const isStockAwal1Matched = setStockToClass.stockAwalShift1 === findStock.stockAwalShift1
+        // compare stock income1
+        const isStockIncome1Matched = setStockToClass.incomeShift1 === findStock.incomeShift1
+        // compare stock out1
+        const isStockOut1Matched = setStockToClass.outputShift1 === findStock.outputShift1
+        // compare stock income2
+        const isStockIncome2Matched = setStockToClass.incomeShift2 === findStock.incomeShift2
+        // compare stock out2
+        const isStockOut2Matched = setStockToClass.outputShift2 === findStock.outputShift2
+        // compare stock income3
+        const isStockIncome3Matched = setStockToClass.incomeShift3 === findStock.incomeShift3
+        // compare stock out3
+        const isStockOut3Matched = setStockToClass.outputShift3 === findStock.outputShift3
+        // compare stock out4
+        const isStockOut4Matched = setStockToClass.outputShift4 === findStock.outputShift4
+        // compare the quantity
+        const isQuantityMatched = setStockToClass.quantity === findStock?.quantity
+        // condition
+        const isPassCondition = isStockAwal1Matched && isStockIncome1Matched && isStockOut1Matched && isStockIncome2Matched 
+                                && isStockOut2Matched && isStockIncome3Matched && isStockOut3Matched && isStockOut4Matched && isQuantityMatched
+        if(isPassCondition) {
+          recordMatched.push(findStock?.getRecordToPrint())
+          recordMatched.push(setStockToClass.get?.getRecordToPrint())
+        } 
+        else {
+          recordNotMached.push(findStock?.getRecordToPrint())
+          recordNotMached.push(setStockToClass.get?.getRecordToPrint())
+        }
+      }
+      else {
+        recordNotCompared.push(setStockToClass.get?.getRecordToPrint())
+      }
+      await new Promise((res) => { setTimeout(() => { res() }, 20); })
+    }
+  }
+
+  
+  // record not matched marker
+  const recordNotMatchedMarker = new Stock('-', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "Stock tidak sesuai")
+  excelReportResultCompared.value.push(recordNotMatchedMarker.get?.getRecordToPrint())
+  excelReportResultCompared.value = excelReportResultCompared.value.concat(recordNotMached)
+  
+  // record matched marker
+  const recordMatchedMarker = new Stock('-', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "Stock sesuai")
+  excelReportResultCompared.value.push(recordMatchedMarker.get?.getRecordToPrint())
+  excelReportResultCompared.value = excelReportResultCompared.value.concat(recordMatched)
+
+  // record not compared marker
+  const recordNotComparedMarker = new Stock('-', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "Stock tidak ditemukan")
+  excelReportResultCompared.value.push(recordNotComparedMarker.get?.getRecordToPrint())
+
+  // filter app stock that not exists in excel
+  stateToCompare.forEach((stockToFilter) => {
+    const findInRecordNotMatched = recordNotMached.find((rec) => rec["Item Id"] === stockToFilter?.itemKode)
+    const findInRecordMatched = recordMatched.find((rec) => rec["Item Id"] === stockToFilter?.itemKode)
+    if(!findInRecordMatched && !findInRecordNotMatched) {
+      excelReportResultCompared.value.push(stockToFilter?.getRecordToPrint())
+    }
+  })
+
 }
 
 export async function getBookStock() {

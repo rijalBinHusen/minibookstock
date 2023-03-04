@@ -53,13 +53,16 @@
           />
         </div>
       </div>
+      
       <div class="flex-2 mt-7">
+        <input accept=".xls, .ods" type="file" id="filePickerBook" class="hidden" ref="filePickerBook" @change="compareExcelBook">
         <Button
               primary
               value="Compare buku stock"
               type="button"
               small
               class="w-52"
+              @trig="filePickerBook.click()"
           />
       </div>
     </div>
@@ -77,13 +80,13 @@
 
 <script setup>
 import { onMounted, ref, watch, computed, toRefs } from "vue";
-import { getBookStock, state, date, nowShift, printStock, compareWithReport  } from "./func"
+import { getBookStock, state, date, nowShift, printStock, compareWithReport, compareWithManualBookStock } from "./func"
 import Datatable from "../../components/parts/Datatable.vue";
 import datePicker from "vue3-datepicker"
 import Button from "../../components/elements/Button.vue"
 import SelectShift from "../../components/parts/SelectShift.vue"
 import ReadExcel from "../../utils/ReadExcel";
-import { closeModalOrDialog, launchForm, loaderMessage } from "../../utils/launchForm";
+import { launchFormAndsubscribeMutation, closeModalOrDialog, launchForm, loaderMessage } from "../../utils/launchForm";
 
 const renderTable = ref(false)
 
@@ -161,6 +164,37 @@ const compareExcelReport = async () => {
     launchForm('ResultBookStockComparedShow', false)
     // value of ref and value of element
     file_pickerReport.value.value = ""
+    
+}
+
+const filePickerBook = ref()
+
+const compareExcelBook = async () => {
+  // if input null
+  if(!filePickerBook.value.files[0]) {
+    return;
+  }
+  // bring up the loader
+  launchForm('Loader', false)
+  loaderMessage('Memabaca File Excel')
+  // get the first file on input element
+  const file = filePickerBook.value.files[0]
+    // read file and convert to array
+    const result = await ReadExcel(file)
+    // show all sheet in modal, await user select one of sheetname
+    const sheetName = await launchFormAndsubscribeMutation('SelectSheet', result['sheetNames'])
+    // get all row in the sheet
+    let sheet = result['sheets'][sheetName]
+    // get the ref of column, it contain the begin and the last column row, e.g A1:F300
+    let infoRow = sheet["!ref"].split(":")
+    // get length of row, this will return 300
+    let lengthRow = +infoRow[1].match(/\d+/)[0]
+    // compare with bookstock
+    await compareWithManualBookStock(sheet, lengthRow)
+
+    launchForm('ResultBookStockComparedShow', false)
+    // value of ref and value of element
+    filePickerBook.value.value = ""
     
 }
 
