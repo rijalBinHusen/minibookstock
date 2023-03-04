@@ -109,7 +109,7 @@ import {
 } from '../composables/Incoming';
 import { closeModalOrDialog } from '../utils/launchForm';
 import { useStore } from 'vuex';
-import { getItemByIdInState } from '../composables/MasterItems';
+import { getItemById } from '../composables/MasterItems';
 import { ddmmyyyy, ymdTime } from '../utils/dateFormat';
 import {
   createStock,
@@ -153,7 +153,7 @@ const stockChildDetails = computed(() => {
   }
   return stockChild.value.map((stock) => ({
     id: stock?.id,
-    item: getItemByIdInState(stock?.item_id).nm_item,
+    item: getItemById(stock?.item_id).nm_item,
     quantity: stock?.quantity,
     product_created: ddmmyyyy(stock?.product_created, '-'),
   }));
