@@ -265,16 +265,16 @@ export const compareWithReport = async (rowObj, lengthRow) => {
   excelReportResultCompared.value.push(recordNotComparedMarker.getStockCompared())
   excelReportResultCompared.value = excelReportResultCompared.value.concat(recordNotCompared)
 
-  // filter app stock
-  // const appStock = stateToCompare.filter((stockToFilter) => {
-  //   const findInRecordNotMatched = recordNotMached.find((rec) => rec?.id === stockToFilter?.id)
-  //   const findInRecordMatched = recordMatched.find((rec) => rec?.id === stockToFilter?.id)
-  //   if(!findInRecordMatched || !findInRecordNotMatched) {
-  //     return stockToFilter
-  //   }
-  // })
+  // filter app stock that not exists in excel
+  const appStock = stateToCompare.forEach((stockToFilter) => {
+    const findInRecordNotMatched = recordNotMached.find((rec) => rec["Item Id"] === stockToFilter?.itemKode)
+    const findInRecordMatched = recordMatched.find((rec) => rec["Item Id"] === stockToFilter?.itemKode)
+    if(!findInRecordMatched && !findInRecordNotMatched) {
+      excelReportResultCompared.value.push(stockToFilter?.getRecordToCompare())
+    }
+  })
 
-  // console.log(appStock)
+  console.log(appStock)
 }
 
 export async function getBookStock() {

@@ -16,7 +16,7 @@
 </template>
 
 <script setup>
-import { onBeforeUnmount } from 'vue';
+import { onUnmounted } from 'vue';
 import Table from '../../components/elements/Table.vue';
 import { excelReportResultCompared, date } from "./func"
 import Button from '../../components/elements/Button.vue';
@@ -38,7 +38,7 @@ const downloadAsExcel = () => {
     ExportToXls(excelReportResultCompared.value, `Laporan harian VS saldo aplikasi ${ ddmmyyyy(date.value, '-')} diunduh ${full()}`)
 }
 
-onBeforeUnmount(() => {
+onUnmounted(() => {
     excelReportResultCompared.value.length = 0
 })
 
