@@ -2,7 +2,7 @@
   <div>
     <div v-if="renderTable" class="flex items-center mb-9">
       <div class="flex flex-auto mt-7">
-        <input accept=".xls, .ods" type="file" class="hidden" ref="file_pickerReport" @change="compareExcelReport">
+        <input accept=".xls, .ods" type="file" id="filePickerReport" class="hidden" ref="file_pickerReport" @change="compareExcelReport">
         <Button
               primary
               value="Compare Laporan"
@@ -76,7 +76,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, watch, computed } from "vue";
+import { onMounted, ref, watch, computed, toRefs } from "vue";
 import { getBookStock, state, date, nowShift, printStock, compareWithReport  } from "./func"
 import Datatable from "../../components/parts/Datatable.vue";
 import datePicker from "vue3-datepicker"
@@ -136,6 +136,7 @@ const getRecord = async () => {
 
 const file_pickerReport = ref()
 const compareExcelReport = async () => {
+    console.log(file_pickerReport.value)
   // if input null
   if(!file_pickerReport.value.files[0]) {
     return;
@@ -160,8 +161,7 @@ const compareExcelReport = async () => {
 
     launchForm('ResultBookStockComparedShow', false)
 
-    file_pickerReport.reset()
-    // console.log(file_pickerReport.value.files = "")
+    file_pickerReport.value.value = ""
     
 }
 

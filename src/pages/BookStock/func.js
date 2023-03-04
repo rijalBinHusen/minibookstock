@@ -22,7 +22,7 @@ export let nowShift = ref(1)
 export const excelReportResultCompared = ref([])
 
 class StockCompared {
-  constructor (itemKode, itemName, stockAwal, lpb,  income, bom, other, retur, output, transfer, other2, akhir) {
+  constructor (itemKode, itemName, stockAwal, lpb,  income, bom, other, retur, output, transfer, other2, akhir, source) {
     this.itemKode = itemKode
     this.itemName = itemName
     this.stockAwal = stockAwal
@@ -35,22 +35,18 @@ class StockCompared {
     this.transfer = transfer
     this.other2 = other2
     this.akhir = akhir
+    this.source = source
   }
 
   getStockCompared () {
     return {
+      "Data": this.source,
       "Item Id": this.itemKode,
       "Nama Lengkap": this.itemName,
       Unit: "Ctn",
       Awal: this.stockAwal,
-      Lpb: this.lpb,
-      Transfer: this.income,
-      Bom: this.bom,
-      "Lain-lain": this.other,
-      Retur: this.retur,	
-      Pemakaian: this.output,
-      Transfer2:	this.transfer,
-      "Lain-lain 2"	: this.other2,
+      Transfer: this.lpb + this.income + this.bom + this.other + this.retur,
+      Pemakaian: this.output + this.transfer + this.other2,
       Akhir: this.akhir
     }
   }
@@ -199,7 +195,7 @@ class Stock {
     const outputTotal = this.incomeShift1 + this.incomeShift2 + this.incomeShift3 + this.incomeShift4
 
     const setStockToClass = new StockCompared(
-      this.itemKode, this.itemName, this.stockAwalShift1, 0, incomeTotal, 0, 0, 0, outputTotal, 0, 0, this.quantity
+      this.itemKode, this.itemName, this.stockAwalShift1, 0, incomeTotal, 0, 0, 0, outputTotal, 0, 0, this.quantity, "Aplikasi"
     )
 
     return setStockToClass.getStockCompared()
@@ -221,7 +217,9 @@ export const compareWithReport = (rowObj, lengthRow) => {
     const quantityExcel = rowObj["M"+i]?.v
 
     const setStockToClass = new StockCompared(
-      kdItemExcel, rowObj["B"+i]?.v, rowObj["D"+i]?.v, rowObj["E"+i]?.v, rowObj["F"+i]?.v, rowObj["G"+i]?.v, rowObj["H"+i]?.v, rowObj["I"+i]?.v, rowObj["J"+i]?.v, rowObj["K"+i]?.v, rowObj["L"+i]?.v, rowObj["M"+i]?.v 
+      kdItemExcel, rowObj["B"+i]?.v, rowObj["D"+i]?.v, rowObj["E"+i]?.v, rowObj["F"+i]?.v, 
+      rowObj["G"+i]?.v, rowObj["H"+i]?.v, rowObj["I"+i]?.v, rowObj["J"+i]?.v, rowObj["K"+i]?.v, 
+      rowObj["L"+i]?.v, rowObj["M"+i]?.v, "Excel"
     )
 
     if(!isNaN(quantityExcel) && kdItemExcel) {
@@ -245,18 +243,18 @@ export const compareWithReport = (rowObj, lengthRow) => {
   }
 
   
-  // record matched
-  const recordMatchedMarker = new StockCompared('Stock sesuai', '', '', '','','','','','','','','')
-  excelReportResultCompared.value.push(recordMatchedMarker.getStockCompared())
-  excelReportResultCompared.value = excelReportResultCompared.value.concat(recordMatched)
-  
   // record not matched
-  const recordNotMatchedMarker = new StockCompared('Stock tidak sesuai', '', '', '','','','','','','','','')
+  const recordNotMatchedMarker = new StockCompared('Stock tidak sesuai', '', '', '','','','','','','','','','')
   excelReportResultCompared.value.push(recordNotMatchedMarker.getStockCompared())
   excelReportResultCompared.value = excelReportResultCompared.value.concat(recordNotMached)
+  
+  // record matched
+  const recordMatchedMarker = new StockCompared('Stock sesuai', '', '', '','','','','','','','','', '')
+  excelReportResultCompared.value.push(recordMatchedMarker.getStockCompared())
+  excelReportResultCompared.value = excelReportResultCompared.value.concat(recordMatched)
 
   // record not compared
-  const recordNotComparedMarker = new StockCompared('Stock tidak ditemukan', '', '', '','','','','','','','','')
+  const recordNotComparedMarker = new StockCompared('Stock tidak ditemukan', '', '', '','','','','','','','','','')
   excelReportResultCompared.value.push(recordNotComparedMarker.getStockCompared())
   excelReportResultCompared.value = excelReportResultCompared.value.concat(recordNotCompared)
 }
