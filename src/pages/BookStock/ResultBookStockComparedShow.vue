@@ -29,8 +29,8 @@ const tHead = computed(() => {
         return [ '-', 'Kode item', 'Stock awal', 'Masuk', 'Keluar', 'Akhir']
     }
     return [
+    "-",
       "Kode item",
-      "Nama item",
       "Awal",
       "Masuk 1",
       "keluar 1",
@@ -56,8 +56,8 @@ const tBody = computed(() => {
         ]
     }
     return [
+        "data",
       "Kode item",
-      "Nama item",
       "Stock awal 1",
       "Produk masuk 1",
       "Produk keluar 1",

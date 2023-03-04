@@ -173,8 +173,8 @@ class Stock {
     const income = this.incomeShift4;
     this.stockAwalShift4 = this.quantity + output - income;
   }
-  getRecordToPrint() {
-    return {
+  getRecordToPrint(addiTional) {
+    const origin =  {
       "Kode item": this.itemKode,
       "Nama item": this.itemName,
       "Stock awal 1": this.stockAwalShift1,
@@ -191,6 +191,10 @@ class Stock {
       "Produk keluar 4": this.outputShift4,
       "Stock akhir": this.quantity
     }
+    if(addiTional) {
+      return { ...addiTional, ...origin } 
+    }
+    return origin
   }
   getRecordToCompare() {
     const incomeTotal = this.incomeShift1 + this.incomeShift2 + this.incomeShift3 + this.incomeShift4
@@ -280,7 +284,6 @@ export const compareWithReport = async (rowObj, lengthRow) => {
 }
 
 export const compareWithManualBookStock = async (rowObj, lengthRow) => {
-  console.log(rowObj, lengthRow)
   compareStockWith.value = "book"
   const stateToCompare = [...state]
   
@@ -296,7 +299,7 @@ export const compareWithManualBookStock = async (rowObj, lengthRow) => {
     const kdItemExcel = rowObj["A"+i]?.v
 
     const setStockToClass = new Stock(
-      i, 0, 0, 0, 0, 0, 0, 0, 0, 0, rowObj["B"+i]?.v, rowObj["E"+i]?.v, rowObj["H"+i]?.v, rowObj["K"+i]?.v, 0, 
+      i, 0, 0, 0, 0, 0, 0, 0, 0, 0, rowObj["P"+i]?.v, rowObj["E"+i]?.v, rowObj["H"+i]?.v, rowObj["K"+i]?.v, 0, 
       rowObj["F"+i]?.v, rowObj["I"+i]?.v, rowObj["L"+i]?.v, rowObj["M"+i]?.v, rowObj["C"+i]?.v, kdItemExcel
     )
 
@@ -326,16 +329,16 @@ export const compareWithManualBookStock = async (rowObj, lengthRow) => {
         const isPassCondition = isStockAwal1Matched && isStockIncome1Matched && isStockOut1Matched && isStockIncome2Matched 
                                 && isStockOut2Matched && isStockIncome3Matched && isStockOut3Matched && isStockOut4Matched && isQuantityMatched
         if(isPassCondition) {
-          recordMatched.push(findStock?.getRecordToPrint())
-          recordMatched.push(setStockToClass.getRecordToPrint())
+          recordMatched.push(findStock?.getRecordToPrint({ data: "Aplikasi" }))
+          recordMatched.push(setStockToClass.getRecordToPrint({ data: "Excel" }))
         } 
         else {
-          recordNotMached.push(findStock?.getRecordToPrint())
-          recordNotMached.push(setStockToClass.getRecordToPrint())
+          recordNotMached.push(findStock?.getRecordToPrint({ data: "Aplikasi" }))
+          recordNotMached.push(setStockToClass.getRecordToPrint({ data: "Excel" }))
         }
       }
       else {
-        recordNotCompared.push(setStockToClass.getRecordToPrint())
+        recordNotCompared.push(setStockToClass.getRecordToPrint({ data: "Excel" }))
       }
       await new Promise((res) => { setTimeout(() => { res() }, 20); })
     }
