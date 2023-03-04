@@ -18,6 +18,10 @@ import {
   faTape,
   faScroll,
   faTag,
+  faPen,
+  faTrash,
+  faBook,
+  faFlag
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(
@@ -35,13 +39,15 @@ library.add(
   faTape,
   faScroll,
   faTag,
-  faBook
+  faBook,
+  faPen,
+  faTrash,
+  faFlag
 );
 
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import VueDatePicker from "@vuepic/vue-datepicker";
 import '@vuepic/vue-datepicker/dist/main.css'
-import { faBook } from "@fortawesome/free-solid-svg-icons";
 
 const app = createApp(App);
 app.component("font-awesome-icon", FontAwesomeIcon)

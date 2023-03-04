@@ -1,16 +1,16 @@
 <template>
-  <div class="dropdown mr-5 px-5">
+  <div class="dropdown dropdown-hover">
     <div tabindex="0" :class="className">
       {{ text }}
     </div>
     <ul
       tabindex="0"
-      class="p-2 shadow menu dropdown-content bg-base-100 rounded-box w-30"
+      class="p-2 shadow menu dropdown-content bg-base-200 rounded-box w-30"
     >
       <li @click="op.method(op.value)" v-for="op in options" :key="op.value">
         <a>
+          <font-awesome-icon v-if="op.icon" class="mr-1" :icon="op.icon" />
           {{ op.text }}
-          <font-awesome-icon v-if="op.icon" class="ml-1" :icon="op.icon" />
         </a>
       </li>
     </ul>

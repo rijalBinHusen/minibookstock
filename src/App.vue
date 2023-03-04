@@ -20,7 +20,7 @@ import MasterItem from './pages/MasterItem.vue';
 import Incoming from './pages/Incoming.vue';
 import VehiclesVue from './pages/Vehicles.vue';
 import ConfirmDialogVue from './components/ConfirmDialog.vue';
-import Output from './pages/Output.vue';
+import Output from './pages/Output/Output.vue';
 import StockMaster from './pages/StockMaster.vue';
 import SalesOrders from './pages/SalesOrders.vue';
 import StockCard from './pages/StockCard.vue';

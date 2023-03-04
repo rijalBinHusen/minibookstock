@@ -63,7 +63,7 @@ export default {
       if (this.ghost) classList.push("btn-ghost");
       if (this.outline) classList.push("btn-outline");
       if (this.success) classList.push("btn-success");
-      if (this.class) classList.push(this.class.split(" "));
+      if (this.class) classList.push(this.class);
 
       return classList.join(" ");
     },

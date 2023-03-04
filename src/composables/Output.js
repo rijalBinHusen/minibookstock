@@ -1,20 +1,20 @@
-import { ref } from 'vue';
+import { ref } from "vue";
 // import { getItemById } from "./MasterItems";
-import { ymdTime, ddmmyyyy } from '../utils/dateFormat';
+import { ymdTime, ddmmyyyy, dateMonth } from "../utils/dateFormat";
 // store name
-export const store = 'output_transaction';
+export const store = "output_transaction";
 // import set parent function for stock master
 import {
   getStockById,
   changeAvailableStock,
   changeQuantityStock,
-} from './StockMaster';
+} from "./StockMaster";
 // import item function
-import { getItemById } from './MasterItems';
+import { getItemById } from "./MasterItems";
 // import idb
-import { useIdb } from '../utils/localforage';
-import { useJurnalProdukKeluar } from './Setting_JurnalId';
-import { subscribeConfirmDialog } from '../utils/launchForm';
+import { useIdb } from "../utils/localforage";
+import { useJurnalProdukKeluar } from "./Setting_JurnalId";
+import { subscribeConfirmDialog } from "../utils/launchForm";
 
 // the state
 export const Output_transaction = ref([]);
@@ -80,7 +80,7 @@ export const createOutput = async (
     // get item of stock
     const itemInfo = await getItemById(stock?.itemId);
     // else alert
-    subscribeConfirmDialog('alert', `Stock ${itemInfo?.nm_item} tidak cukup`);
+    subscribeConfirmDialog("alert", `Stock ${itemInfo?.nm_item} tidak cukup`);
   }
   return false;
 };
@@ -101,7 +101,7 @@ export const getRecordByDate = async () => {
   const outputdb = useIdb(store);
   // get record by date
   const records = await outputdb.getItemsByKeyValue(
-    'tanggal',
+    "tanggal",
     ymdTime(dateRecordToShow.value)
   );
   // map allRecord
@@ -149,11 +149,11 @@ export const getOutputById = async (id) => {
   return findStock
     ? findStock
     : {
-        nomor_so: 'Not found',
-        tanggal: 'Not found',
-        shift: 'Not found',
-        quantity: 'Not found',
-        type: 'Not found',
+        nomor_so: "Not found",
+        tanggal: "Not found",
+        shift: "Not found",
+        quantity: "Not found",
+        type: "Not found",
       };
 };
 
@@ -179,8 +179,8 @@ export const updateOutputById = async (id, keyValueToUpdate) => {
 
     return true;
   }
-  alert('Terjadi kesalahan, mohon refresh aplikasi');
-  console.log('record not updated');
+  alert("Terjadi kesalahan, mohon refresh aplikasi");
+  console.log("record not updated");
   return false;
 };
 
@@ -197,13 +197,13 @@ export const outputTransactionMapped = async (doc) => {
   // return mapped record
   return {
     id: doc?.id,
-    tanggal: ddmmyyyy(doc?.tanggal, '-'),
+    tanggal: dateMonth(doc?.tanggal),
     shift: doc?.shift,
     customer: doc?.customer,
     nomor_so: doc?.nomor_so,
     kd_item: item?.kd_item,
     nm_item: item?.nm_item,
-    product_created: ddmmyyyy(master.product_created, '-'),
+    product_created: dateMonth(master.product_created),
     quantity: doc?.quantity,
     isFinished: doc?.isFinished,
   };
@@ -236,7 +236,7 @@ export const getTotalStockTaken = async (id_stock_master) => {
   const outputdb = useIdb(store);
   // get all Stock master that taken
   const allOutput = await outputdb.getItemsByKeyValue(
-    'stock_master_id',
+    "stock_master_id",
     id_stock_master
   );
   // total all output
@@ -266,7 +266,7 @@ export const getRecordIsFinishedFalse = async () => {
   // initiate db
   const outputdb = useIdb(store);
   // get record by date
-  const records = await outputdb.getItemsByKeyValue('isFinished', false);
+  const records = await outputdb.getItemsByKeyValue("isFinished", false);
 
   // map allRecord
   if (records) {
@@ -289,7 +289,7 @@ export const getOutputByStockMasterId = async (stock_master_id) => {
   const outputdb = useIdb(store);
   // get record by date
   const allOutput = await outputdb.getItemsByKeyValue(
-    'stock_master_id',
+    "stock_master_id",
     stock_master_id
   );
   /**
@@ -318,14 +318,14 @@ export const getOutputByStockMasterId = async (stock_master_id) => {
       result.push({
         unix_time: outStock.tanggal,
         stock_id: stock_master_id,
-        tanggal_transaksi: ddmmyyyy(outStock.tanggal, '-'),
+        tanggal_transaksi: ddmmyyyy(outStock.tanggal, "-"),
         nomor_dokumen: outStock.nomor_so,
         shift: outStock.shift,
-        mutasi: 'Keluar',
+        mutasi: "Keluar",
         kode_item: item.kd_item,
         nama_item: item.nm_item,
         type: outputInfo.nama_jurnal,
-        tanggal_produk: ddmmyyyy(stockInfo.product_created, '-'),
+        tanggal_produk: ddmmyyyy(stockInfo.product_created, "-"),
         quantity: outStock?.quantity,
       });
     }
@@ -364,13 +364,13 @@ export const changeQuantityOutput = async (id, yourNumberNewQuantity) => {
     }
     // show on modal element
     subscribeConfirmDialog(
-      'alert',
+      "alert",
       `${stock?.itemName} kurang dari ketersediaan!`
     );
     // error exection
-    throw 'Stock tidak cukup';
+    throw "Stock tidak cukup";
   } catch (err) {
-    alert('Terjadi kesalahan:', err);
+    alert("Terjadi kesalahan:", err);
     console.log(err);
   }
 };
@@ -380,9 +380,9 @@ export const getOutputByDateByShift = async (date, shift) => {
   const outputdb = useIdb(store);
   // get record by date
   const records = await outputdb.getItemByTwoKeyValue(
-    'tanggal',
+    "tanggal",
     ymdTime(date),
-    'shift',
+    "shift",
     shift
   );
   // result
