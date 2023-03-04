@@ -25,16 +25,16 @@ class StockCompared {
   constructor (itemKode, itemName, stockAwal, lpb,  income, bom, other, retur, output, transfer, other2, akhir, source) {
     this.itemKode = itemKode
     this.itemName = itemName
-    this.stockAwal = stockAwal
-    this.lpb = lpb
-    this.income = income
-    this.bom = bom
-    this.other = other
-    this.retur = retur
-    this.output = output
-    this.transfer = transfer
-    this.other2 = other2
-    this.akhir = akhir
+    this.stockAwal = !isNaN(stockAwal) ? stockAwal : 0
+    this.lpb = !isNaN(lpb) ? lpb : 0
+    this.income = !isNaN(income) ? income : 0
+    this.bom = !isNaN(bom) ? bom : 0
+    this.other = !isNaN(other) ? other : 0
+    this.retur = !isNaN(retur) ? retur : 0
+    this.output = !isNaN(output) ? output : 0
+    this.transfer = !isNaN(transfer) ? transfer : 0
+    this.other2 = !isNaN(other2) ? other2 : 0
+    this.akhir = !isNaN(akhir) ? akhir : 0
     this.source = source
   }
 
@@ -192,7 +192,7 @@ class Stock {
   }
   getRecordToCompare() {
     const incomeTotal = this.incomeShift1 + this.incomeShift2 + this.incomeShift3 + this.incomeShift4
-    const outputTotal = this.incomeShift1 + this.incomeShift2 + this.incomeShift3 + this.incomeShift4
+    const outputTotal = this.outputShift1 + this.outputShift2 + this.outputShift3 + this.outputShift4
 
     const setStockToClass = new StockCompared(
       this.itemKode, this.itemName, this.stockAwalShift1, 0, incomeTotal, 0, 0, 0, outputTotal, 0, 0, this.quantity, "Aplikasi"
@@ -202,7 +202,9 @@ class Stock {
   }
 }
 
-export const compareWithReport = (rowObj, lengthRow) => {
+export const compareWithReport = async (rowObj, lengthRow) => {
+
+  const stateToCompare = [...state]
   
   const recordNotCompared = []
   const recordMatched = []
@@ -224,7 +226,7 @@ export const compareWithReport = (rowObj, lengthRow) => {
 
     if(!isNaN(quantityExcel) && kdItemExcel) {
       // find stock by kd_item
-      const findStock = state.find((rec) => rec?.itemKode === kdItemExcel)
+      const findStock = stateToCompare.find((rec) => rec?.itemKode === kdItemExcel)
       if(findStock) {
         // compare the quantity
         if(findStock?.quantity == quantityExcel) {
@@ -239,12 +241,17 @@ export const compareWithReport = (rowObj, lengthRow) => {
       else {
         recordNotCompared.push(setStockToClass.getStockCompared())
       }
+      await new Promise((res) => {
+        setTimeout(() => {
+          res()
+        }, 20);
+      })
     }
   }
 
   
   // record not matched
-  const recordNotMatchedMarker = new StockCompared('Stock tidak sesuai', '', '', '','','','','','','','','','')
+  const recordNotMatchedMarker = new StockCompared('Stock tidak sesuai', 0, '', '','','','','','','','','','')
   excelReportResultCompared.value.push(recordNotMatchedMarker.getStockCompared())
   excelReportResultCompared.value = excelReportResultCompared.value.concat(recordNotMached)
   
@@ -257,6 +264,17 @@ export const compareWithReport = (rowObj, lengthRow) => {
   const recordNotComparedMarker = new StockCompared('Stock tidak ditemukan', '', '', '','','','','','','','','','')
   excelReportResultCompared.value.push(recordNotComparedMarker.getStockCompared())
   excelReportResultCompared.value = excelReportResultCompared.value.concat(recordNotCompared)
+
+  // filter app stock
+  // const appStock = stateToCompare.filter((stockToFilter) => {
+  //   const findInRecordNotMatched = recordNotMached.find((rec) => rec?.id === stockToFilter?.id)
+  //   const findInRecordMatched = recordMatched.find((rec) => rec?.id === stockToFilter?.id)
+  //   if(!findInRecordMatched || !findInRecordNotMatched) {
+  //     return stockToFilter
+  //   }
+  // })
+
+  // console.log(appStock)
 }
 
 export async function getBookStock() {

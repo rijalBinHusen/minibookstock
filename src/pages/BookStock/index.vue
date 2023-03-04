@@ -136,7 +136,6 @@ const getRecord = async () => {
 
 const file_pickerReport = ref()
 const compareExcelReport = async () => {
-    console.log(file_pickerReport.value)
   // if input null
   if(!file_pickerReport.value.files[0]) {
     return;
@@ -160,7 +159,7 @@ const compareExcelReport = async () => {
     await compareWithReport(sheet, lengthRow)
 
     launchForm('ResultBookStockComparedShow', false)
-
+    // value of ref and value of element
     file_pickerReport.value.value = ""
     
 }
