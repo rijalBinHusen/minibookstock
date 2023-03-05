@@ -106,8 +106,6 @@ const age_item = ref(null);
 const isEditMode = ref(false);
 // the origin value
 const origin = ref({});
-// value that changed
-const changed = ref({});
 
 const emit = defineEmits(['formSubmit']);
 
@@ -127,7 +125,7 @@ const handleSubmit = async () => {
   // update item
   // to update item
   if (isEditMode.value) {
-    await updateItemById(isEditMode.value, changed.value);
+    await updateItemById(isEditMode.value, kd_item.value, nm_item.value, false, false, age_item.value);
   }
   // insert item
   else {
@@ -153,8 +151,6 @@ const handleButton = async (id) => {
     nm_item.value = origin.value?.nm_item;
     kd_item.value = origin.value?.kd_item;
     age_item.value = origin.value?.age_item;
-    // set changed value to null
-    changed.value = {};
     // set edit mode as true
     setTimeout(() => (isEditMode.value = id), 300);
   } else {
@@ -169,27 +165,7 @@ const resetForm = () => {
   age_item.value = null;
   // set edit mode to false
   isEditMode.value = false;
-  // set canged to null
-  changed.value = {};
 };
-
-watch([nm_item, kd_item, age_item], (newVal) => {
-  // if edit modde not null
-  if (isEditMode.value) {
-    // set nm_item
-    if (newVal[0] !== origin.value?.nm_item) {
-      changed.value = { ...changed.value, nm_item: newVal[0] };
-    }
-    // set kd_item
-    if (newVal[1] !== origin.value?.kd_item) {
-      changed.value = { ...changed.value, kd_item: newVal[1] };
-    }
-    // set age_item
-    if (newVal[2] !== origin.value?.age_item) {
-      changed.value = { ...changed.value, age_item: newVal[2] };
-    }
-  }
-});
 
 onMounted(async () => {
   await gettingStartedRecord();

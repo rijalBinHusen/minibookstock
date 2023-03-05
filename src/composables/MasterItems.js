@@ -64,11 +64,11 @@ export const getItemById = async (id) => {
 
   const itemToClass = new Item(
     item?.id,
-    rec?.kd_item,
-    rec?.nm_item,
-    rec?.division,
-    rec?.last_used,
-    rec?.age_item
+    item?.kd_item,
+    item?.nm_item,
+    item?.division,
+    item?.last_used,
+    item?.age_item
   );
 
   Master_items.value.push(itemToClass);
@@ -103,14 +103,29 @@ export const updateItemById = async (
   }
   // find record in db
   const record = await getItemById(id);
+  const recordClass = new Item(
+    record?.id,
+    record?.kd_item,
+    rec?.nm_item,
+    rec?.division,
+    rec?.last_used,
+    rec?.age_item
+  );
 
-  await record.updateItemValue(kdItem, nmItem, division, lastUsed, ageItem);
+  await recordClass.updateItemValue(
+    kdItem,
+    nmItem,
+    division,
+    lastUsed,
+    ageItem
+  );
   return;
 };
 
 export const getItemIdByKdItem = async (kd_item) => {
   const findItem = Master_items.value.find((rec) => rec?.kd_item == kd_item);
   if (findItem) {
+    console.log(findItem);
     return findItem;
   }
 
@@ -125,8 +140,6 @@ export const getItemIdByKdItem = async (kd_item) => {
 };
 
 class Item {
-  #db = useIdb(store);
-
   constructor(id, kd_item, nm_item, division, last_used, age_item) {
     this.id = id;
     this.kd_item = kd_item;
@@ -165,6 +178,6 @@ class Item {
       keyValueToUpdate = { ...keyValueToUpdate, age_item };
     }
     // update on db
-    await this.#db.updateItem(this.id, keyValueToUpdate);
+    await dbitems.updateItem(this.id, keyValueToUpdate);
   }
 }
