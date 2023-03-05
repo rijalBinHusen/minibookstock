@@ -40,6 +40,17 @@
       />
       <!-- End of umur item -->
 
+      <!-- umur item -->
+      <Input
+        @send="sort_item = $event"
+        placeholder="Urutan item"
+        :value="sort_item"
+        tipe="primary"
+        small
+        id="sort_item"
+        class="ml-2"
+      />
+
       <Button
         primary
         :value="isEditMode ? 'Update' : 'Tambah'"
@@ -63,8 +74,8 @@
     <!-- databale -->
     <datatable
       v-if="Master_items.length"
-      :heads="['Kode item', 'Nama item', 'umur']"
-      :keys="['kd_item', 'nm_item', 'age_item']"
+      :heads="['Kode item', 'Nama item', 'umur', 'Nomor urut']"
+      :keys="['kd_item', 'nm_item', 'age_item', 'sort_item']"
       :datanya="Master_items"
       keydata="id"
       no
@@ -97,13 +108,14 @@ import {
   getItemById,
   updateItemById,
 } from '../composables/MasterItems';
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted } from 'vue';
 import { subscribeConfirmDialog } from '../utils/launchForm';
 
 const nm_item = ref(null);
 const kd_item = ref(null);
 const age_item = ref(null);
 const isEditMode = ref(false);
+const sort_item = ref(null)
 // the origin value
 const origin = ref({});
 
@@ -112,7 +124,7 @@ const emit = defineEmits(['formSubmit']);
 // to create item
 // if the form empty
 const handleSubmit = async () => {
-  if (!nm_item.value || !kd_item.value || !age_item.value) {
+  if (!nm_item.value || !kd_item.value || !age_item.value || !sort_item.value) {
     subscribeConfirmDialog('alert', 'Tidak boleh ada form yang kosong');
     return;
   }
@@ -125,7 +137,7 @@ const handleSubmit = async () => {
   // update item
   // to update item
   if (isEditMode.value) {
-    await updateItemById(isEditMode.value, kd_item.value, nm_item.value, false, false, age_item.value);
+    await updateItemById(isEditMode.value, kd_item.value, nm_item.value, false, false, age_item.value, Number(sort_item.value));
   }
   // insert item
   else {
@@ -135,7 +147,8 @@ const handleSubmit = async () => {
       nm_item.value,
       null,
       new Date().getTime(),
-      age_item.value
+      age_item.value,
+      Number(sort_item.value)
     );
   }
   // reset the form
@@ -151,6 +164,7 @@ const handleButton = async (id) => {
     nm_item.value = origin.value?.nm_item;
     kd_item.value = origin.value?.kd_item;
     age_item.value = origin.value?.age_item;
+    sort_item.value = origin.value?.sort_item + '';
     // set edit mode as true
     setTimeout(() => (isEditMode.value = id), 300);
   } else {
@@ -163,6 +177,7 @@ const resetForm = () => {
   nm_item.value = null;
   kd_item.value = null;
   age_item.value = null;
+  sort_item.value = null;
   // set edit mode to false
   isEditMode.value = false;
 };

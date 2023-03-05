@@ -12,10 +12,11 @@ export const createItem = async (
   nm_item,
   division,
   last_used,
-  age_item
+  age_item,
+  sort_item
 ) => {
   // initiate new record
-  const record = { kd_item, nm_item, division, last_used, age_item };
+  const record = { kd_item, nm_item, division, last_used, age_item, sort_item };
   // save to indexeddb
   const recordInserted = await dbitems.createItem(record);
   // push to state
@@ -26,7 +27,8 @@ export const createItem = async (
       nm_item,
       division,
       last_used,
-      age_item
+      age_item,
+      sort_item
     )
   );
 
@@ -46,7 +48,8 @@ export const gettingStartedRecord = async () => {
           rec?.nm_item,
           rec?.division,
           rec?.last_used,
-          rec?.age_item
+          rec?.age_item,
+          rec?.sort_item
         )
     );
   }
@@ -68,7 +71,8 @@ export const getItemById = async (id) => {
     item?.nm_item,
     item?.division,
     item?.last_used,
-    item?.age_item
+    item?.age_item,
+    item?.sort_item
   );
 
   Master_items.value.push(itemToClass);
@@ -87,7 +91,8 @@ export const updateItemById = async (
   nmItem,
   division,
   lastUsed,
-  ageItem
+  ageItem,
+  sort_item
 ) => {
   const findRecordInState = Master_items.value.find((rec) => rec?.id === id);
 
@@ -97,7 +102,8 @@ export const updateItemById = async (
       nmItem,
       division,
       lastUsed,
-      ageItem
+      ageItem,
+      sort_item
     );
     return;
   }
@@ -106,10 +112,11 @@ export const updateItemById = async (
   const recordClass = new Item(
     record?.id,
     record?.kd_item,
-    rec?.nm_item,
-    rec?.division,
-    rec?.last_used,
-    rec?.age_item
+    record?.nm_item,
+    record?.division,
+    record?.last_used,
+    record?.age_item,
+    record?.sort_item
   );
 
   await recordClass.updateItemValue(
@@ -125,7 +132,6 @@ export const updateItemById = async (
 export const getItemIdByKdItem = async (kd_item) => {
   const findItem = Master_items.value.find((rec) => rec?.kd_item == kd_item);
   if (findItem) {
-    console.log(findItem);
     return findItem;
   }
 
@@ -140,16 +146,24 @@ export const getItemIdByKdItem = async (kd_item) => {
 };
 
 class Item {
-  constructor(id, kd_item, nm_item, division, last_used, age_item) {
+  constructor(id, kd_item, nm_item, division, last_used, age_item, sort_item) {
     this.id = id;
     this.kd_item = kd_item;
     this.nm_item = nm_item;
     this.division = division;
     this.last_used = last_used;
     this.age_item = age_item;
+    this.sort_item = sort_item;
   }
 
-  async updateItemValue(kd_item, nm_item, division, last_used, age_item) {
+  async updateItemValue(
+    kd_item,
+    nm_item,
+    division,
+    last_used,
+    age_item,
+    sort_item
+  ) {
     // key value to update
     let keyValueToUpdate = {};
     // condition for kd_item
@@ -176,6 +190,10 @@ class Item {
     if (age_item && this.age_item != age_item) {
       this.age_item = age_item;
       keyValueToUpdate = { ...keyValueToUpdate, age_item };
+    }
+    if (sort_item && this.sort_item != sort_item) {
+      this.sort_item = sort_item;
+      keyValueToUpdate = { ...keyValueToUpdate, sort_item };
     }
     // update on db
     await dbitems.updateItem(this.id, keyValueToUpdate);
