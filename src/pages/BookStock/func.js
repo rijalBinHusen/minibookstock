@@ -77,6 +77,7 @@ class Stock {
     outputShift4,
     itemName,
     itemKode,
+    sort_item,
   ) {
     this.id = id;
     this.available = available;
@@ -103,6 +104,7 @@ class Stock {
     this.stockAwalShift4 = 0
     this.itemName = itemName
     this.itemKode = itemKode
+    this.sort_item = sort_item
     this.setStockAwal()
   }
 
@@ -400,7 +402,8 @@ export async function getBookStock() {
             0,
             0,
             itemInfo?.nm_item,
-            itemInfo?.kd_item
+            itemInfo?.kd_item,
+            itemInfo?.sort_item
         )
     )
     }
@@ -424,7 +427,7 @@ export async function getBookStock() {
           stockMasterId, stockMasterDetails?.available, stockMasterDetails?.available_start, 
           stockMasterDetails?.available_end, stockMasterDetails?.created, incomeLevel1?.id,
           stockMasterDetails?.isTaken, stockMasterDetails?.item_id, stockMasterDetails?.kd_produksi,
-          stockMasterDetails?.product_created, stockMasterDetails?.quantity, 0, 0, 0, 0, 0, 0, 0, 0, itemInfo?.nm_item, itemInfo?.kd_item)
+          stockMasterDetails?.product_created, stockMasterDetails?.quantity, 0, 0, 0, 0, 0, 0, 0, 0, itemInfo?.nm_item, itemInfo?.kd_item, itemInfo?.sort_item)
         stockToPush.addIncome(incomeLevel1?.shift, allQty)
         stocks.push(stockToPush)
       }
@@ -517,20 +520,16 @@ export async function getBookStock() {
           rec?.outputShift3,
           rec?.outputShift4,
           rec?.itemName,
-          rec?.itemKode
+          rec?.itemKode,
+          rec?.sort_item
         )
       );
     }
   });
   state = finalStock.sort(function (a, b) {
-    let x = a['itemKode'];
-    let y = b['itemKode'];
-      if (x < y) {
-        return -1;
-      }
-      if (x > y) {
-        return 1;
-      }
+    let x = a['sort_item'];
+    let y = b['sort_item'];
+    return x - y
   });
 }
 
