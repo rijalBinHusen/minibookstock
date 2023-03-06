@@ -164,11 +164,23 @@ parameter yang dibutuhkan fungsi
     ✅ Versi 1.1
         - Perbaikan kesalahan pada stock master
   
- ✅ Versi 2
-    - Menu buku stock (+ perbaikan pada id record )
+ - Versi 2
+    ✅ Menu buku stock (+ perbaikan pada id record )
+  
+    ✅ Versi 2.0.1
+        ✅ Menandai beberapa produk keluar selesai muat.
+          ✅ Memilih tangal (sekarang/kemarin) selesai muat.
+          ✅ Memilih shift (1/2/3/4) selesai muat.
+  
+    🙏 Versi 2.0.2
+        - Auto compare saldo akhir laporan harian (excel) dengan saldo aplikasi
+        - Auto compare transaksi dengan manual buku stock (excel).
+        - Unduh hasil perbandingan aplikasi dengan Excel.
+    
     🙏 Versi 2.1 
         - Quantity produk masuk dapat diklick 
           untuk memunculkan daftar transaksi
+    
     🙏 Versi 2.2 
         - Quantity produk keluar dapat diklik 
           untuk memunculkan daftar transaksi
@@ -176,23 +188,30 @@ parameter yang dibutuhkan fungsi
 🙏 Versi 3
     - Migrasi produk keluar,
       Dari per item menjadi per kendaraan.
+    
     🙏 Versi 3.1 
       - Checkbox untuk produk selesai muat
       - Tombol *Muat lagi* jika ada produk belum muat
+    
     🙏 Versi 3.2
       - Memisahkan kendaraan register, muat, dan selesai
+    
     🙏 Versi 3.3
       - Quantity coret DO pada produk
       - Menu khusus menampilkan produk coret DO
+    
     🙏 Versi 3.4
       - Quantity muat harian pada produk
   
 🙏 Versi 4
     - Menu loading dock
+    
     🙏 Versi 4.1
       - Menghubungkan loading dock ke kendaraan
 
 🙏 Versi 5
     - Menu daftar tally checker
+    
     🙏 Versi 5.1
       - Form nama tally pada produk keluar
+
