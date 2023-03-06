@@ -1,6 +1,6 @@
-## Pembaruan 18 January 2023
+## Pembaruan 06 Maret 2023
 <!-- omit in toc -->
-- [Pembaruan 18 January 2023](#pembaruan-18-january-2023)
+- [Pembaruan 06 Maret 2023](#pembaruan-06-maret-2023)
     - [Penampakan aplikasi setelah diperbaharui](#penampakan-aplikasi-setelah-diperbaharui)
   - [Apa saja yang baru](#apa-saja-yang-baru)
   - [Bagaimana cara memperbaharui aplikasi](#bagaimana-cara-memperbaharui-aplikasi)
