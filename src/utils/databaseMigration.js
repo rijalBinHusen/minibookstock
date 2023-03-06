@@ -2,6 +2,7 @@ import { useIdb } from './localforage';
 import { getStockThatAvailable, Stock_masters, changeAvailableStock, updateStockById } from '../composables/StockMaster';
 import { loaderMessage, launchForm, closeModalOrDialog } from './launchForm';
 import { getNextYearTime } from './dateFormat';
+import { gettingStartedRecord as getMasterItems, updateItemById, Master_items } from "../composables/MasterItems"
 
 const currentVersion = 2;
 
@@ -120,6 +121,18 @@ class DatabaseVersion {
   }
 }
 
+async function migrationToV3() {
+  launchForm('Loader');
+  // in this migration we're gonna add sort_item number in each master item
+  // get all item
+  await getMasterItems()
+  // add sort_item value
+  for ( let [index, item] of Master_items.value.entries() ) {
+    loaderMessage(`Menambahkan nomor urut pada item, ${index} dari ${Master_items.value.length} item`)
+    await updateItemById(item?.id, false, false, false, false, false, index + 1)
+  }
+}
+
 export async function CheckMigration() {
   const dbVersion = new DatabaseVersion();
 
@@ -137,6 +150,13 @@ export async function CheckMigration() {
   if (nowVersion < 2) {
     await migrationToV2();
     await dbVersion.setVersion(2);
+    CheckMigration();
+    return;
+  }
+  
+  if (nowVersion < 3) {
+    await migrationToV3();
+    await dbVersion.setVersion(3);
     CheckMigration();
     return;
   }
