@@ -176,6 +176,10 @@ parameter yang dibutuhkan fungsi
         - Auto compare saldo akhir laporan harian (excel) dengan saldo aplikasi
         - Auto compare transaksi dengan manual buku stock (excel).
         - Unduh hasil perbandingan aplikasi dengan Excel.
+
+    🙏 Versi 2.0.3
+        - Menambahkan nomor urut pada master item.
+        - Menampilkan urutan item pada buku stock sesuai nomor yang di atur dimaster item.
     
     🙏 Versi 2.1 
         - Quantity produk masuk dapat diklick 
