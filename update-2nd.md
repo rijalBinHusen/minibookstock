@@ -14,7 +14,7 @@
 Pada pembaruan kali ini kami menambahkan fitur dan mengadakan perubahan pada menu produk keluar yaitu :
 
 1. Kami menyembunyikan tombol edit, selesai muat, dan hapus menjadi satu tombol tarik turun *OPTIONS*
-2. Kami menambhakan element checkbox untuk pengguna dapat mendandai beberapa record sekaligus
+2. Kami menambahkan element checkbox untuk pengguna dapat mendandai beberapa record sekaligus
 3. Ketika checkbox dicklick maka akan muncul tombol *selesai muat* pada kanan atas.
 4. Pengguna dapat memilih tanggal (sekarang/kemarin) dan memilih shift (1/2/3/4) untuk merubah status record menjadi selesai muat sesuai dengan tanggal dan shift yang telah dipilih.
 
