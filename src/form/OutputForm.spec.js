@@ -1,20 +1,20 @@
-import { describe, expect, it } from 'vitest';
-import OutputForm from './OutputForm.vue';
-import { faker } from '@faker-js/faker';
-import { useJurnalProdukKeluar } from '../composables/Setting_JurnalId';
+import { describe, expect, it } from "vitest";
+import OutputForm from "./OutputForm/index.vue";
+import { faker } from "@faker-js/faker";
+import { useJurnalProdukKeluar } from "../composables/Setting_JurnalId";
 import {
   createItem,
   getItemById,
   gettingStartedRecord as getItems,
-} from '../composables/MasterItems';
-import { createStock, getStockById } from '../composables/StockMaster';
-import { createStore } from 'vuex';
-import { flushPromises, mount } from '@vue/test-utils';
+} from "../composables/MasterItems";
+import { createStock, getStockById } from "../composables/StockMaster";
+import { createStore } from "vuex";
+import { flushPromises, mount } from "@vue/test-utils";
 
 // create value for mocking jurnal produk keluar
-describe('Create new record for stock keluar', () => {
+describe("Create new record for stock keluar", () => {
   // create jurnal
-  it('Should create new rercord for jurnal produk keluar', async () => {
+  it("Should create new rercord for jurnal produk keluar", async () => {
     // mocking string for jurnal produk keluar
     const jurnalName = faker.datatype.string(10);
     const jurnalName2 = faker.datatype.string(12);
@@ -32,7 +32,7 @@ describe('Create new record for stock keluar', () => {
   });
   let masterItemId = null;
   // create new item
-  it('Should create new record for master item', async () => {
+  it("Should create new record for master item", async () => {
     // fake data for input
     const kdItem = faker.datatype.string(12);
     const nmItem = faker.datatype.string(10);
@@ -55,12 +55,12 @@ describe('Create new record for stock keluar', () => {
   let stockMasterId = null;
   const stockQty = faker.datatype.number({ min: 100 });
   // create stock
-  it('Should create new master stock', async () => {
+  it("Should create new master stock", async () => {
     // waiting proses create item and write to indexeddb
     const newItemIdReturned = await createStock(
       masterItemId,
-      '120938',
-      '10-29381-23',
+      "120938",
+      "10-29381-23",
       stockQty
     );
     // expecting the returned id not equal to false
@@ -73,7 +73,7 @@ describe('Create new record for stock keluar', () => {
     expect(getData?.quantity).equal(stockQty);
   });
   // working with component
-  it('Create new Output qty', async () => {
+  it("Create new Output qty", async () => {
     // Mocking the vuex store
     const store = createStore({
       state() {
@@ -95,10 +95,10 @@ describe('Create new record for stock keluar', () => {
     await getItems();
     await flushPromises();
     // catch form
-    const datePicker = wrapper.find('#date-picker-output');
-    const salesOrder = wrapper.find('#input-sales-order');
-    const customer = wrapper.find('#form-customer');
-    const typeDoc = wrapper.find('#type');
+    const datePicker = wrapper.find("#date-picker-output");
+    const salesOrder = wrapper.find("#input-sales-order");
+    const customer = wrapper.find("#form-customer");
+    const typeDoc = wrapper.find("#type");
     // expect form exists
     expect(datePicker.exists()).equal(true);
     expect(salesOrder.exists()).equal(true);
@@ -109,11 +109,11 @@ describe('Create new record for stock keluar', () => {
     const varSalesOrder = faker.datatype.string(10);
     const varCustomer = faker.datatype.string(12);
     salesOrder.setValue(varSalesOrder);
-    salesOrder.trigger('keyup.alt');
+    salesOrder.trigger("keyup.alt");
     customer.setValue(varCustomer);
-    customer.trigger('keyup.alt');
+    customer.trigger("keyup.alt");
     // fill type doc form
-    const typeDocOptions = typeDoc.findAll('option');
+    const typeDocOptions = typeDoc.findAll("option");
     // typedocoption must be 3, included null option
     expect(typeDocOptions.length).equal(3);
     // set selected
@@ -121,27 +121,27 @@ describe('Create new record for stock keluar', () => {
     // await dom updated
     await flushPromises();
     // FORM TO ADD OR remove item
-    const itemInput = wrapper.find('#input-item-output');
-    const items = wrapper.find('#item').findAll('option');
+    const itemInput = wrapper.find("#input-item-output");
+    const items = wrapper.find("#item").findAll("option");
     itemInput.setValue(items[0].element.value);
-    itemInput.trigger('keyup.alt');
+    itemInput.trigger("keyup.alt");
     // waiting dom updated
     await flushPromises();
-    const itemDateProduct = wrapper.find('#tanggal-produksi');
-    const itemDates = itemDateProduct.findAll('option');
+    const itemDateProduct = wrapper.find("#tanggal-produksi");
+    const itemDates = itemDateProduct.findAll("option");
     await itemDates.at(1).setSelected();
     await flushPromises();
 
-    const itemQtyOutput = wrapper.find('#quantity');
-    const maxQtyElm = wrapper.find('#max-quantity');
-    const maxQty = maxQtyElm.element.innerHTML.replace(/[^\d]/g, '');
+    const itemQtyOutput = wrapper.find("#quantity");
+    const maxQtyElm = wrapper.find("#max-quantity");
+    const maxQty = maxQtyElm.element.innerHTML.replace(/[^\d]/g, "");
     const outputQty = faker.datatype.number({ max: Number(maxQty) });
     itemQtyOutput.setValue(outputQty);
-    itemQtyOutput.trigger('keypup.alt');
+    itemQtyOutput.trigger("keypup.alt");
     await flushPromises();
 
-    const itemSubmit = wrapper.find('#button-add-item');
-    await itemSubmit.trigger('click');
+    const itemSubmit = wrapper.find("#button-add-item");
+    await itemSubmit.trigger("click");
     // waiting until item component finished submit the product
     await new Promise((res) => {
       setTimeout(() => {
@@ -152,10 +152,10 @@ describe('Create new record for stock keluar', () => {
     await flushPromises();
 
     // expect form must be empty after submit
-    expect(itemInput.element.value).equal('');
-    const itemDateProductAfterSubmit = wrapper.find('#tanggal-produksi');
+    expect(itemInput.element.value).equal("");
+    const itemDateProductAfterSubmit = wrapper.find("#tanggal-produksi");
     expect(itemDateProductAfterSubmit.exists()).equal(false);
-    const itemQtyOutputAfterSubmit = wrapper.find('#quantity');
+    const itemQtyOutputAfterSubmit = wrapper.find("#quantity");
     expect(itemQtyOutputAfterSubmit.exists()).equal(false);
 
     // const qtyStockRemaining = Number(maxQty) - outputQty

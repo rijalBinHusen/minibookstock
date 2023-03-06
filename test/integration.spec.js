@@ -1,24 +1,24 @@
 // import "fake-indexeddb/auto"
-import { describe, it, expect } from 'vitest';
-import { faker } from '@faker-js/faker';
+import { describe, it, expect } from "vitest";
+import { faker } from "@faker-js/faker";
 import {
   createItem,
   getItemById,
   updateItemById,
   getItemIdByKdItem,
   getAllDataToBackup,
-} from '../src/composables/MasterItems';
+} from "../src/composables/MasterItems";
 import {
   createStock,
   changeAvailableStock,
   getStockById,
   changeQuantityStock,
-} from '../src/composables/StockMaster';
+} from "../src/composables/StockMaster";
 import {
   createIncoming,
   updateIncomingById,
   getIncomingById,
-} from '../src/composables/Incoming';
+} from "../src/composables/Incoming";
 import {
   createOutput,
   markAsFinished,
@@ -26,7 +26,7 @@ import {
   removeOutputById,
   changeQuantityOutput,
   getTotalStockTaken,
-} from '../src/composables/Output';
+} from "../src/composables/Output";
 
 const variableSaved = {
   newItemId: null,
@@ -43,8 +43,8 @@ for (let i = 0; i < 1; i++) {
   // item age
   const item_age = faker.datatype.number({ min: 1, max: 12 });
   // item master
-  describe('create master item', () => {
-    it('Should create new item', async () => {
+  describe("create master item", () => {
+    it("Should create new item", async () => {
       // waiting proses create item and write to indexeddb
       const newItemIdReturned = await createItem(
         item_kode,
@@ -65,19 +65,22 @@ for (let i = 0; i < 1; i++) {
   // new item varable for update
   const new_kd_item = faker.datatype.string(10);
   // nm_item
-  const new_nm_item = faker.name.firstName('male');
+  const new_nm_item = faker.name.firstName("male");
   // age item
   const new_age_item = faker.datatype.number({ min: 1, max: 12 });
 
   // CREATE NEW ITEM
-  describe('update master item', () => {
-    it('Should create new item', async () => {
+  describe("update master item", () => {
+    it("Should create new item", async () => {
       // waiting proses update item and write to indexeddb
-      await updateItemById(variableSaved.newItemId, {
-        kd_item: new_kd_item,
-        nm_item: new_nm_item,
-        age_item: new_age_item,
-      });
+      await updateItemById(
+        variableSaved.newItemId,
+        new_kd_item,
+        new_nm_item,
+        false,
+        false,
+        new_age_item
+      );
       // find the object from indexeddb by id
       const getData = await getItemById(variableSaved.newItemId);
       // expecting data that we got match with update record
@@ -88,8 +91,8 @@ for (let i = 0; i < 1; i++) {
   });
 
   // GET ITEM BY KODE
-  describe('get item by kode', () => {
-    it('item id must equal', async () => {
+  describe("get item by kode", () => {
+    it("item id must equal", async () => {
       // find the object from indexeddb by id
       const getData = await getItemIdByKdItem(new_kd_item);
       // expecting data that we got match with update record
@@ -106,8 +109,8 @@ for (let i = 0; i < 1; i++) {
   const date_produk = date_past.getTime();
   const stock_quantity = faker.datatype.number({ min: 250, max: 15000 });
   // CREATE STOCK MASTER
-  describe('create master stock', () => {
-    it('Create and expect quantity equal', async () => {
+  describe("create master stock", () => {
+    it("Create and expect quantity equal", async () => {
       // waiting proses create item and write to indexeddb
       const newStockIdReturned = await createStock(
         variableSaved.newItemId,
@@ -133,10 +136,10 @@ for (let i = 0; i < 1; i++) {
   const incoming_date = incoming_date_model.getTime();
   const incoming_type = faker.datatype.string(11);
   const incoming_shift = faker.datatype.number({ min: 1, max: 3 });
-  const incoming_receiver = faker.name.firstName('male');
-  const incoming_sender = faker.name.firstName('male');
-  describe('Create new incoming record', () => {
-    it('Should return not null', async () => {
+  const incoming_receiver = faker.name.firstName("male");
+  const incoming_sender = faker.name.firstName("male");
+  describe("Create new incoming record", () => {
+    it("Should return not null", async () => {
       // waiting proses
       const income = await createIncoming(
         [variableSaved.newStockId],
@@ -157,12 +160,12 @@ for (let i = 0; i < 1; i++) {
   // update incoming
   const newVariableIncoming = {
     paper_id: faker.datatype.string(30),
-    diterima: faker.name.firstName('female'),
+    diterima: faker.name.firstName("female"),
     type: faker.datatype.string(13),
-    diserahkan: faker.name.firstName('female'),
+    diserahkan: faker.name.firstName("female"),
   };
-  describe('Update incoming record', () => {
-    it('Should equal to new variable', async () => {
+  describe("Update incoming record", () => {
+    it("Should equal to new variable", async () => {
       // waiting proses
       await updateIncomingById(
         variableSaved.newIncomingId,
@@ -192,31 +195,31 @@ for (let i = 0; i < 1; i++) {
   // create output greter than stock, must be fail
   // create output lower than stock
   describe(`create output ${quantityOutputGreater} more than stock ${stock_quantity}, it must be false`, () => {
-    it('Should not create output transaction', async () => {
+    it("Should not create output transaction", async () => {
       // waiting proses create item and write to indexeddb
       const newItemIdReturned = await createOutput(
-        '029384',
-        '092834',
+        "029384",
+        "092834",
         1,
-        '09834',
+        "09834",
         variableSaved.newStockId,
         quantityOutputGreater,
-        'any'
+        "any"
       );
       // expecting the returned id equal to false
       expect(newItemIdReturned).equal(false);
     });
     // create output with stock master not exists
-    it('Should not create output transaction', async () => {
+    it("Should not create output transaction", async () => {
       // waiting proses create item and write to indexeddb
       const newItemIdReturned = await createOutput(
-        '029384',
-        '092834',
+        "029384",
+        "092834",
         1,
-        '09834',
-        'loremIpsunDolor',
+        "09834",
+        "loremIpsunDolor",
         stock_quantity,
-        'any'
+        "any"
       );
       // expecting the returned id equal to false
       expect(newItemIdReturned).equal(false);
@@ -233,7 +236,7 @@ for (let i = 0; i < 1; i++) {
     max: stock_quantity,
   });
   describe(`available stock is ${stock_quantity}, Create new output record quantity ${output_quantity}`, () => {
-    it('Should return not null', async () => {
+    it("Should return not null", async () => {
       // waiting proses
       const output = await createOutput(
         output_date,
@@ -268,7 +271,7 @@ for (let i = 0; i < 1; i++) {
 
   // mark as finished
   describe(`Mark output as finished, quantity stock must equal ${availableStockAfterOutput1st}`, () => {
-    it('Should return not null', async () => {
+    it("Should return not null", async () => {
       // waiting proses
       const output = await markAsFinished(variableSaved.newOutputId);
       // expect
@@ -286,7 +289,7 @@ for (let i = 0; i < 1; i++) {
 
   // mark as un finished
   describe(`'Mark output as unfinished', available stock must be back to origin ${stock_quantity}`, () => {
-    it('Should return not null', async () => {
+    it("Should return not null", async () => {
       // waiting proses
       const output = await markAsUnFinished(variableSaved.newOutputId);
       // expect
@@ -332,8 +335,8 @@ for (let i = 0; i < 1; i++) {
   });
 
   // mark as finished
-  describe('Mark output as finished', () => {
-    it('Should return not null', async () => {
+  describe("Mark output as finished", () => {
+    it("Should return not null", async () => {
       // waiting proses
       const output = await markAsFinished(variableSaved.newOutputId);
       // expect
@@ -359,8 +362,8 @@ for (let i = 0; i < 1; i++) {
   });
 
   // mark as un finished
-  describe('Mark output as unfinished', () => {
-    it('Should return not null', async () => {
+  describe("Mark output as unfinished", () => {
+    it("Should return not null", async () => {
       // waiting proses
       const output = await markAsUnFinished(variableSaved.newOutputId);
       // expect
@@ -383,8 +386,8 @@ for (let i = 0; i < 1; i++) {
   });
 
   // remove output
-  describe('Remove output', () => {
-    it('Should return not null', async () => {
+  describe("Remove output", () => {
+    it("Should return not null", async () => {
       // waiting proses
       const output = await removeOutputById(variableSaved.newOutputId);
       // expect

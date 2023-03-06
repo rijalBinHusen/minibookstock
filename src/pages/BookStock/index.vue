@@ -103,23 +103,23 @@ watch([date, nowShift], (newVal, oldVal) => {
   }
 })
 
-const headsTable =['Kode item', 'Nama item', 'Stock awal', 'Masuk', 'keluar', 'Stock akhir']
+const headsTable =['Kode item', 'Urutan', 'Nama item', 'Stock awal', 'Masuk', 'keluar', 'Stock akhir']
 
 const rowTable = computed(() => {
   if(nowShift.value == 1 ) {
-    return ['itemKode', 'itemName', 'stockAwalShift1', 'incomeShift1', 'outputShift1', 'stockAwalShift2']
+    return ['itemKode', 'sort_item', 'itemName', 'stockAwalShift1', 'incomeShift1', 'outputShift1', 'stockAwalShift2']
   } 
   
   else if(nowShift.value == 2) {
-    return ['itemKode', 'itemName', 'stockAwalShift2', 'incomeShift2', 'outputShift2', 'stockAwalShift3']
+    return ['itemKode', 'sort_item', 'itemName', 'stockAwalShift2', 'incomeShift2', 'outputShift2', 'stockAwalShift3']
   }
 
   else if(nowShift.value == 3) {
-    return ['itemKode', 'itemName', 'stockAwalShift3', 'incomeShift3', 'outputShift3', 'stockAwalShift4']
+    return ['itemKode', 'sort_item', 'itemName', 'stockAwalShift3', 'incomeShift3', 'outputShift3', 'stockAwalShift4']
   }
 
   else if(nowShift.value == 4) {
-    return ['itemKode', 'itemName', 'stockAwalShift4', 'incomeShift4', 'outputShift4', 'quantity']
+    return ['itemKode', 'sort_item', 'itemName', 'stockAwalShift4', 'incomeShift4', 'outputShift4', 'quantity']
   }
 })
 
