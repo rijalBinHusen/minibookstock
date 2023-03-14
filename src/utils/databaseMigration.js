@@ -147,14 +147,14 @@ export async function CheckMigration() {
     return;
   }
   
-  if ( dbVersion.currentDbVersion < 2 && nowVersion < 2) {
+  if ( dbVersion.currentDbVersion === 2 && nowVersion < 2) {
     await migrationToV2();
     await dbVersion.setVersion(2);
     CheckMigration();
     return;
   }
   
-  if (dbVersion.currentDbVersion < 3 && nowVersion < 3) {
+  if (dbVersion.currentDbVersion === 3 && nowVersion < 3) {
     await migrationToV3();
     await dbVersion.setVersion(3);
     CheckMigration();
