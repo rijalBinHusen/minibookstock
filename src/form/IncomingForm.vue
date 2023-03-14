@@ -100,7 +100,7 @@ import datePicker from 'vue3-datepicker';
 import Input from '../components/elements/Forms/Input.vue';
 import Button from '../components/elements/Button.vue';
 import PickItemVue from '../components/PickItem.vue';
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import {
   createIncoming,
   getIncomingById,
@@ -147,17 +147,20 @@ const idStockToUpdate = ref([]);
 const idStockToRemove = ref([]);
 const idStockToCreate = ref([]);
 
-const stockChildDetails = computed(() => {
-  if (!stockChild.value.length) {
-    return [];
+const stockChildDetails = ref([])
+
+watch([stockChild], async () => {
+  stockChildDetails.value.length = 0
+  for(let stock of stockChild.value) {
+    const item = await getItemById(stock?.item_id)
+    stockChildDetails.value.push({
+      id: stock?.id,
+      item: item.nm_item,
+      quantity: stock?.quantity,
+      product_created: ddmmyyyy(stock?.product_created, '-')
+    })
   }
-  return stockChild.value.map((stock) => ({
-    id: stock?.id,
-    item: getItemById(stock?.item_id).nm_item,
-    quantity: stock?.quantity,
-    product_created: ddmmyyyy(stock?.product_created, '-'),
-  }));
-});
+}, { deep: true })
 // to add new item form
 const handleStock = async (operation, e) => {
   // add stock
