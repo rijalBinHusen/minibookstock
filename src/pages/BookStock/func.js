@@ -406,7 +406,7 @@ export async function getBookStock() {
             itemInfo?.sort_item
         )
     )
-    }
+  }
 
   const incomeDB = useIdb(storeIncoming);
   const incomes = await incomeDB.getItemsByKeyValue("tanggal", ymdTime(dateTime) );
@@ -415,7 +415,7 @@ export async function getBookStock() {
       const stockMasterDetails = await getStockById(stockMasterId)
       const findRec = stocks.find((rec) => rec?.id === stockMasterId);
       const stockTaken = await getTotalStockTaken(stockMasterId);
-      const allQty = stockMasterDetails.quantity + stockTaken.allTaken
+      const allQty = stockMasterDetails.quantity + stockTaken.allFinished
       if (findRec) {
         findRec.addIncome(
           incomeLevel1?.shift,
@@ -459,7 +459,7 @@ export async function getBookStock() {
     const findRec = stocks.find(
       (recLvl2) => recLvl2?.id === rec?.stock_master_id
     );
-    if (findRec && rec?.isFinished) {
+    if (findRec && rec?.isFinished === true) {
       findRec.addOutput(rec?.shift, rec?.quantity);
     }
   });
