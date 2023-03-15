@@ -1,23 +1,24 @@
-import localforage from 'localforage';
+import * as localforage from 'localforage';
 import { addLog } from './logging';
 import { summary } from './summaryIdb';
 import { generateId } from './GeneratorId';
 
-export const useIdb = (storeName) => {
+export const useIdb = (storeName: string) => {
   // create instance
   const store = localforage.createInstance({
     name: 'my_report_stock',
     storeName,
   });
-  const createItem = async (value) => {
+  const createItem = async (value: object) => {
     // get summary
     const sum = await summary(storeName);
     // generateID
-    const nextId = sum?.lastUpdated && sum?.lastUpdated?.lastId
-      ? generateId(sum?.lastUpdated?.lastId)
+    const nextId = sum?.lastUpdate && sum?.lastUpdate?.lastId
+      ? generateId(sum?.lastUpdate?.lastId)
       : generateId(storeName + '_22030000');
-    const incrementId = sum?.lastUpdated && sum?.lastUpdated?.total
-                          ? sum?.lastUpdated?.total + 1 + ''
+
+    const incrementId = sum?.lastUpdate && sum?.lastUpdate?.total
+                          ? sum?.lastUpdate?.total + 1 + ''
                           : 1 + ''
     // record to set
     const record = { ...value, id: incrementId, uid: nextId, created: new Date().getTime() };
@@ -38,15 +39,15 @@ export const useIdb = (storeName) => {
     }
   };
 
-  const setItem = async (key, value) => {
+  const setItem = async (key: string, value: object) => {
     return store.setItem(key, value);
   };
 
-  const getItem = (key) => {
+  const getItem = (key: string) => {
     return store.getItem(key);
   };
 
-  const getItemsLimit = async (limit) => {
+  const getItemsLimit = async (limit: number) => {
     const result = [];
     return store
       .iterate(function (value, key, iterationNumber) {
@@ -65,13 +66,13 @@ export const useIdb = (storeName) => {
       });
   };
 
-  const removeItem = async (key) => {
+  const removeItem = async (key: string) => {
     addLog(storeName, 'remove', key, { id: key });
     await store.removeItem(key);
     return;
   };
 
-  const findOneItemByKeyValue = (keySearch, valueSearch) => {
+  const findOneItemByKeyValue = (keySearch: string, valueSearch: string) => {
     // let result = {};
     return store.iterate(function (value, key, iterationNumber) {
       // Resulting key/value pair -- this callback
@@ -103,11 +104,16 @@ export const useIdb = (storeName) => {
       });
   };
 
-  const updateItem = async (key, keyValueToUpdate) => {
+  const updateItem = async (key: string, keyValueToUpdate: object) => {
     // onsole.log('local forage update item', key)
     try {
       // get item first
-      const item = await getItem(key);
+      const item = await getItem(key) as object | null;
+
+      if(!item) {
+        throw 'Record tidak ditemukan!'
+      }
+
       // new item
       const newItem = { ...item, ...keyValueToUpdate };
       // record to log
@@ -120,12 +126,13 @@ export const useIdb = (storeName) => {
       }
       return true;
     } catch (err) {
+      alert('Terjadi kesalahan ketika update data')
       console.error(err);
       return false;
     }
   };
 
-  const getItemsByKeyValue = async (keySearch, valueSearch) => {
+  const getItemsByKeyValue = async (keySearch: string, valueSearch: string | number) => {
     let result = [];
     return store
       .iterate(function (value, key, iterationNumber) {
@@ -148,7 +155,7 @@ export const useIdb = (storeName) => {
       });
   };
 
-  const getItemsByKeyGreaterThan = async (keySearch, greaterThanValue) => {
+  const getItemsByKeyGreaterThan = async (keySearch: string, greaterThanValue: string | number) => {
     let result = [];
     return store
       .iterate(function (value, key, iterationNumber) {
@@ -172,10 +179,10 @@ export const useIdb = (storeName) => {
   };
 
   const getItemByTwoKeyValue = async (
-    key1Search,
-    value1Search,
-    key2Search,
-    value2Search
+    key1Search : string,
+    value1Search: string | number,
+    key2Search: string,
+    value2Search: string | number
   ) => {
     let result = [];
     return store
@@ -203,9 +210,9 @@ export const useIdb = (storeName) => {
   };
 
   const getItemsByKeyGreaterOrEqualThanAndLowerOrEqualThan = async (
-    keySearch,
-    greaterOrEqualThanValue,
-    LowerOrEqualThanValue
+    keySearch: string,
+    greaterOrEqualThanValue: number,
+    LowerOrEqualThanValue: number
   ) => {
     let result = [];
     return store
@@ -232,7 +239,7 @@ export const useIdb = (storeName) => {
       });
   };
 
-  const getItemsThatValueIncludes = async (yourString) => {
+  const getItemsThatValueIncludes = async (yourString: object) => {
     const result = [];
     return store
       .iterate(function (value, key, iterationNumber) {
@@ -251,7 +258,7 @@ export const useIdb = (storeName) => {
       });
   };
 
-  const getItemsGreatEqualLowEqual = async (key1, greaterValue1, key2, lowerValue2) => {
+  const getItemsGreatEqualLowEqual = async (key1: string, greaterValue1: string | number, key2: string, lowerValue2: string | number) => {
     let result = [];
     return store
       .iterate(function (value) {

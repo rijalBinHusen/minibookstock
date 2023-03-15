@@ -23,20 +23,24 @@ export const createItem = async (kd_item: string, nm_item: string, division: str
   const record = { kd_item, nm_item, division, last_used, age_item, sort_item };
   // save to indexeddb
   const recordInserted = await dbitems.createItem(record);
-  // push to state
-  Master_items.value.unshift(
-    new ItemClass(
-      recordInserted?.id,
-      kd_item,
-      nm_item,
-      division,
-      last_used,
-      age_item,
-      sort_item
-    )
-  );
+  if(recordInserted){
+    // push to state
+    Master_items.value.unshift(
+      new ItemClass(
+        recordInserted?.id,
+        kd_item,
+        nm_item,
+        division,
+        last_used,
+        age_item,
+        sort_item
+      )
+    );
+    return recordInserted?.id;
+  }
 
-  return recordInserted?.id;
+  return false
+
 };
 
 export const gettingStartedRecord = async () => {
@@ -68,26 +72,24 @@ export const getItemById = async (id: string) => {
     return findItemInState;
   }
   // get item
-  const item = await dbitems.getItem(id);
-
-  const itemToClass = new ItemClass(
-    item?.id,
-    item?.kd_item,
-    item?.nm_item,
-    item?.division,
-    item?.last_used,
-    item?.age_item,
-    item?.sort_item
-  );
-
-  Master_items.value.push(itemToClass);
-
-  return item
-    ? itemToClass
-    : {
-        kd_item: "Not found",
-        nm_item: "Not found",
-      };
+  const item = await dbitems.getItem(id) as Item | null;
+  if(item) {
+    const itemToClass = new ItemClass(
+      item?.id,
+      item?.kd_item,
+      item?.nm_item,
+      item?.division,
+      item?.last_used,
+      item?.age_item,
+      item?.sort_item
+      );
+      
+      Master_items.value.push(itemToClass);
+    
+    return itemToClass
+  }
+  
+  return { kd_item: "Not found", nm_item: "Not found", };
 };
 
 export const updateItemById = async (id: string, kdItem: string, nmItem: string, division: string, lastUsed: number, ageItem: number, sort_item: number) => {
