@@ -3,25 +3,29 @@ import { ref } from "vue";
 const store = "items";
 import { useIdb } from "../utils/localforage";
 const dbitems = useIdb(store);
+const isGetAllItem = ref(<boolean>false)
+
+interface Item {
+  id: string;
+  kd_item: string;
+  nm_item: string;
+  division: string;
+  last_used: number;
+  age_item: number;
+  sort_item: number;
+}
 
 // the state
-export const Master_items = ref([]);
+export const Master_items = ref(<ItemClass[]>[]);
 
-export const createItem = async (
-  kd_item,
-  nm_item,
-  division,
-  last_used,
-  age_item,
-  sort_item
-) => {
+export const createItem = async (kd_item: string, nm_item: string, division: string, last_used:number, age_item:number, sort_item: number) => {
   // initiate new record
   const record = { kd_item, nm_item, division, last_used, age_item, sort_item };
   // save to indexeddb
   const recordInserted = await dbitems.createItem(record);
   // push to state
   Master_items.value.unshift(
-    new Item(
+    new ItemClass(
       recordInserted?.id,
       kd_item,
       nm_item,
@@ -36,13 +40,13 @@ export const createItem = async (
 };
 
 export const gettingStartedRecord = async () => {
-  if (!Master_items.value.length) {
+  if (!Master_items.value.length || !isGetAllItem.value) {
     // get all item
-    const items = await dbitems.getItemsLimit(199);
+    const items = <Item[]> await dbitems.items();
     // dapatkan last used
     Master_items.value = items.map(
       (rec) =>
-        new Item(
+        new ItemClass(
           rec?.id,
           rec?.kd_item,
           rec?.nm_item,
@@ -52,11 +56,12 @@ export const gettingStartedRecord = async () => {
           rec?.sort_item
         )
     );
+    isGetAllItem.value = true
   }
   return;
 };
 
-export const getItemById = async (id) => {
+export const getItemById = async (id: string) => {
   const findItemInState = Master_items.value.find((rec) => rec?.id === id);
 
   if (findItemInState) {
@@ -65,7 +70,7 @@ export const getItemById = async (id) => {
   // get item
   const item = await dbitems.getItem(id);
 
-  const itemToClass = new Item(
+  const itemToClass = new ItemClass(
     item?.id,
     item?.kd_item,
     item?.nm_item,
@@ -85,15 +90,7 @@ export const getItemById = async (id) => {
       };
 };
 
-export const updateItemById = async (
-  id,
-  kdItem,
-  nmItem,
-  division,
-  lastUsed,
-  ageItem,
-  sort_item
-) => {
+export const updateItemById = async (id: string, kdItem: string, nmItem: string, division: string, lastUsed: number, ageItem: number, sort_item: number) => {
   const findRecordInState = Master_items.value.find((rec) => rec?.id === id);
 
   if (findRecordInState) {
@@ -108,8 +105,8 @@ export const updateItemById = async (
     return;
   }
   // find record in db
-  const record = await getItemById(id);
-  const recordClass = new Item(
+  const record = await getItemById(id) as Item;
+  const recordClass = new ItemClass(
     record?.id,
     record?.kd_item,
     record?.nm_item,
@@ -119,17 +116,11 @@ export const updateItemById = async (
     record?.sort_item
   );
 
-  await recordClass.updateItemValue(
-    kdItem,
-    nmItem,
-    division,
-    lastUsed,
-    ageItem
-  );
+  await recordClass.updateItemValue(kdItem, nmItem, division, lastUsed, ageItem, sort_item);
   return;
 };
 
-export const getItemIdByKdItem = async (kd_item) => {
+export const getItemIdByKdItem = async (kd_item: string) => {
   const findItem = Master_items.value.find((rec) => rec?.kd_item == kd_item);
   if (findItem) {
     return findItem;
@@ -145,8 +136,16 @@ export const getItemIdByKdItem = async (kd_item) => {
       };
 };
 
-class Item {
-  constructor(id, kd_item, nm_item, division, last_used, age_item, sort_item) {
+class ItemClass {
+  id: string;
+  kd_item: string;
+  nm_item: string;
+  division: string;
+  last_used: number;
+  age_item: number;
+  sort_item: number;
+
+  constructor(id: string, kd_item: string, nm_item: string, division: string, last_used: number, age_item: number, sort_item: number) {
     this.id = id;
     this.kd_item = kd_item;
     this.nm_item = nm_item;
@@ -156,14 +155,7 @@ class Item {
     this.sort_item = sort_item;
   }
 
-  async updateItemValue(
-    kd_item,
-    nm_item,
-    division,
-    last_used,
-    age_item,
-    sort_item
-  ) {
+  async updateItemValue(kd_item: string, nm_item: string, division: string, last_used: number, age_item: number, sort_item:number ) {
     // key value to update
     let keyValueToUpdate = {};
     // condition for kd_item
