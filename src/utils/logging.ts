@@ -1,4 +1,4 @@
-import localforage from 'localforage';
+import * as localforage from 'localforage';
 
 const logging = localforage.createInstance({
   name: 'my_report_stock',
@@ -10,7 +10,7 @@ let oldKey = null;
 let timeE = 0;
 let modeE = null;
 
-export const addLog = async (storeName, mode, key, value) => {
+export const addLog = async (storeName: string, mode: string, key: string, value: object): Promise<boolean> => {
   try {
     // create new date time first
     const dtime = new Date().getTime();
@@ -34,11 +34,6 @@ export const addLog = async (storeName, mode, key, value) => {
       idRecord: key,
       value: value,
     });
-    await new Promise((res) =>
-      setTimeout(() => {
-        res();
-      }, 110)
-    );
     return true;
   } catch (err) {
     alert('Terjadi kesalahan pada sistem');
