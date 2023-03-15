@@ -9,18 +9,20 @@ let countOfLoggerAtATime = 0;
 let oldKey = null;
 let timeE = 0;
 let modeE = null;
+let oldStoreName = null
 
 export const addLog = async (storeName: string, mode: string, key: string, value: object): Promise<boolean> => {
   try {
     // create new date time first
     const dtime = new Date().getTime();
-    if (oldKey == key && dtime - timeE < 100 && modeE == mode) {
+    if (oldKey == key && dtime - timeE < 100 && modeE == mode && storeName === oldStoreName ) {
       throw `multiple triggered key(mode: ${mode}, key : ${key}, Value: ${value}`;
     }
     // onsole.log('first: ', 'mode: ', mode, 'key: ', key, 'Value: ', value)
     timeE = dtime;
     oldKey = key;
     modeE = mode;
+    oldStoreName = storeName
     // increment count
     countOfLoggerAtATime = countOfLoggerAtATime + 1;
     // id logger

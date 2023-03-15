@@ -152,7 +152,7 @@ for (let i = 0; i < 1; i++) {
         false
       );
       //  save to variable
-      variableSaved.newIncomingId = income.id;
+      variableSaved.newIncomingId = income;
       // expect
       expect(income).not.equal(null);
     });
@@ -169,7 +169,14 @@ for (let i = 0; i < 1; i++) {
       // waiting proses
       await updateIncomingById(
         variableSaved.newIncomingId,
-        newVariableIncoming
+        "",
+        newVariableIncoming.paper_id,
+        newVariableIncoming.tanggal,
+        "",
+        newVariableIncoming.diterima,
+        newVariableIncoming.type,
+        newVariableIncoming.diserahkan,
+        "",
       );
       //  get incoming by id
       const incomingRec = await getIncomingById(variableSaved.newIncomingId);

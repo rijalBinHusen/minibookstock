@@ -107,6 +107,7 @@ class IncomingClass implements Incoming {
       this.catatan = catatan
     }
     await incomedb.updateItem(this.id, keyValueToUpdate);
+    return;
   }
 }
 /**
@@ -222,11 +223,10 @@ export const updateIncomingById = async (id: string,
   diserahkan: string,
   catatan: string): Promise<boolean> => {
 
-  const findRec = Incoming_transaction.value.find(
-    (rec) => rec?.id === id
-  );
+  const findRec: IncomingClass|null = Incoming_transaction.value.find( (rec) => rec?.id === id);
+
   if (findRec) {
-    findRec.updateRecord(stock_master_ids, paper_id, tanggal, shift, diterima, type, diserahkan, catatan)
+    await findRec.updateRecord(stock_master_ids, paper_id, tanggal, shift, diterima, type, diserahkan, catatan)
     return true;
   }
 
@@ -234,7 +234,7 @@ export const updateIncomingById = async (id: string,
 
   if(item) {
     const itemToClass = new IncomingClass(item.id, item.stock_master_ids, item.paper_id, item.tanggal, item.shift, item.diterima, item.type, item.diserahkan, item.catatan)
-    itemToClass.updateRecord(stock_master_ids, paper_id, tanggal, shift, diterima, type, diserahkan, catatan)
+    await itemToClass.updateRecord(stock_master_ids, paper_id, tanggal, shift, diterima, type, diserahkan, catatan)
     return true
   }
 
