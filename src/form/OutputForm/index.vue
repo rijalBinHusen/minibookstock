@@ -97,7 +97,7 @@ import {
   getItemById,
   gettingStartedRecord as getItems,
 } from '../../composables/MasterItems';
-import { ddmmyyyy } from '../../utils/dateFormat';
+import { ddmmyyyy, ymdTime } from '../../utils/dateFormat';
 import {
   StockToOutput,
   getAvailableDateByItem,
@@ -259,7 +259,7 @@ const handleUpdateOutput = async () => {
     }
   }
   const newRec = {
-    tanggal: date.value.getTime(),
+    tanggal: ymdTime(date.value),
     type: type.value,
     shift: shift.value,
     nomor_so: nomor_so.value,
