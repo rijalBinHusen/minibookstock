@@ -618,33 +618,38 @@ export class StockToOutput {
     // console.log('date available: ', dateAvailable);
     const result = [];
     let quantityLeft = yourQuantity;
-    dateAvailable.forEach((stock) => {
+    if(dateAvailable.length) {
+      dateAvailable.forEach((stock) => {
+        if (quantityLeft > 0) {
+          // get available first
+          const available = this.getAvailableStock(stock.id);
+          // onsole.log('available stock', available);
+          // new available
+          // available - yourQuantity (50 - 100)
+          const availableAfterPick = available - quantityLeft;
+          // quantity
+          const quantityOutput =
+            availableAfterPick >= 0 ? quantityLeft : available;
+          // set quantity left
+          quantityLeft = quantityLeft - quantityOutput;
+          // onsole.log('quantity left: ', quantityLeft);
+          result.push({ stock_master_id: stock?.id, quantity: quantityOutput });
+          // decrement avaialable
+          this.pickAvailableStock(stock?.id, quantityOutput)
+          // console.log(this.getAvailableStock(stock?.id))
+        }
+      });
       if (quantityLeft > 0) {
-        // get available first
-        const available = this.getAvailableStock(stock.id);
-        // onsole.log('available stock', available);
-        // new available
-        // available - yourQuantity (50 - 100)
-        const availableAfterPick = available - quantityLeft;
-        // quantity
-        const quantityOutput =
-          availableAfterPick >= 0 ? quantityLeft : available;
-        // set quantity left
-        quantityLeft = quantityLeft - quantityOutput;
-        // onsole.log('quantity left: ', quantityLeft);
-        result.push({ stock_master_id: stock?.id, quantity: quantityOutput });
-        // decrement avaialable
-        this.pickAvailableStock(stock?.id, quantityOutput)
-        // console.log(this.getAvailableStock(stock?.id))
+        // get item name
+        const itemDetails = this.#localStock.find(
+          (rec) => rec?.item_id == item_id
+        );
+        // show on modal element
+        alert(`Stock ${itemDetails?.item_name} kurang dari ketersediaan!`);
       }
-    });
-    if (quantityLeft > 0) {
-      // get item name
-      const itemDetails = this.#localStock.find(
-        (rec) => rec?.item_id == item_id
-      );
-      // show on modal element
-      alert(`Stock ${itemDetails?.item_name} kurang dari ketersediaan!`);
+    } else {
+      alert('Item tidak ditemukan')
+      return;
     }
     return result;
   }
