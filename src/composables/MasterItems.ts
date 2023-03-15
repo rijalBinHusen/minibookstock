@@ -42,7 +42,7 @@ export const createItem = async (kd_item: string, nm_item: string, division: str
 export const gettingStartedRecord = async () => {
   if (!Master_items.value.length || !isGetAllItem.value) {
     // get all item
-    const items = <Item[]> await dbitems.items();
+    const items = <Item[]> await dbitems.getItems();
     // dapatkan last used
     Master_items.value = items.map(
       (rec) =>

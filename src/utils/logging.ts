@@ -34,6 +34,9 @@ export const addLog = async (storeName: string, mode: string, key: string, value
       idRecord: key,
       value: value,
     });
+    await new Promise((res) =>
+      setTimeout((): void => res('') , 110)
+    );
     return true;
   } catch (err) {
     alert('Terjadi kesalahan pada sistem');
