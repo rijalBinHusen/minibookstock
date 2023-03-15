@@ -16,14 +16,17 @@ export const useIdb = (storeName) => {
     const nextId = sum?.lastUpdated && sum?.lastUpdated?.lastId
       ? generateId(sum?.lastUpdated?.lastId)
       : generateId(storeName + '_22030000');
+    const incrementId = sum?.lastUpdated && sum?.lastUpdated?.total
+                          ? sum?.lastUpdated?.total + 1 + ''
+                          : 1 + ''
     // record to set
-    const record = { ...value, id: nextId, created: new Date().getTime() };
+    const record = { ...value, id: incrementId, uid: nextId, created: new Date().getTime() };
     try {
       // record to logs
       const isLogWrited = await addLog(storeName, 'create', nextId, record);
       if (isLogWrited) {
         // setItem
-        await setItem(nextId, record);
+        await setItem(incrementId, record);
         // update summary
         await sum.updateSummary(nextId);
       }
