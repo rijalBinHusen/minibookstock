@@ -259,7 +259,7 @@ const handleUpdateOutput = async () => {
     }
   }
   const newRec = {
-    tanggal: date.value,
+    tanggal: date.value.getTime(),
     type: type.value,
     shift: shift.value,
     nomor_so: nomor_so.value,

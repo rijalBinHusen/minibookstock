@@ -412,7 +412,7 @@ export async function getBookStock() {
       const stockMasterDetails = await getStockById(stockMasterId)
       const findRec = stocks.find((rec) => rec?.id === stockMasterId);
       const stockTaken = await getTotalStockTaken(stockMasterId);
-      const allQty = stockMasterDetails.quantity + stockTaken.allTaken
+      const allQty = stockMasterDetails.quantity + stockTaken.allFinished
       if (findRec) {
         findRec.addIncome(
           incomeLevel1?.shift,
