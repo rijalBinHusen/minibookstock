@@ -1,8 +1,6 @@
 import { ref } from 'vue';
 // import { getItemById } from "./MasterItems";
 import { ymdTime, ddmmyyyy } from '../utils/dateFormat';
-// store name
-export const store = 'incoming_transaction';
 // import set parent function for stock master
 import { setStockParent, getStockById } from './StockMaster';
 // master item function
@@ -16,10 +14,101 @@ import { getTotalStockTaken } from './Output';
 import { loaderMessage } from '../utils/launchForm';
 
 // the state
-export const Incoming_transaction = ref([]);
+export const Incoming_transaction = ref(<IncomingClass[]>[]);
 
 export const dateRecordToShow = ref(new Date());
+// store name
+export const store = 'incoming_transaction';
 
+const incomedb = useIdb(store)
+
+interface Incoming {
+  id: string;
+  stock_master_ids: string[];
+  paper_id: string;
+  tanggal: number
+  shift: number;
+  diterima: string;
+  type: string;
+  diserahkan: string;
+  catatan: string;
+}
+
+class IncomingClass implements Incoming {
+  id: string;
+  stock_master_ids: string[];
+  paper_id: string;
+  tanggal: number;
+  shift: number;
+  diterima: string;
+  type: string;
+  diserahkan: string;
+  catatan: string;
+
+  constructor (id: string, stock_master_ids: string[], paper_id: string, tanggal: number, shift: number, diterima: string, type: string, diserahkan: string, catatan: string) {
+    this.id = id;
+    this.stock_master_ids = stock_master_ids;
+    this.paper_id = paper_id;
+    this.tanggal = ymdTime(tanggal);
+    this.shift = shift;
+    this.diterima = diterima;
+    this.type = type
+    this.diserahkan = diserahkan
+    this.catatan = catatan
+  }
+
+  async updateRecord(stock_master_ids: string[], paper_id: string, tanggal: number, shift: number, diterima: string, type: string, diserahkan: string, catatan: string) {
+    const keyValueToUpdate = <Incoming>{}
+    if(stock_master_ids) {
+      // lenght changed
+      if(stock_master_ids.length !== this.stock_master_ids.length) {
+        keyValueToUpdate.stock_master_ids = stock_master_ids
+        this.stock_master_ids = stock_master_ids
+      }
+      // [1,2,3,4,5] !== [1,2,3,4,6], same length but not same content
+      else if(!this.stock_master_ids.every(elm => stock_master_ids.includes(elm))) {
+        keyValueToUpdate.stock_master_ids = stock_master_ids
+        this.stock_master_ids = stock_master_ids
+      }
+    }
+
+    if(paper_id && this.paper_id !== paper_id) {
+      this.paper_id = paper_id
+      keyValueToUpdate.paper_id = paper_id
+    }
+
+    if(tanggal && this.tanggal !== tanggal) {
+      keyValueToUpdate.tanggal = ymdTime(tanggal)
+      this.tanggal = ymdTime(tanggal)
+    }
+
+    if(shift && this.shift !== shift) {
+      keyValueToUpdate.shift = shift
+      this.shift = shift
+    }
+
+    if(diterima && this.diterima !== diterima) {
+      keyValueToUpdate.diterima = diterima
+      this.diterima = diterima
+    }
+
+    if(type && this.type !== type) {
+      keyValueToUpdate.type = type
+      this.type = type
+    }
+
+    if(diserahkan && this.diserahkan !== diserahkan) {
+      keyValueToUpdate.diserahkan = diserahkan
+      this.diserahkan = diserahkan
+    }
+
+    if(catatan && this.catatan !== catatan) {
+      keyValueToUpdate.catatan = catatan
+      this.catatan = catatan
+    }
+    await incomedb.updateItem(this.id, keyValueToUpdate);
+  }
+}
 /**
  *
   id string [pk]
@@ -34,17 +123,15 @@ export const dateRecordToShow = ref(new Date());
  */
 
 export const createIncoming = async (
-  stock_master_ids,
-  paper_id,
-  tanggal,
-  shift,
-  diterima,
-  type,
-  diserahkan,
-  catatan
-) => {
-  // initiate idb
-  const incomedb = useIdb(store);
+  stock_master_ids: string[],
+  paper_id: string,
+  tanggal: number,
+  shift: number,
+  diterima: string,
+  type: string,
+  diserahkan: string,
+  catatan: string
+): Promise<string|null> => {
   // initiate new record
   const record = {
     stock_master_ids,
@@ -58,29 +145,33 @@ export const createIncoming = async (
   };
   // save to indexeddb
   const recordInserted = await incomedb.createItem(record);
-  // // push to state
-  Incoming_transaction.value.unshift(recordInserted);
-  // set parent for each stock master
-  stock_master_ids.forEach((stockId) => {
-    setStockParent(stockId, recordInserted?.id);
-  });
-  // return the whole record
-  return recordInserted;
+  if(recordInserted) {
+    // // push to state
+    Incoming_transaction.value.unshift(new IncomingClass(recordInserted?.id, stock_master_ids, paper_id, tanggal, shift, diterima, type, diserahkan, catatan));
+    // set parent for each stock master
+    stock_master_ids.forEach((stockId) => {
+      setStockParent(stockId, recordInserted?.id);
+    });
+    // return the whole record
+    return recordInserted.id;
+  }
 };
 
-export const gettingStartedRecord = async () => {
+export const gettingStartedRecord = async (): Promise<void> => {
   // dapatkan last used
   if (!Incoming_transaction.value.length) {
     // initiate idb
     const incomedb = useIdb(store);
     // get all item
-    const item = await incomedb.getItems();
-    Incoming_transaction.value = item ? item : [];
+    const items = await incomedb.getItems() as Incoming[] | null;
+    if(items) {
+      Incoming_transaction.value = items.map((item) => new IncomingClass(item.id, item.stock_master_ids, item.paper_id, item.tanggal, item.shift, item.diterima, item.type, item.diserahkan, item.catatan))
+    }
   }
   return;
 };
 
-export const removeIncomingById = async (id) => {
+export const removeIncomingById = async (id: string): Promise<void> => {
   // initiate idb
   const incomedb = useIdb(store);
   // remove from state
@@ -99,44 +190,55 @@ export const removeIncomingById = async (id) => {
 // //   return lastRec[0];
 // // };
 
-export const getIncomingById = async (id) => {
-  let findIncome = false;
+export const getIncomingById = async (id: string):Promise<IncomingClass|null> => {
   if (id) {
-    // initiate idb
-    const incomedb = useIdb(store);
-    // find stock
-    findIncome = await incomedb.getItem(id);
+    const findRecord = await incomedb.getItem(id) as Incoming|null;
+    if(findRecord) {
+      const findIncome = new IncomingClass(
+        findRecord?.id, 
+        findRecord?.stock_master_ids, 
+        findRecord?.paper_id, 
+        findRecord?.tanggal, 
+        findRecord?.shift, 
+        findRecord?.diterima, 
+        findRecord?.type, 
+        findRecord?.diserahkan, 
+        findRecord?.catatan
+      )
+      return findIncome
+    }
   }
-  return findIncome
-    ? findIncome
-    : {
-        paper_id: 'Not found',
-        tanggal: false,
-        shift: 'Not found',
-        diterima: 'Not found',
-        type: false,
-        diserahkan: 'Not found',
-        catatan: 'Not found',
-      };
+
+  return null
 };
 
-export const updateIncomingById = async (id, keyValueToUpdate) => {
-  // initiate idb
-  const incomedb = useIdb(store);
-  const findIndexRec = Incoming_transaction.value.findIndex(
+export const updateIncomingById = async (id: string,
+  stock_master_ids: string[],
+  paper_id: string,
+  tanggal: number,
+  shift: number,
+  diterima: string,
+  type: string,
+  diserahkan: string,
+  catatan: string): Promise<boolean> => {
+
+  const findRec = Incoming_transaction.value.find(
     (rec) => rec?.id === id
   );
-  if (findIndexRec > -1) {
-    const record = Incoming_transaction.value[findIndexRec];
-    Incoming_transaction.value.splice(findIndexRec, 1, {
-      ...record,
-      ...keyValueToUpdate,
-    });
+  if (findRec) {
+    findRec.updateRecord(stock_master_ids, paper_id, tanggal, shift, diterima, type, diserahkan, catatan)
+    return true;
   }
-  // update in idb
-  await incomedb.updateItem(id, keyValueToUpdate);
-  // saveData();
-  return;
+
+  const item: Incoming| null = await incomedb.getItem(id) as Incoming | null
+
+  if(item) {
+    const itemToClass = new IncomingClass(item.id, item.stock_master_ids, item.paper_id, item.tanggal, item.shift, item.diterima, item.type, item.diserahkan, item.catatan)
+    itemToClass.updateRecord(stock_master_ids, paper_id, tanggal, shift, diterima, type, diserahkan, catatan)
+    return true
+  }
+
+  return false;
 };
 
 // export const getStockWithoutParent = () => {
@@ -147,22 +249,14 @@ export const updateIncomingById = async (id, keyValueToUpdate) => {
 //   return stock;
 // };
 
-export const incomingTransactionForStockCard = async (
-  startDate,
-  finishDate,
-  itemId
-) => {
+export const incomingTransactionForStockCard = async (startDate: number, finishDate: number, itemId: number) => {
   // result var
   const result = [];
-  // initiate db
-  const incomeDb = useIdb(store);
   // get record between date
-  const incomes =
-    await incomeDb.getItemsByKeyGreaterOrEqualThanAndLowerOrEqualThan(
-      'tanggal',
-      startDate,
-      finishDate
-    );
+  const incomes = await incomedb.getItemsByKeyGreaterOrEqualThanAndLowerOrEqualThan('tanggal', startDate, finishDate );
+  if(!incomes) {
+    return false
+  }
   // looping record
   for (let [index, income] of incomes.entries()) {
     // show message
@@ -198,23 +292,14 @@ export const incomingTransactionForStockCard = async (
   }
 };
 
-export const getAllDataToBackup = async () => {
-  // initiate idb
-  const incomedb = useIdb(store);
-  // get all data
-  const allData = await incomedb.getItems();
-  // return the result
-  return { store, data: allData ? allData : null };
-};
-
-export const getRecordByDate = async () => {
+export const getRecordByDate = async (): Promise<void> => {
   // initiate idb
   const incomedb = useIdb(store);
   // get income by date
-  Incoming_transaction.value = await incomedb.getItemsByKeyValue(
-    'tanggal',
-    ymdTime(dateRecordToShow.value)
-  );
+  const items: Incoming[]|null = await incomedb.getItemsByKeyValue('tanggal', ymdTime(dateRecordToShow.value)) as Incoming[] | null;
+  if(items) {
+    Incoming_transaction.value = items.map((rec) => new IncomingClass(rec.id, rec.stock_master_ids, rec.paper_id, rec.tanggal, rec.shift, rec.diterima, rec.type, rec.diserahkan, rec.catatan))
+  }
   // return
   return;
 };
