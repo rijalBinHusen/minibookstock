@@ -1,7 +1,7 @@
 import { ref } from 'vue';
 // item function
-import { getItemById, getItemIdByKdItem, createItem } from './MasterItems';
-import { loaderMessage } from '../utils/launchForm';
+import { getItemById, getItemIdByKdItem, createItem } from '../MasterItems/MasterItems';
+import { loaderMessage } from '../../utils/launchForm';
 // date formatter
 import {
   ddmmyyyy,
@@ -10,17 +10,17 @@ import {
   time,
   dayPlusOrMinus,
   JSToExcelDate,
-} from '../utils/dateFormat';
+} from '../../utils/dateFormat';
 // store name
 export const store = 'stock_master';
 // incoming function
-import { createIncoming, getIncomingById } from './Incoming';
+import { createIncoming, getIncomingById } from '../Incoming/Incoming';
 // conver excel date to javascript date
-import excelToJSDate from '../utils/ExcelDateToJs';
+import excelToJSDate from '../../utils/ExcelDateToJs';
 // import local forage
-import { useIdb } from '../utils/localforage';
-import { getTotalStockTaken } from './Output';
-import { useJurnalProdukMasuk } from './Setting_JurnalId';
+import { useIdb } from '../../utils/localforage';
+import { getTotalStockTaken } from '../Output/Output';
+import { useJurnalProdukMasuk } from '../Settings/Setting_JurnalId';
 
 // the state
 export const Stock_masters = ref([]);

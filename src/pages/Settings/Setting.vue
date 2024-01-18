@@ -59,13 +59,13 @@
 </template>
 
 <script setup>
-import JurnalId from '../components/JurnalId.vue';
-import Select from '../components/elements/Forms/Select.vue';
+import JurnalId from './JurnalId.vue';
+import Select from '../../components/elements/Forms/Select.vue';
 import { computed, ref } from 'vue';
-import BackupData from '../components/BackupData.vue';
-import ExportLogs from '../components/ExportLogs.vue';
-import ImportData from '../components/ImportData.vue';
-import ImportStockAwal from '../components/ImportStockAwal.vue';
+import BackupData from './BackupData.vue';
+// import ExportLogs from './ExportLogs.vue';
+import ImportData from './ImportData.vue';
+import ImportStockAwal from './ImportStockAwal.vue';
 
 const listData = [
   // { id: 'database', type: 'import', title: 'Import Database'},
@@ -99,7 +99,7 @@ const components = {
   BackupData,
   ImportData,
   ImportStockAwal,
-  ExportLogs,
+  // ExportLogs,
 };
 
 // list of location id that would be import to database

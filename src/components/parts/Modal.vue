@@ -20,9 +20,9 @@
 
 <script setup>
 import Loader from './Loader.vue';
-import IncomingForm from '../../form/IncomingForm.vue';
-import VehiclesForm from '../../form/VehiclesForm.vue';
-import OutputForm from '../../form/OutputForm/index.vue';
+import IncomingForm from '../../pages/Incoming/IncomingForm.vue';
+import VehiclesForm from '../../pages/Vehicles/VehiclesForm.vue';
+import OutputForm from '../../pages/Output/OutputForm.vue';
 import ResultBookStockComparedShow from '../../pages/BookStock/ResultBookStockComparedShow.vue';
 import SelectSheet from '../../pages/BookStock/SelectSheet.vue';
 import { useStore } from 'vuex';

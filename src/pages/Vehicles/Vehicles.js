@@ -1,17 +1,17 @@
-import { summary } from '../utils/summaryIdb';
+import { summary } from '../../utils/summaryIdb';
 import { ref } from 'vue';
 // import { getItemById } from "./MasterItems";
-import { ymdTime, ddmmyyyy } from '../utils/dateFormat';
+import { ymdTime, ddmmyyyy } from '../../utils/dateFormat';
 // store name
 const store = 'vehicles';
 // generator id
-import { generateId } from '../utils/GeneratorId';
+import { generateId } from '../../utils/GeneratorId';
 // import set parent function for stock master
-import { setStockParent, getStockById } from './StockMaster';
+import { setStockParent, getStockById } from '../../composables/StockMaster';
 // master item function
 import { getItemById } from './MasterItems';
 // import localforage function
-import { useIdb } from '../utils/localforage';
+import { useIdb } from '../../utils/localforage';
 // import typep jurnal
 import { useJurnalProdukMasuk } from './Setting_JurnalId';
 

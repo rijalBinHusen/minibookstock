@@ -4,13 +4,13 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import {
   useJurnalProdukKeluar,
   useJurnalProdukMasuk,
-} from '../composables/Setting_JurnalId';
+} from '../../composables/Setting_JurnalId';
 import {
   createItem,
   Master_items,
   getItemById,
   gettingStartedRecord as getAllItems,
-} from '../composables/MasterItems';
+} from '../../composables/MasterItems';
 import IncomingForm from './IncomingForm.vue';
 import { createStore } from 'vuex';
 

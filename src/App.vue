@@ -14,21 +14,21 @@
 
 <script>
 import Navbar from './components/Navbar.vue';
-import Setting from './pages/Setting.vue';
+import Setting from './pages/Settings/Setting.vue';
 import Modal from './components/parts/Modal.vue';
-import MasterItem from './pages/MasterItem.vue';
-import Incoming from './pages/Incoming.vue';
-import VehiclesVue from './pages/Vehicles.vue';
+import MasterItem from './pages/MasterItems/MasterItem.vue';
+import Incoming from './pages/Incoming/Incoming.vue';
+import VehiclesVue from './pages/Vehicles/Vehicles.vue';
 import ConfirmDialogVue from './components/ConfirmDialog.vue';
 import Output from './pages/Output/Output.vue';
-import StockMaster from './pages/StockMaster.vue';
-import SalesOrders from './pages/SalesOrders.vue';
+import StockMaster from './pages/StockMasters/StockMaster.vue';
+import SalesOrders from './pages/SalesOrders/SalesOrders.vue';
 import StockCard from './pages/StockCard.vue';
 import SlowMoving from './pages/SlowMoving.vue';
 import SummaryStockMaster from './pages/SummaryStockMaster.vue';
 import Transaction from './pages/Transaction.vue';
 import FooterVue from './components/Footer.vue';
-import { getStockThatAvailable } from './composables/StockMaster';
+import { getStockThatAvailable } from './pages/StockMasters/StockMaster';
 import { CheckMigration } from './utils/databaseMigration';
 import BookStock from "./pages/BookStock/index.vue"
 import Toast from './components/parts/Toast.vue';
@@ -85,3 +85,4 @@ export default {
   },
 };
 </script>
+./pages/MasterItems/StockMaster

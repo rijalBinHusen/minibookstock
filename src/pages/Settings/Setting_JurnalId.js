@@ -1,6 +1,6 @@
 import { ref } from "vue";
 // import localforage function
-import { useIdb } from "../utils/localforage"
+import { useIdb } from "../../utils/localforage"
 
 export const useJurnalProdukMasuk = () => {
   // store name

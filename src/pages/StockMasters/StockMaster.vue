@@ -35,12 +35,12 @@
   </template>
 
   <script setup>
-  import Button from "../components/elements/Button.vue";
-  import Datatable from "../components/parts/Datatable.vue";
-  import { getStockThatAvailable, Stock_masters } from "../composables/StockMaster"
-  import { launchFormAndsubscribeMutation, launchForm, closeModalOrDialog } from "../utils/launchForm";
+  import Button from "../../components/elements/Button.vue";
+  import Datatable from "../../components/parts/Datatable.vue";
+  import { getStockThatAvailable, Stock_masters } from "./StockMaster"
+  import { launchFormAndsubscribeMutation, launchForm, closeModalOrDialog } from "../../utils/launchForm";
   import { onMounted, } from "vue";
-  import { startExportMaster } from '../reports/StockMaster';
+  // import { startExportMaster } from './StockMaster';
   // id: stock?.id,
   // kd_item: item?.kd_item,
   // nm_item: item?.nm_item,
@@ -59,7 +59,7 @@ const handleMasterStock = async () => {
     // launch the loader
     launchForm('Loader', false)
     // waiting for process
-    await startExportMaster()
+    // await startExportMaster()
     // close the loader
     closeModalOrDialog(false)
 }
@@ -74,3 +74,4 @@ const handleMasterStock = async () => {
   })
 
   </script>
+./MasterItems/StockMaster

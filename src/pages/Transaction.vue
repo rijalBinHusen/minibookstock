@@ -73,8 +73,8 @@ import {
   closeModalOrDialog,
   loaderMessage,
 } from '../utils/launchForm';
-import { getIncomingByDateByShift } from '../composables/Incoming';
-import { getOutputByDateByShift } from '../composables/Output';
+import { getIncomingByDateByShift } from './Incoming/Incoming';
+import { getOutputByDateByShift } from './Output/Output';
 import ExportToXls from '../utils/ExportToXls';
 import { ddmmyyyy } from '../utils/dateFormat';
 // date start
@@ -148,3 +148,4 @@ const handleExport = async () => {
   closeModalOrDialog(false);
 };
 </script>
+./Output/Output./Incoming/Incoming

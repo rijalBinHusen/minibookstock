@@ -27,8 +27,8 @@ import {
   launchForm,
   closeModalOrDialog,
   loaderMessage,
-} from '../utils/launchForm';
-import { useIdb } from '../utils/localforage';
+} from '../../utils/launchForm';
+import { useIdb } from '../../utils/localforage';
 
 // ref for input type file
 const inputFile = ref();

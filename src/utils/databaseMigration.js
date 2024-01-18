@@ -1,8 +1,8 @@
 import { useIdb } from './localforage';
-import { getStockThatAvailable, Stock_masters, changeAvailableStock, updateStockById } from '../composables/StockMaster';
+import { getStockThatAvailable, Stock_masters, changeAvailableStock, updateStockById } from '../pages/StockMasters/StockMaster';
 import { loaderMessage, launchForm, closeModalOrDialog } from './launchForm';
 import { getNextYearTime } from './dateFormat';
-import { gettingStartedRecord as getMasterItems, updateItemById, Master_items } from "../composables/MasterItems"
+import { gettingStartedRecord as getMasterItems, updateItemById, Master_items } from "../pages/MasterItems/MasterItems"
 
 const currentVersion = 3;
 

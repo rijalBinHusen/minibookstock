@@ -98,18 +98,18 @@
 </template>
 
 <script setup>
-import Button from '../components/elements/Button.vue';
-import Input from '../components/elements/Forms/Input.vue';
-import Datatable from '../components/parts/Datatable.vue';
+import Button from '@/components/elements/Button.vue';
+import Input from '@/components/elements/Forms/Input.vue';
+import Datatable from '@/components/parts/Datatable.vue';
 import {
   createItem,
   Master_items,
   gettingStartedRecord,
   getItemById,
   updateItemById,
-} from '../composables/MasterItems';
+} from './MasterItems';
 import { ref, onMounted } from 'vue';
-import { subscribeConfirmDialog } from '../utils/launchForm';
+import { subscribeConfirmDialog } from '../../utils/launchForm';
 
 const nm_item = ref(null);
 const kd_item = ref(null);

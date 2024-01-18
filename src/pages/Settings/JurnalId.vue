@@ -46,7 +46,7 @@ import Input from "@/components/elements/Forms/Input.vue";
 import Table from "@/components/elements/Table.vue";
 import Select from "@/components/elements/Forms/Select.vue";
 // Import function of jurnal produk masuk
-import { useJurnalProdukMasuk, useJurnalProdukKeluar } from "../composables/Setting_JurnalId";
+import { useJurnalProdukMasuk, useJurnalProdukKeluar } from "./Setting_JurnalId";
 import { ref, watch, computed } from "vue";
 
 const listJurnalType = [
@@ -138,3 +138,4 @@ watch([activeJurnalToInput], async (newVal) => {
 })
 
 </script>
+../pages/Settings/Setting_JurnalId

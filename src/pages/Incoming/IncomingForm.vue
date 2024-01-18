@@ -97,20 +97,20 @@
 
 <script setup>
 import datePicker from 'vue3-datepicker';
-import Input from '../components/elements/Forms/Input.vue';
-import Button from '../components/elements/Button.vue';
-import PickItemVue from '../components/PickItem.vue';
+import Input from '@/components/elements/Forms/Input.vue';
+import Button from '@/components/elements/Button.vue';
+import PickItemVue from '@/components/PickItem.vue';
 import { ref, onMounted, computed, watch } from 'vue';
 import {
   createIncoming,
   getIncomingById,
   updateIncomingById,
   removeIncomingById,
-} from '../composables/Incoming';
-import { closeModalOrDialog } from '../utils/launchForm';
+} from '@/pages/Incoming/Incoming';
+import { closeModalOrDialog } from '@/utils/launchForm';
 import { useStore } from 'vuex';
-import { getItemById } from '../composables/MasterItems';
-import { ddmmyyyy, ymdTime } from '../utils/dateFormat';
+import { getItemById } from '@/pages/MasterItems/MasterItems';
+import { ddmmyyyy, ymdTime } from '@/utils/dateFormat';
 import {
   createStock,
   getStockById,
@@ -119,10 +119,10 @@ import {
   getStockByIdForIncomingForm,
   setStockParent,
   updateQuantity,
-} from '../composables/StockMaster';
-import { getTotalStockTaken } from '../composables/Output';
-import SelectShift from '../components/parts/SelectShift.vue';
-import SelectTypeDocument from '../components/parts/SelectTypeDocument.vue';
+} from '@/pages/StockMasters/StockMaster';
+import { getTotalStockTaken } from '@/pages/Output/Output';
+import SelectShift from '@/components/parts/SelectShift.vue';
+import SelectTypeDocument from '@/components/parts/SelectTypeDocument.vue';
 // vuex
 const store = useStore();
 // date record

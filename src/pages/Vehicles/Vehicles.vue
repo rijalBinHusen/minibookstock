@@ -76,10 +76,10 @@
 
 <script setup>
 import datePicker from "vue3-datepicker";
-import Datatable from "../components/parts/Datatable.vue";
-import Button from "../components/elements/Button.vue";
+import Datatable from "../../components/parts/Datatable.vue";
+import Button from "../../components/elements/Button.vue";
 import { ref, onMounted } from "vue";
-import { launchForm, subscribeConfirmDialog } from '../utils/launchForm'
+import { launchForm, subscribeConfirmDialog } from '../../utils/launchForm'
 // import { Vehicles, gettingStartedRecord, removeVehicle} from "@/composables/Vehicles";
 
 const tanggal = ref(new Date())

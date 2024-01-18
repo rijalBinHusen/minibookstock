@@ -1,7 +1,7 @@
 import { ref } from "vue";
 // store name
 const store = "items";
-import { useIdb } from "../utils/localforage";
+import { useIdb } from "../../utils/localforage";
 const dbitems = useIdb(store);
 const isGetAllItem = ref(<boolean>false)
 

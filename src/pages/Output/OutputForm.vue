@@ -89,34 +89,34 @@ import Button from '../../components/elements/Button.vue';
 import PickItemToOutputVue from './PickItemToOutput.vue';
 import SelectShift from '../../components/parts/SelectShift.vue';
 import SelectTypeDocument from '../../components/parts/SelectTypeDocument.vue';
-import InputSalesOrder from '../../components/InputSalesOrder.vue';
+import InputSalesOrder from '../SalesOrders/InputSalesOrder.vue';
 import { ref, onMounted, computed, watch } from 'vue';
 import { closeModalOrDialog } from '../../utils/launchForm';
 import { useStore } from 'vuex';
 import {
   getItemById,
   gettingStartedRecord as getItems,
-} from '../../composables/MasterItems';
+} from '../MasterItems/MasterItems';
 import { ddmmyyyy, ymdTime } from '../../utils/dateFormat';
 import {
   StockToOutput,
   getAvailableDateByItem,
   getStockById,
-} from '../../composables/StockMaster';
+} from '../StockMasters/StockMaster';
 import {
   createOutput,
   getOutputById,
   updateOutputById,
   changeQuantityOutput,
-} from '../../composables/Output';
+} from '../Output/Output';
 import {
   getSalesOrderById,
   removeChildItemsOrder,
-} from '../../composables/SalesOrder';
+} from '../SalesOrders/SalesOrder';
 import {
   getItemOrderById,
   changeOrderValue,
-} from '../../composables/SalesOrderItem';
+} from '../SalesOrders/SalesOrderItem';
 
 // vuex
 const store = useStore();
@@ -379,3 +379,4 @@ onMounted(async () => {
   }
 });
 </script>
+../SalesOrder/SalesOrder../SalesOrder/SalesOrderItem../MasterItems/StockMaster

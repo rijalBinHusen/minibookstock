@@ -107,15 +107,15 @@ import Input from '../../components/elements/Forms/Input.vue';
 import Button from '@/components/elements/Button.vue';
 import TableVue from '../../components/elements/Table.vue';
 import { ref, defineEmits, defineProps, watch, onBeforeMount } from 'vue';
-import { getItemIdByKdItem, getItemById } from '../../composables/MasterItems';
+import { getItemIdByKdItem, getItemById } from '../MasterItems/MasterItems';
 import {
   getStockById,
   StockToOutput,
   getStockThatAvailable,
   Stock_masters,
-} from '../../composables/StockMaster';
+} from '../StockMasters/StockMaster';
 import Select from '../../components/elements/Forms/Select.vue';
-import { getOutputById } from '../../composables/Output';
+import { getOutputById } from '../Output/Output';
 
 const props = defineProps({
   isParentEditMode: String,
@@ -292,3 +292,4 @@ onBeforeMount(async () => {
   }
 });
 </script>
+../MasterItems/StockMaster

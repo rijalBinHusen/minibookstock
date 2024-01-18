@@ -3,7 +3,7 @@ import { describe, it, expect, test } from "vitest";
 import { mount, flushPromises } from "@vue/test-utils";
 import MasterItem from "./MasterItem.vue";
 import { faker } from "@faker-js/faker";
-import { Master_items } from "../composables/MasterItems";
+import { Master_items } from "../../composables/MasterItems";
 
 describe("Click submit button ", async () => {
   // mount component

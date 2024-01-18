@@ -1,5 +1,5 @@
-import { useIdb } from "../utils/localforage";
-import { time } from "../utils/dateFormat";
+import { useIdb } from "../../utils/localforage";
+import { time } from "../../utils/dateFormat";
 import { ref } from "vue";
 
 const store = "sales_orders";

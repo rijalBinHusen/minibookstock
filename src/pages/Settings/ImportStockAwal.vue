@@ -38,10 +38,10 @@ import {
   launchForm,
   closeModalOrDialog,
   loaderMessage,
-} from '../utils/launchForm';
-import exportXLS from '../utils/ExportToXls';
-import readExcel from '../utils/ReadExcel';
-import { createStockAwal } from '../composables/StockMaster';
+} from '../../utils/launchForm';
+import exportXLS from '../../utils/ExportToXls';
+import readExcel from '../../utils/ReadExcel';
+import { createStockAwal } from '../StockMasters/StockMaster';
 
 // ref for input type file
 const inputFile = ref();

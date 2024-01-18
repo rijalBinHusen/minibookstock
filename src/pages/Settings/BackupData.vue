@@ -11,22 +11,22 @@
 </template>
 
 <script setup>
-import Button from './elements/Button.vue';
+import Button from '../../components/elements/Button.vue';
 // import all function that get all data
 import {
   launchForm,
   closeModalOrDialog,
   loaderMessage,
-} from '../utils/launchForm';
+} from '../../utils/launchForm';
 // import function to export text to file and download it
-import { startExport } from '../utils/ExportAsFile';
+import { startExport } from '../../utils/ExportAsFile';
 // import date time formater
-import { full } from '../utils/dateFormat';
-import { useIdb } from '../utils/localforage';
+import { full } from '../../utils/dateFormat';
+import { useIdb } from '../../utils/localforage';
 import {
   useJurnalProdukKeluar,
   useJurnalProdukMasuk,
-} from '../composables/Setting_JurnalId';
+} from '../Settings/Setting_JurnalId';
 
 const handleBackup = async () => {
   // launch the loader
@@ -83,3 +83,4 @@ const handleBackup = async () => {
   closeModalOrDialog(false);
 };
 </script>
+../pages/Settings/Setting_JurnalId

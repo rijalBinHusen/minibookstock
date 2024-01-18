@@ -1,13 +1,13 @@
-import { getStockForBookStock, getStockById } from "../../composables/StockMaster";
-import { store as storeIncoming } from "../../composables/Incoming";
+import { getStockForBookStock, getStockById } from "../StockMasters/StockMaster";
+import { store as storeIncoming } from "../Incoming/Incoming";
 import {
   getTotalStockTaken,
   store as storeOutput,
-} from "../../composables/Output";
+} from "../Output/Output";
 import { useIdb } from "../../utils/localforage";
 import { ddmmyyyy, ymdTime } from "../../utils/dateFormat";
 import { ref } from "vue";
-import { getItemById } from "../../composables/MasterItems"
+import { getItemById } from "../MasterItems/MasterItems"
 import {  } from "../../components/parts/Toast.vue"
 import ExportToXls from "../../utils/ExportToXls"
 import { loaderMessage } from "../../utils/launchForm";

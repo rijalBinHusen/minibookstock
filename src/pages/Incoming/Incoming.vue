@@ -52,11 +52,11 @@
 
 <script setup>
 import datePicker from "vue3-datepicker";
-import Datatable from "../components/parts/Datatable.vue";
-import Button from "../components/elements/Button.vue";
+import Datatable from "../../components/parts/Datatable.vue";
+import Button from "../../components/elements/Button.vue";
 import { ref, onMounted } from "vue";
-import { launchFormAndsubscribeMutation } from "../utils/launchForm";
-import { mapIncomingTransactionWoutItem, dateRecordToShow, getRecordByDate } from "../composables/Incoming"
+import { launchFormAndsubscribeMutation } from "../../utils/launchForm";
+import { mapIncomingTransactionWoutItem, dateRecordToShow, getRecordByDate } from "./Incoming"
 
 // what date to show record
 // dateRecordToShow.value (using that ^ date)

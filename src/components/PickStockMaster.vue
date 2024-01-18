@@ -67,8 +67,8 @@ import SelectItems from './SelectItems.vue';
 import Input from './elements/Forms/Input.vue';
 import Select from './elements/Forms/Select.vue';
 import Button from './elements/Button.vue';
-import { getItemById } from "../composables/MasterItems"
-import { getAvailableDateByItem, getStockById } from "../composables/StockMaster"
+import { getItemById } from "@/pages/MasterItems/MasterItems"
+import { getAvailableDateByItem, getStockById } from "@/pages/StockMasters/StockMaster"
 
 // variable for kd_item
 const kd_item = ref(null)
@@ -116,3 +116,4 @@ const hadleStockMaster = async (id_stock_master) => {
 
 
 </script>
+../pages/MasterItems/StockMaster

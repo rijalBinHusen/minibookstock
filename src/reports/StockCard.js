@@ -1,12 +1,12 @@
-import { getItemById } from "../composables/MasterItems";
-import { getStockMasterByItemId } from "../composables/StockMaster";
-import { getIncomingById } from "../composables/Incoming";
+import { getItemById } from "../pages/MasterItems/MasterItems";
+import { getStockMasterByItemId } from "../pages/StockMasters/StockMaster";
+import { getIncomingById } from "../pages/Incoming/Incoming";
 import { ddmmyyyy } from "../utils/dateFormat";
-import { useJurnalProdukMasuk } from "../composables/Setting_JurnalId";
+import { useJurnalProdukMasuk } from "../pages/Settings/Setting_JurnalId";
 import {
   getOutputByStockMasterId,
   getTotalStockTaken,
-} from "../composables/Output";
+} from "../pages/Output/Output";
 import ExportToXls from "../utils/ExportToXls";
 import { loaderMessage } from "../utils/launchForm";
 import { useIdb } from "../utils/localforage";

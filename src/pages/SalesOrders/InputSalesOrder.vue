@@ -23,7 +23,7 @@
 
 <script setup>
 import { defineEmits, onMounted, defineProps } from 'vue';
-import { getSalesOrder, sales_orders } from "../composables/SalesOrder"
+import { getSalesOrder, sales_orders } from "./SalesOrder"
 
 const emit = defineEmits(['pickedSalesOrder'])
 

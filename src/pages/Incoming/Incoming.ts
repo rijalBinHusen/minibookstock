@@ -1,17 +1,17 @@
 import { ref } from 'vue';
 // import { getItemById } from "./MasterItems";
-import { ymdTime, ddmmyyyy } from '../utils/dateFormat';
+import { ymdTime, ddmmyyyy } from '../../utils/dateFormat';
 // import set parent function for stock master
-import { setStockParent, getStockById } from './StockMaster';
+import { setStockParent, getStockById } from '../StockMasters/StockMaster';
 // master item function
-import { getItemById } from './MasterItems';
+import { getItemById } from '../MasterItems/MasterItems';
 // import localforage function
-import { useIdb } from '../utils/localforage';
+import { useIdb } from '../../utils/localforage';
 // import typep jurnal
-import { useJurnalProdukMasuk } from './Setting_JurnalId';
+import { useJurnalProdukMasuk } from '../Settings/Setting_JurnalId';
 // output
-import { getTotalStockTaken } from './Output';
-import { loaderMessage } from '../utils/launchForm';
+import { getTotalStockTaken } from '../Output/Output';
+import { loaderMessage } from '../../utils/launchForm';
 
 // the state
 export const Incoming_transaction = ref(<IncomingClass[]>[]);

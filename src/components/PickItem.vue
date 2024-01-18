@@ -122,8 +122,8 @@ import {
   Master_items,
   getItemIdByKdItem,
   getItemById,
-} from '../composables/MasterItems';
-import { ymdTime } from '../utils/dateFormat';
+} from '@/pages/MasterItems/MasterItems';
+import { ymdTime } from '@/utils/dateFormat';
 
 const props = defineProps({
   isParentEditMode: String,

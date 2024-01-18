@@ -17,7 +17,7 @@
 
 <script setup>
 import Select from '../elements/Forms/Select.vue';
-import { useJurnalProdukKeluar, useJurnalProdukMasuk } from "../../composables/Setting_JurnalId"
+import { useJurnalProdukKeluar, useJurnalProdukMasuk } from "../../pages/Settings/Setting_JurnalId"
 // use the composable jurnal produk masuk
 import { defineEmits, ref, computed, onMounted } from 'vue';
 const { gettingJurnalProdukKeluarRecord, Jurnal_produk_keluar } = useJurnalProdukKeluar();
@@ -57,3 +57,4 @@ onMounted( async () => {
 
 // todo, build select type document compoentn
 </script>
+../../pages/Settings/Setting_JurnalId
