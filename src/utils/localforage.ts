@@ -17,17 +17,14 @@ export const useIdb = (storeName: string) => {
       ? generateId(sum?.lastUpdate?.lastId)
       : generateId(storeName + '_22030000');
 
-    const incrementId = sum?.lastUpdate && sum?.lastUpdate?.total
-                          ? sum?.lastUpdate?.total + 1 + ''
-                          : 1 + ''
     // record to set
-    const record = { ...value, id: incrementId, uid: nextId, created: new Date().getTime() };
+    const record = { ...value, id: nextId, created: new Date().getTime() };
     try {
       // record to logs
       const isLogWrited = await addLog(storeName, 'create', nextId, record);
       if (isLogWrited) {
         // setItem
-        await setItem(incrementId, record);
+        await setItem(nextId, record);
         // update summary
         await sum.updateSummary(nextId);
       }
@@ -43,7 +40,7 @@ export const useIdb = (storeName: string) => {
     return store.setItem(key, value);
   };
 
-  const getItem = (key: string) => {
+  const getItem = <T>(key: string): Promise<T> => {
     return store.getItem(key);
   };
 
@@ -72,36 +69,30 @@ export const useIdb = (storeName: string) => {
     return;
   };
 
-  const findOneItemByKeyValue = (keySearch: string, valueSearch: string) => {
+  const findOneItemByKeyValue = <T>(keySearch: string, valueSearch: string): Promise<T> => {
     // let result = {};
-    return store.iterate(function (value, key, iterationNumber) {
+    return store.iterate(function (value:T) {
       // Resulting key/value pair -- this callback
-      // will be executed for every item in the
-      // database.
-      if (value[keySearch] == valueSearch) {
-        // save to result
-        return value;
-      }
+      // will be executed for every item in the database.
+      if (value[keySearch] == valueSearch) return value;
     });
   };
 
-  const getItems = async () => {
-    const result = [];
-    return store
-      .iterate(function (value, key, iterationNumber) {
-        if (value && key) {
-          result.push(value);
-        }
-        // return result;
+  const getItems = async <T>(): Promise<T[]> => {
+    const result = <T[]>[];
+    await store.iterate(function (value: T, key) {
+        
+        if (value && key) result.push(value);
       })
       .then(function () {
         // onsole.log("Iteration has completed, last iterated pair:");
-        return result;
+        // return result;
       })
       .catch(function (err) {
         // This code runs if there were any errors
         console.log(err);
       });
+    return result;
   };
 
   const updateItem = async (key: string, keyValueToUpdate: object) => {

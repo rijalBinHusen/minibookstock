@@ -7,9 +7,9 @@
     >
       <!-- kode item -->
       <Input
-        @send="kd_item = $event"
+        @send="itemForm.kd_item = $event"
         placeholder="Kode item"
-        :value="kd_item"
+        :value="itemForm.kd_item"
         tipe="primary"
         small
         id="kd_item"
@@ -18,9 +18,9 @@
 
       <!-- Nama item -->
       <Input
-        @send="nm_item = $event"
+        @send="itemForm.nm_item = $event"
         placeholder="Nama item"
-        :value="nm_item"
+        :value="itemForm.nm_item"
         tipe="primary"
         small
         id="nm_item"
@@ -30,9 +30,9 @@
 
       <!-- umur item -->
       <Input
-        @send="age_item = $event"
+        @send="itemForm.age_item = $event"
         placeholder="Umur produk"
-        :value="age_item"
+        :value="itemForm.age_item"
         tipe="primary"
         small
         id="age_item"
@@ -42,9 +42,9 @@
 
       <!-- umur item -->
       <Input
-        @send="sort_item = $event"
+        @send="itemForm.sort_item = $event"
         placeholder="Urutan item"
-        :value="sort_item"
+        :value="itemForm.sort_item"
         tipe="primary"
         small
         id="sort_item"
@@ -97,92 +97,81 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import Button from '@/components/elements/Button.vue';
 import Input from '@/components/elements/Forms/Input.vue';
 import Datatable from '@/components/parts/Datatable.vue';
-import {
-  createItem,
-  Master_items,
-  gettingStartedRecord,
-  getItemById,
-  updateItemById,
-} from './MasterItems';
+import { Items, Item, Master_items } from './MasterItems';
 import { ref, onMounted } from 'vue';
 import { subscribeConfirmDialog } from '../../utils/launchForm';
 
-const nm_item = ref(null);
-const kd_item = ref(null);
-const age_item = ref(null);
-const isEditMode = ref(false);
-const sort_item = ref(null)
+const itemForm = ref<Item>({
+  age_item: 0,
+  division: "",
+  id: "",
+  kd_item: "",
+  last_used: 0,
+  nm_item: "",
+  sort_item: 0
+});
+
 // the origin value
 const origin = ref({});
-
+const isEditMode = ref("");
 const emit = defineEmits(['formSubmit']);
 
-// to create item
-// if the form empty
+const { updateItemById, createItem, getItemById, getAllMasterItems } = Items();
+
 const handleSubmit = async () => {
-  if (!nm_item.value || !kd_item.value || !age_item.value || !sort_item.value) {
-    subscribeConfirmDialog('alert', 'Tidak boleh ada form yang kosong');
-    return;
-  }
-  // we're doing this to make easy for unti testing
-  // emit('formSubmit', {
-  //   kd_item: kd_item.value,
-  //   nm_item: nm_item.value,
-  //   age_item: age_item.value,
-  // });
-  // update item
+
   // to update item
-  if (isEditMode.value) {
-    await updateItemById(isEditMode.value, kd_item.value, nm_item.value, false, false, age_item.value, Number(sort_item.value));
-  }
+  if (isEditMode.value) await updateItemById(itemForm.value.id, itemForm.value);
+  
   // insert item
   else {
-    // setItem('items', nm_item.value)
-    await createItem(
-      kd_item.value,
-      nm_item.value,
-      null,
-      new Date().getTime(),
-      age_item.value,
-      Number(sort_item.value)
-    );
+    
+    const isCreateItem = await createItem(itemForm.value.kd_item, itemForm.value.nm_item, "", 0, itemForm.value.age_item, itemForm.value.sort_item);
+    subscribeConfirmDialog("alert", isCreateItem);
   }
+  
   // reset the form
   resetForm();
 };
 
 // to edit item
-const handleButton = async (id) => {
+const handleButton = async (id: string) => {
   if (id && id !== isEditMode.value) {
     // get item by id from db
-    origin.value = await getItemById(id);
+    const getItem = await getItemById(id);
+
     // fill the form
-    nm_item.value = origin.value?.nm_item;
-    kd_item.value = origin.value?.kd_item;
-    age_item.value = origin.value?.age_item;
-    sort_item.value = origin.value?.sort_item + '';
+    itemForm.value = getItem;
+
     // set edit mode as true
     setTimeout(() => (isEditMode.value = id), 300);
-  } else {
+  } 
+  
+  else {
     resetForm();
   }
 };
 
 const resetForm = () => {
   // reset the form
-  nm_item.value = null;
-  kd_item.value = null;
-  age_item.value = null;
-  sort_item.value = null;
+  itemForm.value = {
+    age_item: 0,
+    division: "",
+    id: "",
+    kd_item: "",
+    last_used: 0,
+    nm_item: "",
+    sort_item: 0
+  }
   // set edit mode to false
-  isEditMode.value = false;
+  isEditMode.value = "";
 };
 
 onMounted(async () => {
-  await gettingStartedRecord();
+  await getAllMasterItems();
 });
 </script>
