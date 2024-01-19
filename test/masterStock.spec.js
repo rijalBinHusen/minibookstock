@@ -6,13 +6,13 @@ import {
   getStockById,
   Stock_masters,
   StockToOutput,
-} from '../src/composables/StockMaster';
+} from '@/pages/StockMasters/StockMaster';
 import {
   createOutput,
   markAsFinished,
   getOutputById,
   getTotalStockTaken,
-} from '../src/composables/Output';
+} from '@/pages/Output/Output';
 
 let newItemId = null;
 const quantityStock = faker.datatype.number({ min: 200 });

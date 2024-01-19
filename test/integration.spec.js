@@ -7,18 +7,18 @@ import {
   updateItemById,
   getItemIdByKdItem,
   getAllDataToBackup,
-} from "../src/composables/MasterItems";
+} from "@/pages/MasterItems/MasterItems";
 import {
   createStock,
   changeAvailableStock,
   getStockById,
   changeQuantityStock,
-} from "../src/composables/StockMaster";
+} from "@/pages/StockMasters/StockMaster";
 import {
   createIncoming,
   updateIncomingById,
   getIncomingById,
-} from "../src/composables/Incoming";
+} from "@/pages/Incoming/Incoming";
 import {
   createOutput,
   markAsFinished,
@@ -26,7 +26,7 @@ import {
   removeOutputById,
   changeQuantityOutput,
   getTotalStockTaken,
-} from "../src/composables/Output";
+} from "@/pages/Output/Output";
 
 const variableSaved = {
   newItemId: null,

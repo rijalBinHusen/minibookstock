@@ -5,7 +5,7 @@ import {
   updateItemById,
   getItemIdByKdItem,
   getAllDataToBackup,
-} from "../src/composables/MasterItems";
+} from "@/pages/MasterItems/MasterItems";
 import { describe, it, expect } from "vitest";
 
 let newItemId = null;

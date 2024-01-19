@@ -1,7 +1,7 @@
 import { flushPromises, mount } from '@vue/test-utils';
 import { faker } from '@faker-js/faker';
 import { describe, it, expect, beforeEach, test } from 'vitest';
-import { useJurnalProdukMasuk } from '../../composables/Setting_JurnalId';
+import { useJurnalProdukMasuk } from '@/pages/Settings/Setting_JurnalId';
 import SelectTypeDocument from './SelectTypeDocument.vue';
 
 // create value for mocking jurnal produk masuk
