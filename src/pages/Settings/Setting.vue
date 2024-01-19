@@ -63,7 +63,7 @@ import JurnalId from './JurnalId.vue';
 import Select from '../../components/elements/Forms/Select.vue';
 import { computed, ref } from 'vue';
 import BackupData from './BackupData.vue';
-// import ExportLogs from './ExportLogs.vue';
+import ExportLogs from './ExportLogs.vue';
 import ImportData from './ImportData.vue';
 import ImportStockAwal from './ImportStockAwal.vue';
 
@@ -99,7 +99,7 @@ const components = {
   BackupData,
   ImportData,
   ImportStockAwal,
-  // ExportLogs,
+  ExportLogs,
 };
 
 // list of location id that would be import to database

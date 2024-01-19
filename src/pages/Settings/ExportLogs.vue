@@ -2,7 +2,7 @@
   <div class="mt-10 flex items-center">
     <span class="">Tanggal mulai</span>
     <date-picker 
-        class="m-2 bg-base-200 p-2 rounded" 
+        class="m-2 bg-base-200 p-2 rounded border" 
         v-model="date"
     >
     </date-picker> 
@@ -17,12 +17,12 @@
 </template>
 
 <script setup>
-import Button from './elements/Button.vue';
-import { launchForm, closeModalOrDialog, } from '../utils/launchForm';
-import { startExport } from '../utils/ExportAsFile';
+import Button from '@/components/elements/Button.vue';
+import { launchForm, closeModalOrDialog, } from '@/utils/launchForm';
+import { startExport } from '@/utils/ExportAsFile';
 // import date time formater
-import { full } from '../utils/dateFormat';
-import { useIdb } from '../utils/localforage';
+import { full } from '@/utils/dateFormat';
+import { useIdb } from '@/utils/localforage';
 import datePicker from "vue3-datepicker"
 import { ref } from 'vue';
 

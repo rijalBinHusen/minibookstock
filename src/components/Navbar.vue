@@ -105,7 +105,7 @@ import { ref } from 'vue';
 const emit = defineEmits(['navigate_to_navbar']);
 
 const active = ref(null);
-const title = ref('Book of stock');
+const title = ref('FIFO Enforcer');
 
 const navs = [
   { name: 'Incoming', title: 'produk masuk', icon: 'dice-d6' },
@@ -131,7 +131,7 @@ const navigate = (nav) => {
   // find title
   const findTitle = dropdownNavs.find((rec) => rec?.name === nav);
   // set title
-  title.value = findTitle?.title || 'Book of stock';
+  title.value = findTitle?.title || 'FIFO Enforcer';
   emit('navigate_to_navbar', nav);
 };
 </script>
