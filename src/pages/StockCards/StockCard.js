@@ -1,15 +1,16 @@
-import { getItemById } from "../pages/MasterItems/MasterItems";
-import { getStockMasterByItemId } from "../pages/StockMasters/StockMaster";
-import { getIncomingById } from "../pages/Incoming/Incoming";
-import { ddmmyyyy } from "../utils/dateFormat";
-import { useJurnalProdukMasuk } from "../pages/Settings/Setting_JurnalId";
+import { Items } from "../MasterItems/MasterItems";
+const { getItemById } = Items();
+import { getStockMasterByItemId } from "../StockMasters/StockMaster";
+import { getIncomingById } from "../Incoming/Incoming";
+import { ddmmyyyy } from "../../utils/dateFormat";
+import { useJurnalProdukMasuk } from "../Settings/Setting_JurnalId";
 import {
   getOutputByStockMasterId,
   getTotalStockTaken,
-} from "../pages/Output/Output";
-import ExportToXls from "../utils/ExportToXls";
-import { loaderMessage } from "../utils/launchForm";
-import { useIdb } from "../utils/localforage";
+} from "../Output/Output";
+import ExportToXls from "../../utils/ExportToXls";
+import { loaderMessage } from "../../utils/launchForm";
+import { useIdb } from "../../utils/localforage";
 
 export const stockCard = async (item_id, tanggal_start, tanggal_finished) => {
   // use jurnal produk masuk

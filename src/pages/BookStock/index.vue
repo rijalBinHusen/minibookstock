@@ -80,7 +80,7 @@
 
 <script setup>
 import { onMounted, ref, watch, computed, toRefs } from "vue";
-import { getBookStock, state, date, nowShift, printStock, compareWithReport, compareWithManualBookStock } from "./func"
+import { getBookStock, state, date, nowShift, printStock, compareWithReport, compareWithManualBookStock } from "./bookStock"
 import Datatable from "../../components/parts/Datatable.vue";
 import datePicker from "vue3-datepicker"
 import Button from "../../components/elements/Button.vue"

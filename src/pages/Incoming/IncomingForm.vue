@@ -99,7 +99,7 @@
 import datePicker from 'vue3-datepicker';
 import Input from '@/components/elements/Forms/Input.vue';
 import Button from '@/components/elements/Button.vue';
-import PickItemVue from '@/components/PickItem.vue';
+import PickItemVue from '@/pages/MasterItems/PickItem.vue';
 import { ref, onMounted, computed, watch } from 'vue';
 import {
   createIncoming,
@@ -109,7 +109,9 @@ import {
 } from '@/pages/Incoming/Incoming';
 import { closeModalOrDialog } from '@/utils/launchForm';
 import { useStore } from 'vuex';
-import { getItemById } from '@/pages/MasterItems/MasterItems';
+import { Items } from '@/pages/MasterItems/MasterItems';
+const { getItemById } = Items();
+
 import { ddmmyyyy, ymdTime } from '@/utils/dateFormat';
 import {
   createStock,

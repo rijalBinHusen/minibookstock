@@ -24,7 +24,9 @@
  * <SelectItems :kd_item="your kode item" @pickedItem="yourFunctionHere" />
  */
 import { defineEmits, onMounted } from 'vue';
-import { gettingStartedRecord as getItems, Master_items, getItemIdByKdItem } from "../pages/MasterItems/MasterItems"
+import { Master_items, Items } from "@/pages/MasterItems/MasterItems"
+
+const { gettingStartedRecord: getItems,  getItemKdItem } = Items();
 
 const emit = defineEmits(['pickedItem'])
 const props = defineProps({

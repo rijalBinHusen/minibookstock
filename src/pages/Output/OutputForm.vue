@@ -93,10 +93,8 @@ import InputSalesOrder from '../SalesOrders/InputSalesOrder.vue';
 import { ref, onMounted, computed, watch } from 'vue';
 import { closeModalOrDialog } from '../../utils/launchForm';
 import { useStore } from 'vuex';
-import {
-  getItemById,
-  gettingStartedRecord as getItems,
-} from '../MasterItems/MasterItems';
+import { Items } from '../MasterItems/MasterItems';
+const {  getItemById, getAllMasterItems: getItems } = Items()
 import { ddmmyyyy, ymdTime } from '../../utils/dateFormat';
 import {
   StockToOutput,

@@ -7,7 +7,8 @@ import {
 import { useIdb } from "../../utils/localforage";
 import { ddmmyyyy, ymdTime } from "../../utils/dateFormat";
 import { ref } from "vue";
-import { getItemById } from "../MasterItems/MasterItems"
+import { Items } from "../MasterItems/MasterItems"
+const { getItemById } = Items();
 import {  } from "../../components/parts/Toast.vue"
 import ExportToXls from "../../utils/ExportToXls"
 import { loaderMessage } from "../../utils/launchForm";

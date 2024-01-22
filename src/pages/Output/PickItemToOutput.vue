@@ -107,7 +107,8 @@ import Input from '../../components/elements/Forms/Input.vue';
 import Button from '@/components/elements/Button.vue';
 import TableVue from '../../components/elements/Table.vue';
 import { ref, defineEmits, defineProps, watch, onBeforeMount } from 'vue';
-import { getItemIdByKdItem, getItemById } from '../MasterItems/MasterItems';
+import { Items } from '../MasterItems/MasterItems';
+const { getItemByKdItem, getItemById } = Items();
 import {
   getStockById,
   StockToOutput,

@@ -18,12 +18,12 @@ import Setting from './pages/Settings/Setting.vue';
 import Modal from './components/parts/Modal.vue';
 import MasterItem from './pages/MasterItems/MasterItem.vue';
 import Incoming from './pages/Incoming/Incoming.vue';
-import VehiclesVue from './pages/Vehicles/Vehicles.vue';
+// import VehiclesVue from './pages/Vehicles/Vehicles.vue';
 import ConfirmDialogVue from './components/ConfirmDialog.vue';
 import Output from './pages/Output/Output.vue';
 import StockMaster from './pages/StockMasters/StockMaster.vue';
 import SalesOrders from './pages/SalesOrders/SalesOrders.vue';
-import StockCard from './pages/StockCard.vue';
+import StockCard from './pages/StockCards/StockCard.vue';
 import SlowMoving from './pages/SlowMoving.vue';
 import SummaryStockMaster from './pages/SummaryStockMaster.vue';
 import Transaction from './pages/Transaction.vue';
@@ -55,7 +55,7 @@ export default {
     Modal,
     MasterItem,
     Incoming,
-    Vehicles: VehiclesVue,
+    // Vehicles: VehiclesVue,
     Confirm: ConfirmDialogVue,
     Output,
     StockMaster,

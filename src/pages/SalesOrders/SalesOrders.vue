@@ -35,18 +35,19 @@
       </div>
   </template>
   
-  <script setup>
-  import Button from "../../components/elements/Button.vue";
-  import Datatable from "../../components/parts/Datatable.vue";
-  import { launchForm, subscribeConfirmDialog, closeModalOrDialog, loaderMessage } from "../../utils/launchForm";
+<script setup>
+  import Button from "@/components/elements/Button.vue";
+  import Datatable from "@/components/parts/Datatable.vue";
+  import { launchForm, subscribeConfirmDialog, closeModalOrDialog, loaderMessage } from "@/utils/launchForm";
   import { onMounted, ref } from "vue";
-  import readExcel from "../../utils/ReadExcel";
-    import { getItemIdByKdItem } from "../MasterItems/MasterItems";
-    import { getSalesOrderById, sales_orders ,getSalesOrderIdByNomorSO, createSalesOrder, addChildItemsOrder, getSalesOrder } from "./SalesOrder"
-    import { createItemOrder } from "./SalesOrderItem"
-import ExcelDateToJSDate from "../../utils/ExcelDateToJs";
-import { ddmmyyyy, dayPlusOrMinus } from "../../utils/dateFormat";
-  
+  import readExcel from "@/utils/ReadExcel";
+  import { getSalesOrderById, sales_orders ,getSalesOrderIdByNomorSO, createSalesOrder, addChildItemsOrder, getSalesOrder } from "./SalesOrder"
+  import { createItemOrder } from "./SalesOrderItem"
+  import ExcelDateToJSDate from "@/utils/ExcelDateToJs";
+  import { ddmmyyyy, dayPlusOrMinus } from "@/utils/dateFormat";
+  import { Items } from "../MasterItems/MasterItems";
+  const { getItemByKdItem } = Items();
+    
 //   const file picker
 const file_picker = ref()
 const SOInserted = [];
@@ -85,7 +86,7 @@ const startImport = async () => {
         // if order more than 0 and date > 14 day before now
         if(order > 0 && nomor_so && date.getTime() >= maxDayBefore) {
             // checking is item exists
-            const itemInfo = await getItemIdByKdItem(kodeItem)
+            const itemInfo = await getItemByKdItem(kodeItem)
             // if item exists create sales order
             if(itemInfo?.id) {
                 // checking is sales order exists

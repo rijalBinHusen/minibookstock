@@ -1,6 +1,7 @@
 import { ref } from 'vue';
 // item function
-import { getItemById, getItemIdByKdItem, createItem } from '../MasterItems/MasterItems';
+import { Items } from '../MasterItems/MasterItems';
+const { getItemById, getItemByKdItem, createItem} = Items();
 import { loaderMessage } from '../../utils/launchForm';
 // date formatter
 import {
@@ -239,7 +240,7 @@ export const createStockAwal = async (
   // convert excel date to javascript date
   const date = excelToJSDate(tanggal_produksi);
   // cari dulu itemnya sudah ada atau belum
-  const isItemExists = await getItemIdByKdItem(kode_item);
+  const isItemExists = await getItemByKdItem(kode_item);
   // jika ada langsung input ke master
   if (isItemExists?.id) {
     // create new stock

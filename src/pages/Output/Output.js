@@ -10,7 +10,8 @@ import {
   changeQuantityStock,
 } from "../StockMasters/StockMaster";
 // import item function
-import { getItemById } from "../MasterItems/MasterItems";
+import { Items } from "../MasterItems/MasterItems";
+const { getItemById } = Items();
 // import idb
 import { useIdb } from "../../utils/localforage";
 import { useJurnalProdukKeluar } from "../Settings/Setting_JurnalId";

@@ -19,7 +19,7 @@
 <script setup>
 import { computed, onUnmounted } from 'vue';
 import Table from '../../components/elements/Table.vue';
-import { excelReportResultCompared, date, compareStockWith } from "./func"
+import { excelReportResultCompared, date, compareStockWith } from "./bookStock"
 import Button from '../../components/elements/Button.vue';
 import ExportToXls from '../../utils/ExportToXls';
 import { ddmmyyyy, full } from '../../utils/dateFormat';

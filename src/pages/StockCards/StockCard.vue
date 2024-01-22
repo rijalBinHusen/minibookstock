@@ -43,18 +43,18 @@
 
 <script setup>
 import { ref } from 'vue';
-import Button from '../components/elements/Button.vue';
+import Button from '@/components/elements/Button.vue';
 // import item input
-import SelecItemsVue from '../components/SelectItems.vue';
+import SelecItemsVue from '../MasterItems/SelectItems.vue';
 // import stock card
-import { stockCard } from '../reports/StockCard';
+import { stockCard } from './StockCard';
 // import date picker
 import datePicker from 'vue3-datepicker';
 import {
   launchForm,
   closeModalOrDialog,
   subscribeConfirmDialog,
-} from '../utils/launchForm';
+} from '@/utils/launchForm';
 // variable that contain item id
 const itemId = ref(null);
 // date start

@@ -4,7 +4,8 @@ import { ymdTime, ddmmyyyy } from '../../utils/dateFormat';
 // import set parent function for stock master
 import { setStockParent, getStockById } from '../StockMasters/StockMaster';
 // master item function
-import { getItemById } from '../MasterItems/MasterItems';
+import { Items } from '../MasterItems/MasterItems';
+const { getItemById } = Items();
 // import localforage function
 import { useIdb } from '../../utils/localforage';
 // import typep jurnal

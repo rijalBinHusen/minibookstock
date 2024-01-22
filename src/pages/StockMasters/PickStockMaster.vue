@@ -63,12 +63,13 @@
 <script setup>
 // item quantity tanggal produksi option
 import { ref } from 'vue';
-import SelectItems from './SelectItems.vue';
-import Input from './elements/Forms/Input.vue';
-import Select from './elements/Forms/Select.vue';
-import Button from './elements/Button.vue';
-import { getItemById } from "@/pages/MasterItems/MasterItems"
-import { getAvailableDateByItem, getStockById } from "@/pages/StockMasters/StockMaster"
+import Input from '@/pages/elements/Forms/Input.vue';
+import Select from '@/pages/elements/Forms/Select.vue';
+import Button from '@/pages/elements/Button.vue';
+import SelectItems from '@/pages/MasterItems/SelectItems.vue';
+import { Items } from "@/pages/MasterItems/MasterItems"
+const { getItemById } = Items();
+import { getAvailableDateByItem, getStockById } from "./StockMaster"
 
 // variable for kd_item
 const kd_item = ref(null)

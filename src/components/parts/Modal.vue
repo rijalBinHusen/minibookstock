@@ -21,7 +21,7 @@
 <script setup>
 import Loader from './Loader.vue';
 import IncomingForm from '../../pages/Incoming/IncomingForm.vue';
-import VehiclesForm from '../../pages/Vehicles/VehiclesForm.vue';
+// import VehiclesForm from '../../pages/Vehicles/VehiclesForm.vue';
 import OutputForm from '../../pages/Output/OutputForm.vue';
 import ResultBookStockComparedShow from '../../pages/BookStock/ResultBookStockComparedShow.vue';
 import SelectSheet from '../../pages/BookStock/SelectSheet.vue';

@@ -36,11 +36,12 @@
             type="number"
             placeholder="Quantity"
             class="w-20 input input-sm input-primary"
-            @keyup="quantity = $event.target.value"
-            :value="quantity"
-            @change="quantity = $event.target.value"
+            v-model="quantity"
             id="form-input-incoming-quantity"
-          />
+            />
+            <!-- @keyup="quantity = $event.target.value"
+            :value="quantity"
+            @change="quantity = $event.target.value" -->
         </div>
       </div>
       <!-- Kode produksi -->
@@ -53,10 +54,11 @@
             type="text"
             placeholder="Kode"
             class="w-24 input input-sm input-primary"
-            @keyup="kd_produksi = $event.target.value"
-            :value="kd_produksi"
             id="form-input-incoming-kd-produksi"
+            v-model="kd_produksi"
           />
+            <!-- @keyup="kd_produksi = $event.target.value"
+            :value="kd_produksi" -->
         </div>
       </div>
       <!-- tanggal produksi -->
@@ -110,20 +112,20 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 // item, quantity, kode produksi, tanggal produksi, tanggal exp
-import Input from './elements/Forms/Input.vue';
+import Input from '@/components/elements/Forms/Input.vue';
 import datePicker from 'vue3-datepicker';
 import Button from '@/components/elements/Button.vue';
-import TableVue from './elements/Table.vue';
+import TableVue from '@/components/elements/Table.vue';
 import { ref, onMounted, defineEmits, defineProps, computed, watch } from 'vue';
-import {
-  gettingStartedRecord as getItem,
-  Master_items,
-  getItemIdByKdItem,
-  getItemById,
-} from '@/pages/MasterItems/MasterItems';
-import { ymdTime } from '@/utils/dateFormat';
+import { Items, Master_items } from './MasterItems';
+const { 
+  getAllMasterItems: getItem,
+  getItemByKdItem,
+  getItemById } = Items();
+
+import { ymdTime } from '../../utils/dateFormat';
 
 const props = defineProps({
   isParentEditMode: String,
@@ -156,9 +158,9 @@ const handleItem = (e) => {
       clearTimeout(timeoutHandleItem);
       timeoutHandleItem = setTimeout(async () => {
         const kd_item = e.target.value.split('*')[0];
-        item_detail.value = await getItemIdByKdItem(kd_item);
+        item_detail.value = await getItemByKdItem(kd_item);
         item.value = item_detail.value?.id;
-        resolve();
+        resolve("");
       }, 1000);
     }
   });

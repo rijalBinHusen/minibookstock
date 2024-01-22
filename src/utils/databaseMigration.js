@@ -2,7 +2,9 @@ import { useIdb } from './localforage';
 import { getStockThatAvailable, Stock_masters, changeAvailableStock, updateStockById } from '../pages/StockMasters/StockMaster';
 import { loaderMessage, launchForm, closeModalOrDialog } from './launchForm';
 import { getNextYearTime } from './dateFormat';
-import { gettingStartedRecord as getMasterItems, updateItemById, Master_items } from "../pages/MasterItems/MasterItems"
+import { Items, Master_items } from "../pages/MasterItems/MasterItems"
+
+const { gettingStartedRecord: getMasterItems, updateItemById } = Items();
 
 const currentVersion = 3;
 
@@ -154,11 +156,12 @@ export async function CheckMigration() {
     return;
   }
   
-  if (dbVersion.currentDbVersion === 3 && nowVersion < 3) {
-    await migrationToV3();
-    await dbVersion.setVersion(3);
-    CheckMigration();
-    return;
-  }
+  // if (dbVersion.currentDbVersion === 3 && nowVersion < 3) {
+  //   await migrationToV3();
+  //   await dbVersion.setVersion(3);
+  //   CheckMigration();
+  //   return;
+  // }
+
   closeModalOrDialog();
 }
