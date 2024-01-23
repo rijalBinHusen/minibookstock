@@ -12,7 +12,7 @@ import { useIdb } from '../utils/localforage';
 // import typep jurnal
 import { useJurnalProdukMasuk } from './Setting_JurnalId';
 // output
-import { getTotalStockTaken } from './Output';
+import { getTotalStockTaken } from '@/pages/Output/Output';
 import { loaderMessage } from '../utils/launchForm';
 
 // the state

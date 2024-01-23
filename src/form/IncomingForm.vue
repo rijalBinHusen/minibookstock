@@ -120,7 +120,7 @@ import {
   setStockParent,
   updateQuantity,
 } from '../composables/StockMaster';
-import { getTotalStockTaken } from '../composables/Output';
+import { getTotalStockTaken } from '@/pages/Output/Output';
 import SelectShift from '../components/parts/SelectShift.vue';
 import SelectTypeDocument from '../components/parts/SelectTypeDocument.vue';
 // vuex

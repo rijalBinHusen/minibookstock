@@ -74,7 +74,7 @@ import {
   loaderMessage,
 } from '../utils/launchForm';
 import { getIncomingByDateByShift } from '../composables/Incoming';
-import { getOutputByDateByShift } from '../composables/Output';
+import { getOutputByDateByShift } from '@/pages/Output/Output';
 import ExportToXls from '../utils/ExportToXls';
 import { ddmmyyyy } from '../utils/dateFormat';
 // date start

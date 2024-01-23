@@ -6,7 +6,7 @@ import { useJurnalProdukMasuk } from '../composables/Setting_JurnalId';
 import {
   getOutputByStockMasterId,
   getTotalStockTaken,
-} from '../composables/Output';
+} from '@/pages/Output/Output';
 import ExportToXls from '../utils/ExportToXls';
 import { loaderMessage } from '../utils/launchForm';
 import { useIdb } from '../utils/localforage';

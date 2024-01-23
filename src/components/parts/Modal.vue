@@ -22,7 +22,7 @@
 import Loader from './Loader.vue';
 import IncomingForm from '../../form/IncomingForm.vue';
 import VehiclesForm from '../../form/VehiclesForm.vue';
-import OutputForm from '../../form/OutputForm/index.vue';
+// import OutputForm from '../../form/OutputForm/index.vue';
 import ResultBookStockComparedShow from '../../pages/BookStock/ResultBookStockComparedShow.vue';
 import SelectSheet from '../../pages/BookStock/SelectSheet.vue';
 import { useStore } from 'vuex';
@@ -43,7 +43,7 @@ const forms = {
   Loader,
   IncomingForm,
   VehiclesForm,
-  OutputForm,
+  // OutputForm,
   ResultBookStockComparedShow,
   SelectSheet,
 };

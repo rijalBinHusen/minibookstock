@@ -1,6 +1,6 @@
 import { ref } from "vue";
-// import { getItemById } from "./MasterItems";
-import { ymdTime, ddmmyyyy, dateMonth } from "../utils/dateFormat";
+// import { getItemById } from "@/composables/MasterItems";
+import { ymdTime, ddmmyyyy, dateMonth } from "@/utils/dateFormat";
 // store name
 export const store = "output_transaction";
 // import set parent function for stock master
@@ -8,13 +8,13 @@ import {
   getStockById,
   changeAvailableStock,
   changeQuantityStock,
-} from "./StockMaster";
+} from "@/composables/StockMaster";
 // import item function
-import { getItemById } from "./MasterItems";
+import { getItemById } from "@/composables/MasterItems";
 // import idb
-import { useIdb } from "../utils/localforage";
-import { useJurnalProdukKeluar } from "./Setting_JurnalId";
-import { subscribeConfirmDialog } from "../utils/launchForm";
+import { useIdb } from "@/utils/localforage";
+import { useJurnalProdukKeluar } from "@/composables/Setting_JurnalId";
+import { subscribeConfirmDialog } from "@/utils/launchForm";
 
 // the state
 export const Output_transaction = ref([]);

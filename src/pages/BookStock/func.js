@@ -3,7 +3,7 @@ import { store as storeIncoming } from "../../composables/Incoming";
 import {
   getTotalStockTaken,
   store as storeOutput,
-} from "../../composables/Output";
+} from "../Output/Output";
 import { useIdb } from "../../utils/localforage";
 import { ddmmyyyy, ymdTime } from "../../utils/dateFormat";
 import { ref } from "vue";

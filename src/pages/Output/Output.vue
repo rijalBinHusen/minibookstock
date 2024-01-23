@@ -128,7 +128,7 @@ import {
   getRecordByDate,
   markAsUnFinished,
   updateOutputById,
-} from '../../composables/Output';
+} from './Output';
 import Dropdown from '../../components/elements/Dropdown.vue';
 import { ref } from 'vue';
 import FinishedDropdown from './FinishedDropdown.vue';

@@ -19,7 +19,7 @@ import { createIncoming, getIncomingById } from './Incoming';
 import excelToJSDate from '../utils/ExcelDateToJs';
 // import local forage
 import { useIdb } from '../utils/localforage';
-import { getTotalStockTaken } from './Output';
+import { getTotalStockTaken } from '@/pages/Output/Output';
 import { useJurnalProdukMasuk } from './Setting_JurnalId';
 
 // the state
