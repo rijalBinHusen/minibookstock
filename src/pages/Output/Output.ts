@@ -36,6 +36,14 @@ export const dateRecordToShow = ref(new Date());
   isFinished boolean
  */
 
+export interface stockOutput {
+  id: string
+  itemId: string,
+  itemName: string
+  quantity: number,
+  product_created: string
+}
+
 export const createOutput = async (
   tanggal,
   type,

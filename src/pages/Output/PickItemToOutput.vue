@@ -22,7 +22,7 @@
               @select="handleItem(item.item_id)"
               v-for="item in itemAvailable"
               :key="item.item_id"
-              :value="item.kd_item + '* ' + item.nm_item"
+              :value="item.kodeItem + '* ' + item.itemName"
             />
           </datalist>
         </div>
@@ -58,10 +58,8 @@
             type="number"
             placeholder="Quantity"
             class="w-32 input input-sm input-primary"
-            @keyup="quantity = $event.target.value"
-            :value="quantity"
-            @change="quantity = $event.target.value"
             id="quantity"
+            v-model="stockOutputForm.quantity"
           />
         </div>
       </div>
@@ -101,35 +99,33 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 // item, quantity, kode produksi, tanggal produksi, tanggal exp
+import { ref, defineEmits, defineProps, watch, onBeforeMount } from 'vue';
 import Input from '../../components/elements/Forms/Input.vue';
 import Button from '@/components/elements/Button.vue';
 import TableVue from '../../components/elements/Table.vue';
-import { ref, defineEmits, defineProps, watch, onBeforeMount } from 'vue';
-import { getItemIdByKdItem, getItemById } from '../../composables/MasterItems';
-import {
-  getStockById,
-  StockToOutput,
-  getStockThatAvailable,
-  Stock_masters,
-} from '../../composables/StockMaster';
 import Select from '../../components/elements/Forms/Select.vue';
-import { getOutputById } from '../../composables/Output';
+import { StockToOutput } from './OutputForm';
+import { getOutputById, stockOutput } from './Output';
 
 const props = defineProps({
-  isParentEditMode: String,
+  isParentEditMode: {
+    type: Boolean,
+    required: true
+  },
   stockChild: Array,
   currentStockEdit: Object,
 });
 
-// emit
-const emit = defineEmits([
-  'addStock',
-  'removeStock',
-  'editStock',
-  'updateStock',
-]);
+const emits = defineEmits<{
+  (e: 'addStock', stock: stockOutput): void
+  (e: 'removeStock', id: number): void
+  (e: 'editStock', id: number): void
+  (e: 'updateStock', stock: stockOutput): void
+}>()
+
+const stockOutputForm = ref(<stockOutput>{});
 
 const stock = new StockToOutput();
 
@@ -151,7 +147,7 @@ const currentStockMaster = ref(null);
 // available stock that can take to quantity output
 const quantityAvailableStockMaster = ref(null);
 
-const handleItem = async (e) => {
+const handleItem = async (e: string) => {
   if (e.target.value) {
     // getItem
     const kd_item = e.target.value.split('*')[0];
@@ -210,7 +206,9 @@ const handleSubmit = async () => {
   // create stock
   else {
     // send event to parent
-    emit('addStock', record);
+    // emit('addStock', record);
+
+    emits("addStock", 1);
     // set quantity stock
     stock.pickAvailableStock(currentStockMaster.value, quantityToOutput);
   }
@@ -280,15 +278,6 @@ watch([props], async () => {
     }
     // set stock master using this way
     hadleStockMaster(stockMaster.id);
-  }
-});
-
-// jika quantity master tidak tersedia
-// jika
-
-onBeforeMount(async () => {
-  if (!props.isParentEditMode) {
-    await getStockThatAvailable();
   }
 });
 </script>

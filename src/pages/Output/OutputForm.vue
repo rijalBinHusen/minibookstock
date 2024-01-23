@@ -82,7 +82,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import datePicker from 'vue3-datepicker';
 import Input from '../../components/elements/Forms/Input.vue';
 import Button from '../../components/elements/Button.vue';
@@ -93,22 +93,14 @@ import InputSalesOrder from '../../components/InputSalesOrder.vue';
 import { ref, onMounted, computed, watch } from 'vue';
 import { closeModalOrDialog } from '../../utils/launchForm';
 import { useStore } from 'vuex';
-import {
-  getItemById,
-  gettingStartedRecord as getItems,
-} from '../../composables/MasterItems';
-import { ddmmyyyy, ymdTime } from '../../utils/dateFormat';
-import {
-  StockToOutput,
-  getAvailableDateByItem,
-  getStockById,
-} from '../../composables/StockMaster';
+import { ymdTime } from '../../utils/dateFormat';
 import {
   createOutput,
   getOutputById,
   updateOutputById,
   changeQuantityOutput,
-} from '../../composables/Output';
+  stockOutput
+} from './Output';
 import {
   getSalesOrderById,
   removeChildItemsOrder,
@@ -118,40 +110,45 @@ import {
   changeOrderValue,
 } from '../../composables/SalesOrderItem';
 
+interface OutputFormStruct {
+  date: Date
+  shift: number
+  type: string
+  nomor_so: string
+  customer: string
+  stockChild: stockOutput[]
+}
+
+const outputForm = ref(<OutputFormStruct>{
+  date: new Date(),
+  customer: "",
+  nomor_so: "",
+  shift: 1,
+  type: "",
+})
+
 // vuex
 const store = useStore();
-// date record
-const date = ref(new Date());
-// shift record
-const shift = ref(1);
-// type incom product
-const type = ref(null);
-// paper id record
-const nomor_so = ref(null);
-// customer name
-const customer = ref(null);
-// master stock
-const stockChild = ref([]);
-// current stock editing
-const currentStockEdit = ref(null);
-// stock to update while editing form
-const stockToUpdate = ref([]);
+const isParentEditMode = ref(false);
 
+// stock to update while editing form
+const currentStockEdit = ref(<stockOutput>{});
+const stockToUpdate = ref([]);
 const stockChildDetails = ref([]);
 
-const stockChildMap = async () => {
-  stockChildDetails.value = [];
-  for (const stock of stockChild.value) {
-    const getStockMaster = await getStockById(stock?.stock_master_id);
-    const getItem = await getItemById(getStockMaster?.item_id);
-    stockChildDetails.value.push({
-      id: stock?.id,
-      item: getItem.nm_item,
-      quantity: stock?.quantity,
-      product_created: ddmmyyyy(getStockMaster.product_created, '-'),
-    });
-  }
-};
+// const stockChildMap = async () => {
+//   stockChildDetails.value = [];
+//   for (const stock of stockChild.value) {
+//     const getStockMaster = await getStockById(stock?.stock_master_id);
+//     const getItem = await getItemById(getStockMaster?.item_id);
+//     stockChildDetails.value.push({
+//       id: stock?.id,
+//       item: getItem.nm_item,
+//       quantity: stock?.quantity,
+//       product_created: ddmmyyyy(getStockMaster.product_created, '-'),
+//     });
+//   }
+// };
 // to add new item form
 const handleStock = (operation, e) => {
   //  data from child = { stock_master_id, quantity }
