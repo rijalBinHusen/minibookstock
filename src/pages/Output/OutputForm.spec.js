@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import OutputForm from './OutputForm.vue';
 import { faker } from '@faker-js/faker';
-import { useJurnalProdukKeluar } from '../composables/Setting_JurnalId';
+import { useJurnalProdukKeluar } from '@/composables/Setting_JurnalId';
 import {
   createItem,
   getItemById,
   gettingStartedRecord as getItems,
-} from '../composables/MasterItems';
-import { createStock, getStockById } from '../composables/StockMaster';
+} from '@/composables/MasterItems';
+import { createStock, getStockById } from '@/composables/StockMaster';
 import { createStore } from 'vuex';
 import { flushPromises, mount } from '@vue/test-utils';
 
