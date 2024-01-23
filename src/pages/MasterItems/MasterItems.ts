@@ -26,7 +26,7 @@ export const Master_items = ref(<Item[]>[]);
 
 export function Items () {
 
-  async function createItem (kd_item: string, nm_item: string, division: string, last_used:number, age_item:number, sort_item: number): Promise<true|string> {
+  async function createItem (kd_item: string, nm_item: string, division: string, last_used:number, age_item:number, sort_item: number): Promise<false|string> {
     
     const errorMessage = [];
     if(kd_item === "") errorMessage.push("Kode item tidak boleh kosong");
@@ -43,10 +43,10 @@ export function Items () {
     if(recordInserted){
       // push to state
       Master_items.value.unshift({ id: recordInserted?.id, ...record });
-      return true;
+      return recordInserted.id;
     }
 
-    return "Gagal menambahkan item baru"
+    return false;
   };
 
 

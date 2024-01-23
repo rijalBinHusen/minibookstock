@@ -1,13 +1,9 @@
 // import "fake-indexeddb/auto"
 import { describe, it, expect } from "vitest";
 import { faker } from "@faker-js/faker";
-import {
-  createItem,
-  getItemById,
-  updateItemById,
-  getItemIdByKdItem,
-  getAllDataToBackup,
-} from "@/pages/MasterItems/MasterItems";
+import { Items } from "@/pages/MasterItems/MasterItems";
+const { createItem, getItemById, updateItemById, getItemByKdItem } = Items()
+
 import {
   createStock,
   changeAvailableStock,
@@ -46,13 +42,7 @@ for (let i = 0; i < 1; i++) {
   describe("create master item", () => {
     it("Should create new item", async () => {
       // waiting proses create item and write to indexeddb
-      const newItemIdReturned = await createItem(
-        item_kode,
-        item_name,
-        false,
-        false,
-        item_age
-      );
+      const newItemIdReturned = await createItem( item_kode, item_name, false, false, item_age);
       // find the object from indexeddb by id
       const getData = await getItemById(newItemIdReturned);
       // expecting data that we got match with original record
@@ -94,7 +84,7 @@ for (let i = 0; i < 1; i++) {
   describe("get item by kode", () => {
     it("item id must equal", async () => {
       // find the object from indexeddb by id
-      const getData = await getItemIdByKdItem(new_kd_item);
+      const getData = await getItemByKdItem(new_kd_item);
       // expecting data that we got match with update record
       expect(getData.id).equal(variableSaved.newItemId);
       expect(getData.nm_item).equal(new_nm_item);

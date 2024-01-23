@@ -2,14 +2,12 @@ import { describe, expect, it } from "vitest";
 import OutputForm from "./OutputForm.vue";
 import { faker } from "@faker-js/faker";
 import { useJurnalProdukKeluar } from "@/pages/Settings/Setting_JurnalId";
-import {
-  createItem,
-  getItemById,
-  gettingStartedRecord as getItems,
-} from "@/pages/MasterItems/MasterItems";
+import { Items } from "@/pages/MasterItems/MasterItems";
 import { createStock, getStockById } from "@/pages/StockMasters/StockMaster";
 import { createStore } from "vuex";
 import { flushPromises, mount } from "@vue/test-utils";
+
+const { createItem, getItemById, getAllMasterItems: getItems } = Items();
 
 // create value for mocking jurnal produk keluar
 describe("Create new record for stock keluar", () => {
