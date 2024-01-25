@@ -105,7 +105,7 @@ import Input from '../../components/elements/Forms/Input.vue';
 import Button from '../../components/elements/Button.vue';
 import TableVue from '../../components/elements/Table.vue';
 import Select from '../../components/elements/Forms/Select.vue';
-import { StockToOutput } from './OutputForm';
+import { StockToOutput, AvailableDate } from './OutputForm';
 import { getOutputById, stockOutput } from './Output';
 
 const props = defineProps({
@@ -140,7 +140,7 @@ const quantity = ref(null);
 const item = ref(null);
 const item_detail = ref(null);
 // lists of date that availablel to taken
-const itemAvilabelDate = ref([]);
+const itemAvilabelDate = ref(<AvailableDate[]>[]);
 // stock master that should we take
 const currentStockMaster = ref(null);
 // available stock that can take to quantity output
@@ -153,11 +153,12 @@ const handleItem = async (e: Event) => {
 
   // getItem
   const kd_item = inputElm.value.split('*')[0];
-  item_detail.value = await getItemIdByKdItem(kd_item);
+  const getItem = stock.getItemByKodeItem(kd_item);
+  item_detail.value = ""
   item.value = item_detail.value?.id;
   // after item taken
   // get product created by it item that available to take
-  itemAvilabelDate.value = stock.getAvailableDateByItem(item.value);
+  itemAvilabelDate.value = stock.getAvailableDateByKodeItem(kd_item);
 };
 
 const hadleStockMaster = async (id_stock_master) => {

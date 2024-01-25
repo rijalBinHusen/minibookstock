@@ -27,11 +27,18 @@ interface MasterItem {
   id: string
 }
 
+export interface AvailableDate {
+  id: string
+  product_created: string
+  origin_product_created: number
+}
+
 const masterItemDb = useIdb(masterItemStoreName);
 const masterStockDb = useIdb(MasterStockStoreName);
 
 export class StockToOutput {
     #localStock = <StockMaster[]>[];
+    #items = <MasterItem[]>[];
     constructor() {
         this.getMasterStocks();
     }
@@ -50,16 +57,12 @@ export class StockToOutput {
       return result;
     }
   
-    getAvailableDateByItem(item_id: string) {
+    getAvailableDateByKodeItem(kodeItem: string) {
       
-        const result = <{
-            id: string
-            product_created: string
-            origin_product_created: number
-        }[]>[];
+      const result = <AvailableDate[]>[];
       this.#localStock.forEach((stock) => {
         // if availabel and item_id == item_id
-        if (stock?.item_id == item_id && stock?.available > 0) {
+        if (stock?.kodeItem == kodeItem && stock?.available > 0) {
           // product create as number
           const product_created_as_number =
             typeof stock?.product_created === 'string'
@@ -135,9 +138,9 @@ export class StockToOutput {
       return false;
     }
   
-    pickStockByItemAndQty(item_id: string, yourQuantity: number) {
+    pickStockByItemAndQty(kodeItem: string, yourQuantity: number) {
       // console.log('your quantity: ', yourQuantity)
-      const dateAvailable = this.getAvailableDateByItem(item_id);
+      const dateAvailable = this.getAvailableDateByKodeItem(kodeItem);
       // console.log('date available: ', dateAvailable);
       const result = <{ stock_master_id: string, quantity:number}[]>[];
       let quantityLeft = yourQuantity;
@@ -164,7 +167,7 @@ export class StockToOutput {
       if (quantityLeft > 0) {
         // get item name
         const itemDetails = this.#localStock.find(
-          (rec) => rec?.item_id == item_id
+          (rec) => rec?.kodeItem == kodeItem
         );
         
         getItemById(itemDetails?.item_id).then((res) => {
@@ -179,13 +182,31 @@ export class StockToOutput {
     async getMasterStocks() {
 
         const getAllStocks = await masterStockDb.getItemsByKeyGreaterThan("available", 0) as StockMaster[];
-        const getAllItems = await masterItemDb.getItems() as MasterItem[];
+        this.#items = await masterItemDb.getItems() as MasterItem[];
 
         for(let stock of getAllStocks) {
-          const findItem = getAllItems.find((item) => item.id === stock.item_id);
+          const findItem = this.#items.find((item) => item.id === stock.item_id);
           this.#localStock.push({
             ...stock, itemName: findItem?.nm_item || "Not found", kodeItem: findItem?.kd_item || "Not found"
           })
         }
+    }
+
+    getItemByKodeItem(kodeItem: string): MasterItem {
+      
+      const findItem = this.#items.find((item) => item.kd_item === kodeItem);
+
+      if(findItem) {
+        return findItem
+      }
+
+      return {
+        age_item: 0,
+        division: "",
+        id: "",
+        kd_item: "",
+        last_used: 0,
+        nm_item: "",
+      }
     }
   }
