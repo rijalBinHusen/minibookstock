@@ -1,41 +1,35 @@
 import { ref } from "vue";
 // import { getItemById } from "@/composables/MasterItems";
-import { ymdTime, ddmmyyyy, dateMonth } from "@/utils/dateFormat";
+import { ymdTime, ddmmyyyy, dateMonth } from "../../utils/dateFormat";
 // store name
 export const store = "output_transaction";
 // import set parent function for stock master
-import {
-  getStockById,
-  changeAvailableStock,
-  changeQuantityStock,
-} from "@/composables/StockMaster";
+import { getStockById, changeAvailableStock, changeQuantityStock } from "../../composables/StockMaster";
 // import item function
-import { getItemById } from "@/composables/MasterItems";
+import { getItemById } from "../../composables/MasterItems";
 // import idb
-import { useIdb } from "@/utils/localforage";
-import { useJurnalProdukKeluar } from "@/composables/Setting_JurnalId";
-import { subscribeConfirmDialog } from "@/utils/launchForm";
+import { useIdb } from "../../utils/localforage";
+import { useJurnalProdukKeluar } from "../../composables/Setting_JurnalId";
 
-// the state
-export const Output_transaction = ref([]);
+interface Output {
+  id: string
+  tanggal: number,
+  type: string,
+  nomor_so: string,
+  stock_master_id: string,
+  shift: number,
+  quantity: number,
+  isFinished: boolean,
+  customer: string,
+}
 
-// what date to show
-export const dateRecordToShow = ref(new Date());
-
-/**
- *
-  id string [pk]
-  stock_master_ids string
-  paper_id string
-  tanggal date
-  shift number
-  diterima string
-  type string
-  diserahkan string
-  catatan string
-  isFinished boolean
- */
-
+interface OutputMapped extends Output {
+  kd_item: string
+  nm_item: string
+  product_created: string
+  tanggal2: string
+}
+ 
 export interface stockOutput {
   id: string
   itemId: string,
@@ -43,20 +37,17 @@ export interface stockOutput {
   quantity: number,
   product_created: string
 }
+import { subscribeConfirmDialog } from "../../utils/launchForm";
 
-export const createOutput = async (
-  tanggal,
-  type,
-  shift,
-  nomor_so,
-  stock_master_id,
-  quantity,
-  customer
-) => {
+// the state
+export const Output_transaction = ref(<OutputMapped[]>[]);
+export const dateRecordToShow = ref(new Date());
+
+export const createOutput = async (tanggal: Date, type: string, shift: number,nomor_so: string, stock_master_id: string, quantity: number, customer: string) => {
   // initiate db
   const outputdb = useIdb(store);
   // initiate new record
-  const record = {
+  const record = <Output>{
     tanggal: ymdTime(tanggal),
     type,
     nomor_so,
@@ -192,28 +183,18 @@ export const updateOutputById = async (id, keyValueToUpdate) => {
   return false;
 };
 
-export const outputTransactionMapped = async (doc) => {
-  // const result = [];
-  // // if the state null
-  if (!doc) {
-    return;
-  }
+export const outputTransactionMapped = async (doc: Output): Promise<OutputMapped> => {
+  
   // get master stock
   const master = await getStockById(doc?.stock_master_id);
-  // get item
   const item = await getItemById(master.item_id);
   // return mapped record
   return {
-    id: doc?.id,
-    tanggal: dateMonth(doc?.tanggal),
-    shift: doc?.shift,
-    customer: doc?.customer,
-    nomor_so: doc?.nomor_so,
-    kd_item: item?.kd_item,
-    nm_item: item?.nm_item,
+    ...doc,
+    tanggal2: dateMonth(doc.tanggal),
+    kd_item: item.kd_item,
+    nm_item: item.nm_item,
     product_created: dateMonth(master.product_created),
-    quantity: doc?.quantity,
-    isFinished: doc?.isFinished,
   };
 };
 

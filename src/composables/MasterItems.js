@@ -1,6 +1,6 @@
 import { ref } from 'vue';
 // store name
-const store = 'items';
+export const store = 'items';
 // // import { dayPlusOrMinus } from "../utils/dateFormat";
 import { useIdb } from '../utils/localforage';
 

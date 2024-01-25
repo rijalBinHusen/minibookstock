@@ -19,7 +19,6 @@
           />
           <datalist id="item">
             <option
-              @select="handleItem(item.item_id)"
               v-for="item in itemAvailable"
               :key="item.item_id"
               :value="item.kodeItem + '* ' + item.itemName"
@@ -103,7 +102,7 @@
 // item, quantity, kode produksi, tanggal produksi, tanggal exp
 import { ref, defineEmits, defineProps, watch, onBeforeMount } from 'vue';
 import Input from '../../components/elements/Forms/Input.vue';
-import Button from '@/components/elements/Button.vue';
+import Button from '../../components/elements/Button.vue';
 import TableVue from '../../components/elements/Table.vue';
 import Select from '../../components/elements/Forms/Select.vue';
 import { StockToOutput } from './OutputForm';
@@ -147,17 +146,18 @@ const currentStockMaster = ref(null);
 // available stock that can take to quantity output
 const quantityAvailableStockMaster = ref(null);
 
-const handleItem = async (e: string) => {
-  if (e.target.value) {
-    // getItem
-    const kd_item = e.target.value.split('*')[0];
-    item_detail.value = await getItemIdByKdItem(kd_item);
-    item.value = item_detail.value?.id;
-    // after item taken
-    // get product created by it item that available to take
-    itemAvilabelDate.value = stock.getAvailableDateByItem(item.value);
-  }
-  return;
+const handleItem = async (e: Event) => {
+
+  const inputElm = e.target as HTMLInputElement;
+  if(!e?.target && !inputElm.value) return;
+
+  // getItem
+  const kd_item = inputElm.value.split('*')[0];
+  item_detail.value = await getItemIdByKdItem(kd_item);
+  item.value = item_detail.value?.id;
+  // after item taken
+  // get product created by it item that available to take
+  itemAvilabelDate.value = stock.getAvailableDateByItem(item.value);
 };
 
 const hadleStockMaster = async (id_stock_master) => {
