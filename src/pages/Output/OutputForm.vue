@@ -54,7 +54,6 @@
           :stockChild="stockChildDetails"
           @addStock="handleStock('add', $event)"
           @removeStock="handleStock('remove', $event)"
-          @editStock="handleStock('edit', $event)"
           @updateStock="handleStock('update', $event)"
           :currentStockEdit="currentStockEdit"
         />
@@ -109,6 +108,7 @@ import {
   getItemOrderById,
   changeOrderValue,
 } from '../../composables/SalesOrderItem';
+import { StockToOutput } from './OutputForm';
 
 interface OutputFormStruct {
   date: Date
@@ -133,7 +133,7 @@ const isParentEditMode = ref(false);
 
 // stock to update while editing form
 const currentStockEdit = ref(<stockOutput>{});
-const stockToUpdate = ref([]);
+const stockToUpdate = ref(<string[]>[]);
 const stockChildDetails = ref([]);
 
 // const stockChildMap = async () => {
@@ -150,39 +150,43 @@ const stockChildDetails = ref([]);
 //   }
 // };
 // to add new item form
-const handleStock = (operation, e) => {
+const handleStock = (operation: string, e: stockOutput) => {
   //  data from child = { stock_master_id, quantity }
   if (operation == 'add') {
-    const id = e?.id || stockChild.value.length + 1 + '';
-    stockChild.value.push({ id, ...e });
-  } else if (operation == 'edit') {
-    currentStockEdit.value = stockChild.value.find((rec) => rec?.id == e);
-  } else if (operation == 'update') {
-    stockChild.value = stockChild.value.map((stock) =>
-      stock?.id == e.id ? { id: e.id, ...e.value } : stock
+
+    const id = e?.id || outputForm.value.stockChild.length + 1 + '';
+    outputForm.value.stockChild.push({ ...e, id });
+  }
+  
+  else if (operation == 'update') {
+
+    outputForm.value.stockChild = outputForm.value.stockChild.map((stock) =>
+      stock?.id == e.id ? { ...e } : stock
     );
+
     // if isedit mode, push to stock to uupdate
-    if (isEditMode.value) {
-      stockToUpdate.value.push(e.id);
-    }
-    currentStockEdit.value = null;
-  } else {
-    stockChild.value = stockChild.value.filter((rec) => rec?.id !== e);
+    if (isEditMode.value) stockToUpdate.value.push(e.id);
+    
+  } 
+  
+  // remove
+  else {
+    outputForm.value.stockChild = outputForm.value.stockChild.filter((rec) => rec?.id !== e.id);
   }
 };
 
 const handleSubmit = async () => {
+
   // prevent form to submitted twice
   if (message.value) return;
   // there is form null
-  if (
-    !date.value ||
-    !shift.value ||
-    !type.value ||
-    !nomor_so.value ||
-    !stockChild.value ||
-    !customer.value
-  ) {
+  const isAnyFormNull = !outputForm.value.date 
+                        || !outputForm.value.shift 
+                        || !outputForm.value.type 
+                        || !outputForm.value.nomor_so
+                        || !outputForm.value.stockChild.length
+                        || !outputForm.value.customer
+  if (isAnyFormNull) {
     alert('Tidak boleh ada form yang kosong');
     return;
   }
@@ -193,6 +197,7 @@ const handleSubmit = async () => {
   }
   // create new output
   else {
+    
     await handleCreateOutput();
   }
 
@@ -203,25 +208,24 @@ const handleSubmit = async () => {
 };
 
 // message to show while insert to database
-const message = ref(null);
+const message = ref("");
 const handleCreateOutput = async () => {
   // stock child value = data from child = { stock_master_id, quantity }
   // then insert incoming transction with child from insert all stock
-  for (const [index, stock] of stockChild.value.entries()) {
+  for (const [index, stock] of outputForm.value.stockChild.entries()) {
     // set message to show
-    message.value = `Memasukkan produk ${index + 1} dari ${
-      stockChild.value.length
-    }`;
+    message.value = `Memasukkan produk ${index + 1} dari ${outputForm.value.stockChild.length}`;
     // create output record
     await createOutput(
-      date.value,
-      type.value,
-      shift.value,
-      nomor_so.value,
-      stock?.stock_master_id,
-      stock?.quantity,
-      customer.value
+      outputForm.value.date, 
+      outputForm.value.type, 
+      outputForm.value.shift, 
+      outputForm.value.nomor_so, 
+      stock.stockMasterId,
+      stock.quantity, 
+      outputForm.value.customer
     );
+
     // change order quantity if it picked from item order, this will return (order - yournumber)
     if (stock?.orderId) {
       const orderQuantity = await changeOrderValue(

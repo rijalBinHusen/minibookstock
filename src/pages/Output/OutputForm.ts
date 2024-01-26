@@ -3,6 +3,7 @@ import { store as masterItemStoreName, getItemById } from "../../composables/Mas
 import { store as MasterStockStoreName } from "../../composables/StockMaster";
 import { useIdb } from "../../utils/localforage";
 import { ddmmyyyy } from '../..//utils/dateFormat';
+import { stockOutput } from  "./Output";
 
 export interface StockMaster {
     id: string
@@ -18,13 +19,13 @@ export interface StockMaster {
     kodeItem: string
 }
 
-interface MasterItem {
+export interface MasterItem {
+  id: string
   kd_item: string,
   nm_item: string,
   division: string,
   last_used: number,
   age_item: number
-  id: string
 }
 
 export interface AvailableDate {
@@ -207,6 +208,27 @@ export class StockToOutput {
         kd_item: "",
         last_used: 0,
         nm_item: "",
+      }
+    }
+
+    getStockMasterById(stockId: string): StockMaster {
+
+      const findStock = this.#localStock.find((stock) => stock.id === stockId);
+
+      if(findStock) return findStock;
+
+      return {
+        available: 0,
+        available_end: 0,
+        available_start: 0,
+        id: "",
+        isTaken: true,
+        item_id: "",
+        itemName: "",
+        kd_produksi: "",
+        kodeItem: "",
+        product_created: 0,
+        quantity: 0
       }
     }
   }

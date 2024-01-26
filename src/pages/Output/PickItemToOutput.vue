@@ -12,7 +12,7 @@
             placeholder="Masukkan item"
             class="w-64 input input-sm input-primary"
             @change="handleItem"
-            v-model="itemModel"
+            v-model="stockOutputForm.itemName"
             list="item"
             :disabled="isParentEditMode"
             id="input-item-output"
@@ -45,11 +45,12 @@
           />
         </div>
       </div>
+
       <!-- Kode produksi -->
       <div v-if="currentStockMaster" class="form-control">
         <label class="label">
           <span id="max-quantity" class="label-text"
-            >Qantity (Max: {{ quantityAvailableStockMaster }})</span
+            >Qantity (Max: {{ currentStockMaster.available }})</span
           >
         </label>
         <div class="relative">
@@ -59,10 +60,12 @@
             class="w-32 input input-sm input-primary"
             id="quantity"
             v-model="stockOutputForm.quantity"
+            :max="currentStockMaster.available"
           />
         </div>
       </div>
-      <div id="incoming_item_add" class="w-full text-right">
+
+      <div id="output_item_add" class="w-full text-right">
         <Button
           v-if="isEditMode"
           type="button"
@@ -100,12 +103,12 @@
 
 <script setup lang="ts">
 // item, quantity, kode produksi, tanggal produksi, tanggal exp
-import { ref, defineEmits, defineProps, watch, onBeforeMount } from 'vue';
+import { ref, defineEmits, defineProps, watch, onBeforeMount, PropType } from 'vue';
 import Input from '../../components/elements/Forms/Input.vue';
 import Button from '../../components/elements/Button.vue';
 import TableVue from '../../components/elements/Table.vue';
 import Select from '../../components/elements/Forms/Select.vue';
-import { StockToOutput, AvailableDate } from './OutputForm';
+import { StockToOutput, AvailableDate, MasterItem, StockMaster } from './OutputForm';
 import { getOutputById, stockOutput } from './Output';
 
 const props = defineProps({
@@ -113,14 +116,15 @@ const props = defineProps({
     type: Boolean,
     required: true
   },
-  stockChild: Array,
+  stockChild: {
+    type: Object as PropType<stockOutput>
+  },
   currentStockEdit: Object,
 });
 
 const emits = defineEmits<{
   (e: 'addStock', stock: stockOutput): void
   (e: 'removeStock', id: number): void
-  (e: 'editStock', id: number): void
   (e: 'updateStock', stock: stockOutput): void
 }>()
 
@@ -133,18 +137,13 @@ const isEditMode = ref(null);
 // item llist that available
 const itemAvailable = stock.itemThatAvailable();
 
-// item mode
-const itemModel = ref(null);
-const quantity = ref(null);
 // item kd and name
-const item = ref(null);
-const item_detail = ref(null);
+const item = ref("");
+const item_detail = ref(<MasterItem>{});
 // lists of date that availablel to taken
 const itemAvilabelDate = ref(<AvailableDate[]>[]);
-// stock master that should we take
-const currentStockMaster = ref(null);
-// available stock that can take to quantity output
-const quantityAvailableStockMaster = ref(null);
+// stockmaster info
+const currentStockMaster = ref(<StockMaster>{});
 
 const handleItem = async (e: Event) => {
 
@@ -153,65 +152,69 @@ const handleItem = async (e: Event) => {
 
   // getItem
   const kd_item = inputElm.value.split('*')[0];
-  const getItem = stock.getItemByKodeItem(kd_item);
-  item_detail.value = ""
-  item.value = item_detail.value?.id;
+  
   // after item taken
+  item_detail.value = stock.getItemByKodeItem(kd_item);
+  item.value = item_detail.value.id;
+
   // get product created by it item that available to take
   itemAvilabelDate.value = stock.getAvailableDateByKodeItem(kd_item);
 };
 
-const hadleStockMaster = async (id_stock_master) => {
+const hadleStockMaster = async (id_stock_master: string) => {
   // set the stock master
-  currentStockMaster.value = id_stock_master;
+  currentStockMaster.value = stock.getStockMasterById(id_stock_master);
   // get stock master by id
   const stockAvailable = stock.getAvailableStock(id_stock_master);
   // get the quantity
   // show the maximum quantity
-  if (stockAvailable) {
-    if (props.isParentEditMode) {
-      quantityAvailableStockMaster.value =
-        quantityAvailableStockMaster.value + stockAvailable;
-    } else {
-      quantityAvailableStockMaster.value = stockAvailable;
-    }
-  }
-  // console.log(stockMaster)
+
+  // if (stockAvailable) {
+
+  //   if (props.isParentEditMode) {
+  //     // add stock available and taked quantity
+  //     quantityAvailableStockMaster.value = quantityAvailableStockMaster.value + stockAvailable;
+  //   } 
+    
+  //   else {
+  //     quantityAvailableStockMaster.value = stockAvailable;
+  //   }
+  // }
 };
 
 const handleSubmit = async () => {
   // condition
-  const condition =
-    currentStockMaster.value &&
-    Number(quantity.value) <= Number(quantityAvailableStockMaster.value);
+  const condition = currentStockMaster.value && Number(stockOutputForm.value.quantity) <= Number(currentStockMaster.value.available);
+  
   // if condition false
   if (!condition) {
-    alert(
-      'Tidak boleh ada form yang kosong, dan quantity tidak melebihi maximal'
-    );
+    alert('Tidak boleh ada form yang kosong, quantity tidak melebihi maximal');
     return;
   }
+
   let quantityToOutput = isEditMode.value
-    ? Number(quantity.value) - quantityAvailableStockMaster.value
-    : Number(quantity.value);
+    ? Number(stockOutputForm.value.quantity) - currentStockMaster.value.available
+    : Number(stockOutputForm.value);
+
   // variable new record
   const record = {
     stock_master_id: currentStockMaster.value,
-    quantity: quantity.value,
+    quantity: stockOutputForm.value,
   };
   // is edit mode
   if (isEditMode.value) {
     // send event to parent
-    emit('updateStock', { id: isEditMode.value, value: record });
+    emits('updateStock', stockOutputForm.value );
   }
+
   // create stock
   else {
     // send event to parent
     // emit('addStock', record);
 
-    emits("addStock", 1);
+    emits("addStock", stockOutputForm.value);
     // set quantity stock
-    stock.pickAvailableStock(currentStockMaster.value, quantityToOutput);
+    stock.pickAvailableStock(currentStockMaster.value.id, quantityToOutput);
   }
   // reset the form after submit
   resetForm();
@@ -219,18 +222,39 @@ const handleSubmit = async () => {
 };
 
 const resetForm = () => {
+
   setTimeout(() => {
-    item_detail.value = '';
+
+    item_detail.value = {
+      age_item: 0,
+      division: "",
+      id: "",
+      kd_item: "",
+      last_used: 0,
+      nm_item: ""
+    };
+
     item.value = '';
-    itemModel.value = '';
-    quantity.value = '';
+
+    // itemModel.value = null;
+
+    stockOutputForm.value = {
+      id: "",
+      itemId: "",
+      itemName: "",
+      product_created: "",
+      quantity: 0,
+      stockMasterId: ""
+    };
+
     itemAvilabelDate.value = [];
     // to empty currentStockEdit in parent
-    emit('editStock', false);
+    // emits('editStock', 1);
+
     // set the stock master
-    currentStockMaster.value = null;
+    // currentStockMaster.value = "";
     // show the maximum quantity
-    quantityAvailableStockMaster.value = null;
+    // quantityAvailableStockMaster.value = 0;
     // editmode
     isEditMode.value = null;
   }, 300);
@@ -239,46 +263,44 @@ const resetForm = () => {
 // // btn table handle
 const handleBtnTable = (operation, id) => {
   if (operation === 'remove') {
-    const confirm = window.confirm(
-      'Apakah anda yakin akan menghapus item tersebut'
-    );
+    const confirm = window.confirm('Apakah anda yakin akan menghapus item tersebut');
     if (confirm) {
-      emit('removeStock', id);
+      emits('removeStock', id);
     }
   } else {
-    emit('editStock', id);
+    // emits('editStock', id);
   }
 };
 
 watch([props], async () => {
-  if (props?.currentStockEdit?.id) {
-    // get stock master
-    const stockMaster = await getStockById(
-      props?.currentStockEdit?.stock_master_id
-    );
-    // set editmode
-    isEditMode.value = props?.currentStockEdit?.id;
-    // get item
-    const itemDetails = await getItemById(stockMaster['item_id']);
-    // set quantity
-    // console.log(props?.currentStockEdit)
-    quantity.value = props?.currentStockEdit?.quantity;
-    // set item model
-    itemModel.value = itemDetails.kd_item + '* ' + itemDetails.nm_item;
-    // set item id
-    item.value = itemDetails.id;
-    // waiting item to input text
-    await handleItem({ target: { value: itemModel.value } });
-    // set quantity available stock master
-    // if isEditMode.value.length > 5 it means we're edit record from output database
-    if (isEditMode.value.length > 5) {
-      const outputRec = await getOutputById(isEditMode.value);
-      quantityAvailableStockMaster.value = Number(outputRec?.quantity);
-    } else {
-      quantityAvailableStockMaster.value = props?.currentStockEdit?.quantity;
-    }
-    // set stock master using this way
-    hadleStockMaster(stockMaster.id);
-  }
+  // if (props?.currentStockEdit?.id) {
+  //   // get stock master
+  //   const stockMaster = await getStockById(
+  //     props?.currentStockEdit?.stock_master_id
+  //   );
+  //   // set editmode
+  //   isEditMode.value = props?.currentStockEdit?.id;
+  //   // get item
+  //   const itemDetails = await getItemById(stockMaster['item_id']);
+  //   // set quantity
+  //   // console.log(props?.currentStockEdit)
+  //   quantity.value = props?.currentStockEdit?.quantity;
+  //   // set item model
+  //   itemModel.value = itemDetails.kd_item + '* ' + itemDetails.nm_item;
+  //   // set item id
+  //   item.value = itemDetails.id;
+  //   // waiting item to input text
+  //   await handleItem({ target: { value: itemModel.value } });
+  //   // set quantity available stock master
+  //   // if isEditMode.value.length > 5 it means we're edit record from output database
+  //   if (isEditMode.value.length > 5) {
+  //     const outputRec = await getOutputById(isEditMode.value);
+  //     quantityAvailableStockMaster.value = Number(outputRec?.quantity);
+  //   } else {
+  //     quantityAvailableStockMaster.value = props?.currentStockEdit?.quantity;
+  //   }
+  //   // set stock master using this way
+  //   hadleStockMaster(stockMaster.id);
+  // }
 });
 </script>

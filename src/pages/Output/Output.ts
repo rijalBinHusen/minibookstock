@@ -32,6 +32,7 @@ interface OutputMapped extends Output {
  
 export interface stockOutput {
   id: string
+  stockMasterId: string
   itemId: string,
   itemName: string
   quantity: number,
