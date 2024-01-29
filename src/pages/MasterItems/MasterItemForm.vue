@@ -2,7 +2,6 @@
     <form
       @submit.prevent="handleSubmit"
       id="form_item"
-      class="flex items-center justify-center"
     >
       <!-- kode item -->
       <InputVue
@@ -24,7 +23,6 @@
         tipe="primary"
         small
         id="nm_item"
-        class="ml-2"
         label="Nama item"
       />
       <!--End of  Nama item -->
@@ -37,8 +35,8 @@
         tipe="primary"
         small
         id="age_item"
-        class="ml-2"
         label="Umur item"
+        type="number"
       />
       <!-- End of umur item -->
 
@@ -50,8 +48,9 @@
         tipe="primary"
         small
         id="sort_item"
-        class="ml-2"
         label="Nomor urut item dibuku stock"
+        type="number"
+        class="mb-4"
       />
 
       <Button
@@ -59,7 +58,6 @@
         :value="idItem ? 'Update' : 'Tambah'"
         type="button"
         small
-        class="ml-2"
         id="submit-master-item"
       />
 

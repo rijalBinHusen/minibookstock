@@ -48,7 +48,7 @@ export default {
     placeholder: String,
     small: Boolean,
     button: String,
-    value: String,
+    value: String|Number,
     ref: String,
     disabled: Boolean,
     id: String,

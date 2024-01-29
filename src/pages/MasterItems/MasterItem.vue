@@ -6,7 +6,7 @@
         value="Tambah item"
         type="button"
         small
-        class="ml-2 w-1/6"
+        class="w-1/6"
         @trig="isActiveModal = true"
       />
     <!-- databale -->
@@ -87,13 +87,13 @@ function cancelForm () {
 }
 
 async function addItem(item: Item) {
-  
+
+  errorMessage.value = "Membuat item baru";
   const isCreated = await createItem(item.kd_item, item.nm_item, item.division, 0, item.age_item, item.sort_item);
 
   const isFailedToCreate = isCreated !== false && isCreated.length > 14;
-  if(isFailedToCreate) errorMessage.value = isCreated
-  else cancelForm()
-  console.log("lsdkfj")
+  if(isFailedToCreate) { errorMessage.value = isCreated }
+  else { cancelForm() }
 }
 
 async function updateItem(item: Item) {

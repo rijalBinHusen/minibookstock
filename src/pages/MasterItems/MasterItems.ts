@@ -28,9 +28,9 @@ export function Items () {
   async function createItem (kd_item: string, nm_item: string, division: string, last_used:number, age_item:number, sort_item: number): Promise<false|string> {
     
     const errorMessage = [];
-    if(kd_item === "") errorMessage.push("Kode item tidak boleh kosong");
-    if(nm_item === "") errorMessage.push("Nama item tidak boleh kosong");
-    if(age_item === 0) errorMessage.push("Umur item tidak boleh kosong");
+    if(!Boolean(kd_item)) errorMessage.push("Kode item tidak boleh kosong");
+    if(!Boolean(nm_item)) errorMessage.push("Nama item tidak boleh kosong");
+    if(!Boolean(age_item)) errorMessage.push("Umur item tidak boleh kosong");
 
     if(errorMessage.length) return errorMessage.join(", ")
     
@@ -75,9 +75,9 @@ export function Items () {
   async function updateItemById (id: string, keyValueToUpdate: ItemUpdate): Promise<boolean|string> {
     
     const errorMessage = [];
-    if(keyValueToUpdate.kd_item === "") errorMessage.push("Kode item tidak boleh kosong");
-    if(keyValueToUpdate.nm_item === "") errorMessage.push("Nama item tidak boleh kosong");
-    if(keyValueToUpdate.age_item === 0) errorMessage.push("Umur item tidak boleh kosong");
+    if(!Boolean(keyValueToUpdate.kd_item)) errorMessage.push("Kode item tidak boleh kosong");
+    if(!Boolean(keyValueToUpdate.nm_item)) errorMessage.push("Nama item tidak boleh kosong");
+    if(!Boolean(keyValueToUpdate.age_item)) errorMessage.push("Umur item tidak boleh kosong");
 
     return errorMessage.join(", ")
     
