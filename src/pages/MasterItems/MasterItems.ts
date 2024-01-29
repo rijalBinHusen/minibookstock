@@ -25,14 +25,14 @@ export const Master_items = ref(<Item[]>[]);
 
 export function Items () {
 
-  async function createItem (kd_item: string, nm_item: string, division: string, last_used:number, age_item:number, sort_item: number): Promise<false|string> {
+  async function createItem (kd_item: string, nm_item: string, division: string, last_used:number, age_item:number, sort_item: number): Promise<false|string|string[]> {
     
     const errorMessage = [];
     if(!Boolean(kd_item)) errorMessage.push("Kode item tidak boleh kosong");
     if(!Boolean(nm_item)) errorMessage.push("Nama item tidak boleh kosong");
     if(!Boolean(age_item)) errorMessage.push("Umur item tidak boleh kosong");
 
-    if(errorMessage.length) return errorMessage.join(", ")
+    if(errorMessage.length) return errorMessage
     
     // initiate new record
     const record = { kd_item, nm_item, division, last_used, age_item, sort_item };
@@ -72,14 +72,21 @@ export function Items () {
     return { kd_item: "Not found", nm_item: "Not found", age_item: 0, division: "", id: "", last_used: 0, sort_item: 0};
   };
 
-  async function updateItemById (id: string, keyValueToUpdate: ItemUpdate): Promise<boolean|string> {
+  async function updateItemById (id: string, keyValueToUpdate: ItemUpdate): Promise<boolean|string|string[]> {
     
     const errorMessage = [];
-    if(!Boolean(keyValueToUpdate.kd_item)) errorMessage.push("Kode item tidak boleh kosong");
-    if(!Boolean(keyValueToUpdate.nm_item)) errorMessage.push("Nama item tidak boleh kosong");
-    if(!Boolean(keyValueToUpdate.age_item)) errorMessage.push("Umur item tidak boleh kosong");
+    const keyToUpdate = typeof keyValueToUpdate === 'object' ? Object.getOwnPropertyNames(keyValueToUpdate) : [];
+    const isNothingToUpdate = keyToUpdate.length === 0;
 
-    return errorMessage.join(", ")
+    const isKdItemInvalid = keyToUpdate.includes("kd_item") && !Boolean(keyValueToUpdate.kd_item);
+    const isNmItemInvalid = keyToUpdate.includes("nm_item") && !Boolean(keyValueToUpdate.nm_item);
+    const isAgeItemInvalid = keyToUpdate.includes("age_item") && !Boolean(keyValueToUpdate.age_item);
+
+    if(isKdItemInvalid || isNothingToUpdate) errorMessage.push("Kode item tidak boleh kosong");
+    if(isNmItemInvalid || isNothingToUpdate) errorMessage.push("Nama item tidak boleh kosong");
+    if(isAgeItemInvalid || isNothingToUpdate) errorMessage.push("Umur item tidak boleh kosong");
+    
+    if(errorMessage.length) return errorMessage;
     
     const indexItem = Master_items.value.findIndex((rec) => rec?.id === id);
 
