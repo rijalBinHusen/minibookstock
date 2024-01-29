@@ -72,7 +72,7 @@ export function Items () {
     return { kd_item: "Not found", nm_item: "Not found", age_item: 0, division: "", id: "", last_used: 0, sort_item: 0};
   };
 
-  async function updateItemById (id: string, keyValueToUpdate: ItemUpdate): Promise<boolean|string|string[]> {
+  async function updateItemById (id: string, keyValueToUpdate: ItemUpdate): Promise<boolean|string[]> {
     
     const errorMessage = [];
     const keyToUpdate = typeof keyValueToUpdate === 'object' ? Object.getOwnPropertyNames(keyValueToUpdate) : [];

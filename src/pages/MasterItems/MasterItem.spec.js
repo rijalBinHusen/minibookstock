@@ -5,7 +5,7 @@ import { Items } from "./MasterItems";
 
 describe("Test master item", async () => {
   
-  const { createItem, getItemById, updateItemById } = Items();
+  const { createItem, getItemById, updateItemById, getItemByKdItem } = Items();
   
   const kodeItemError = "Kode item tidak boleh kosong";
   const nameItemError = "Nama item tidak boleh kosong";
@@ -43,7 +43,7 @@ describe("Test master item", async () => {
     }
   });
 
-  it("Create, update, and getItemById, the item must matched", async () => {
+  it("Create,  getItemById, update, and getItemByKdItem, the item must matched", async () => {
     
     for(let i=0; i < 20; i++) {
       // new record
@@ -78,8 +78,19 @@ describe("Test master item", async () => {
       expect(updateFailed3[0]).toBe(umurItemError)
 
       // failed update item because age item is null
-      const updateFailed4 = await updateItemById((idItem, { }));
+      const updateFailed4 = await updateItemById(idItem, { });
       expect(updateFailed4.join(", ")).toBe(kodeItemError + ", " + nameItemError + ", " + umurItemError)
+
+      const kd_item_update = faker.datatype.string(7);
+      // updated item
+      const updated = await updateItemById(idItem, { kd_item: kd_item_update });
+      expect(updated).toBe(true)
+
+      const item2 = await getItemByKdItem(kd_item_update);
+
+      // expect item information must be matched after updated
+      expect(item2.id).toBe(idItem);
+      expect(item2.kd_item).toBe(kd_item_update);
     }
   });
 
