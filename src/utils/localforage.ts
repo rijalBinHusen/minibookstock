@@ -95,38 +95,34 @@ export const useIdb = (storeName: string) => {
     return result;
   };
 
-  const updateItem = async (key: string, keyValueToUpdate: object) => {
+  const updateItem = async (key: string, keyValueToUpdate: object): Promise<boolean> => {
     // onsole.log('local forage update item', key)
     try {
       // get item first
       const item = await getItem(key) as object | null;
 
-      if(!item) {
-        throw 'Record tidak ditemukan!'
-      }
+      if(!item) throw 'Record tidak ditemukan!';
 
-      // new item
       const newItem = { ...item, ...keyValueToUpdate };
       // record to log
-      const isNotDuplicate = await addLog(storeName, 'update', key, {
-        ...keyValueToUpdate,
-      });
+      const isNotDuplicate = await addLog(storeName, 'update', key, { ...keyValueToUpdate });
       // then set item
-      if (isNotDuplicate) {
-        await setItem(key, newItem);
-      }
+      if (isNotDuplicate) await setItem(key, newItem);
+    
       return true;
-    } catch (err) {
+
+    } 
+    
+    catch (err) {
       alert('Terjadi kesalahan ketika update data')
       console.error(err);
       return false;
     }
   };
 
-  const getItemsByKeyValue = async (keySearch: string, valueSearch: string | number) => {
-    let result = [];
-    return store
-      .iterate(function (value, key, iterationNumber) {
+  const getItemsByKeyValue = async <T>(keySearch: string, valueSearch: string | number): Promise<T[]> => {
+    let result = <T[]>[];
+    await store.iterate(function (value:T, key, iterationNumber) {
         // Resulting key/value pair -- this callback
         // will be executed for every item in the
         // database.
@@ -136,20 +132,18 @@ export const useIdb = (storeName: string) => {
           result.push(value);
         }
       })
-      .then(function () {
-        // return result
-        return result;
-      })
       .catch(function (err) {
         // This code runs if there were any errors
         console.log(err);
       });
+
+      return result;
   };
 
-  const getItemsByKeyGreaterThan = async (keySearch: string, greaterThanValue: string | number) => {
-    let result = [];
-    return store
-      .iterate(function (value, key, iterationNumber) {
+  const getItemsByKeyGreaterThan = async <T>(keySearch: string, greaterThanValue: string | number): Promise<T[]> => {
+    let result = <T[]>[];
+
+    store.iterate(function (value: T, key, iterationNumber) {
         // Resulting key/value pair -- this callback
         // will be executed for every item in the
         // database.
@@ -159,14 +153,33 @@ export const useIdb = (storeName: string) => {
           result.push(value);
         }
       })
-      .then(function () {
-        // return result
-        return result;
+      .catch(function (err) {
+        // This code runs if there were any errors
+        console.log(err);
+      });
+
+      return result;
+  };
+
+  const getItemsByKeyThatValueLowerAndEqualThan = async <T>(keySearch: string, LowerThanValue: string | number): Promise<T[]> => {
+    let result = <T[]>[];
+
+    store.iterate(function (value: T, key, iterationNumber) {
+        // Resulting key/value pair -- this callback
+        // will be executed for every item in the
+        // database.
+        // onsole.log([key, value]);
+        if (value[keySearch] <= LowerThanValue) {
+          // save to result
+          result.push(value);
+        }
       })
       .catch(function (err) {
         // This code runs if there were any errors
         console.log(err);
       });
+
+      return result;
   };
 
   const getItemByTwoKeyValue = async (
@@ -249,10 +262,10 @@ export const useIdb = (storeName: string) => {
       });
   };
 
-  const getItemsGreatEqualLowEqual = async (key1: string, greaterValue1: string | number, key2: string, lowerValue2: string | number) => {
-    let result = [];
-    return store
-      .iterate(function (value) {
+  const getItemsGreatEqualLowEqual = async <T>(key1: string, greaterValue1: string | number, key2: string, lowerValue2: string | number): Promise<T[]> => {
+   
+    let result = <T[]>[];
+    store.iterate(function (value: T) {
         // Resulting key/value pair -- this callback
         // will be executed for every item in the
         // database.
@@ -263,14 +276,12 @@ export const useIdb = (storeName: string) => {
           result.push(value);
         }
       })
-      .then(function () {
-        // return result
-        return result;
-      })
       .catch(function (err) {
         // This code runs if there were any errors
         console.log(err);
       });
+
+    return result;
   }
 
   return {
@@ -287,6 +298,7 @@ export const useIdb = (storeName: string) => {
     getItemsByKeyGreaterOrEqualThanAndLowerOrEqualThan,
     getItemsThatValueIncludes,
     createItem,
-    getItemsGreatEqualLowEqual
+    getItemsGreatEqualLowEqual,
+    getItemsByKeyThatValueLowerAndEqualThan
   };
 };
