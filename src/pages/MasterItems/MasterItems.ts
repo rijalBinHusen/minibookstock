@@ -48,7 +48,6 @@ export function Items () {
     return false;
   };
 
-
   async function getAllMasterItems (): Promise<Item[]> {
     
     // get all item
@@ -73,7 +72,14 @@ export function Items () {
     return { kd_item: "Not found", nm_item: "Not found", age_item: 0, division: "", id: "", last_used: 0, sort_item: 0};
   };
 
-  async function updateItemById (id: string, keyValueToUpdate: ItemUpdate): Promise<void> {
+  async function updateItemById (id: string, keyValueToUpdate: ItemUpdate): Promise<boolean|string> {
+    
+    const errorMessage = [];
+    if(keyValueToUpdate.kd_item === "") errorMessage.push("Kode item tidak boleh kosong");
+    if(keyValueToUpdate.nm_item === "") errorMessage.push("Nama item tidak boleh kosong");
+    if(keyValueToUpdate.age_item === 0) errorMessage.push("Umur item tidak boleh kosong");
+
+    return errorMessage.join(", ")
     
     const indexItem = Master_items.value.findIndex((rec) => rec?.id === id);
 
@@ -89,10 +95,11 @@ export function Items () {
     else {
 
       const getItem = await getItemById(id);
-      itemToUpdate = { ...getItem, ...keyValueToUpdate}
+      itemToUpdate = { ...getItem, ...keyValueToUpdate }
     }
 
-    await dbitems.updateItem(id, itemToUpdate)
+    const isUpdated = await dbitems.updateItem(id, itemToUpdate)
+    return isUpdated;
   };
   
   async function getItemByKdItem (kd_item: string): Promise<Item> {

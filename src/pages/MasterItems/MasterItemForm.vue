@@ -12,6 +12,7 @@
         tipe="primary"
         small
         id="kd_item"
+        label="Kode item"
       />
       <!-- End of kode item -->
 
@@ -24,6 +25,7 @@
         small
         id="nm_item"
         class="ml-2"
+        label="Nama item"
       />
       <!--End of  Nama item -->
 
@@ -36,10 +38,11 @@
         small
         id="age_item"
         class="ml-2"
+        label="Umur item"
       />
       <!-- End of umur item -->
 
-      <!-- umur item -->
+      <!-- Nomor urut item -->
       <InputVue
         @send="itemForm.sort_item = $event"
         placeholder="Urutan item"
@@ -48,11 +51,12 @@
         small
         id="sort_item"
         class="ml-2"
+        label="Nomor urut item dibuku stock"
       />
 
       <Button
         primary
-        :value="isEditMode ? 'Update' : 'Tambah'"
+        :value="idItem ? 'Update' : 'Tambah'"
         type="button"
         small
         class="ml-2"
@@ -60,14 +64,16 @@
       />
 
       <Button
-        v-if="isEditMode"
+        v-if="!idItem"
         secondary
         value="Cancel"
         type="button"
         small
         class="ml-2"
-        @trig="handleButton"
+        @trig="resetForm"
       />
+
+      <p>{{ errorMessage }}</p>
     </form>
 </template>
 
@@ -75,20 +81,24 @@
     
     import InputVue from '@/components/elements/Forms/Input.vue';
     import Button from '@/components/elements/Button.vue';
-    import { Item, Items } from "./MasterItems";
+    import { Item, } from "./MasterItems";
     import { PropType, computed, onMounted, ref } from 'vue';
-    import { subscribeConfirmDialog } from '../../utils/launchForm';
 
     const props = defineProps({
 
         itemFormProps: {
             type: Object as PropType<Item>,
             required: true
-        }
+        },
+        errorMessage: String
     })
 
-    const { updateItemById, createItem } = Items();
-    const isEditMode = ref("");
+    const emits = defineEmits<{
+      (e: 'addItem', stock: Item): void
+      (e: 'updateItem', stock: Item): void
+      (e: 'cancel'): void
+    }>()
+
     const itemForm = ref<Item>({
         age_item: 0,
         division: "",
@@ -104,15 +114,10 @@
     const handleSubmit = async () => {
 
         // to update item
-        if (isEditMode.value) await updateItemById(itemForm.value.id, itemForm.value);
+        if (idItem.value) emits("updateItem", itemForm.value);
 
         // insert item
-        else {
-        
-            const isCreateItem = await createItem(itemForm.value.kd_item, itemForm.value.nm_item, "", 0, itemForm.value.age_item, itemForm.value.sort_item);
-            subscribeConfirmDialog("alert", isCreateItem);
-        }
-
+        else emits("addItem", itemForm.value)
         // reset the form
         resetForm();
     };
@@ -128,8 +133,6 @@
             nm_item: "",
             sort_item: 0
         }
-        // set edit mode to false
-        isEditMode.value = "";
     };
 
     onMounted(() => {

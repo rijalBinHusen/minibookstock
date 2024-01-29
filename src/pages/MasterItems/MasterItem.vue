@@ -1,5 +1,14 @@
 <template>
   <div class="grid mx-2 gap-2">
+
+    <Button
+        accent
+        value="Tambah item"
+        type="button"
+        small
+        class="ml-2 w-1/6"
+        @trig="isActiveModal = true"
+      />
     <!-- databale -->
     <datatable
       v-if="Master_items.length"
@@ -23,39 +32,77 @@
         @trig="handleButton($event)"
       />
     </datatable>
+
+    <Modal v-if="isActiveModal" @closeModal="cancelForm">
+      
+      <MasterItemForm
+        :itemFormProps="itemForm"
+        @addItem="addItem"
+        @updateItem="updateItem"
+        @cancel="cancelForm"
+        :errorMessage="errorMessage"
+      />
+    </Modal>
   </div>
 </template>
 
 <script setup lang="ts">
 import Button from '@/components/elements/Button.vue';
 import Datatable from '@/components/parts/Datatable.vue';
-import { Items, Master_items } from './MasterItems';
+import { Items, Master_items, Item } from './MasterItems';
 import { ref, onMounted } from 'vue';
+import Modal from '../../components/parts/Modal.vue';
+import MasterItemForm from './MasterItemForm.vue';
 
 
 // the origin value
-const origin = ref({});
-const emit = defineEmits(['formSubmit']);
+const itemForm = ref(<Item>{});
+const isActiveModal = ref(false);
+const errorMessage = ref("");
 
-const { getItemById, getAllMasterItems } = Items();
+const { getItemById, getAllMasterItems, createItem, updateItemById } = Items();
 
-// to edit item
-const handleButton = async (id: string) => {
-  if (id && id !== isEditMode.value) {
-    // get item by id from db
-    const getItem = await getItemById(id);
-
-    // fill the form
-    itemForm.value = getItem;
-
-    // set edit mode as true
-    setTimeout(() => (isEditMode.value = id), 300);
-  } 
-  
-  else {
-    resetForm();
-  }
+const handleButton = async (id?: string) => {
+    
+  // fill the form
+  const getItem = await getItemById(id);
+  itemForm.value = getItem;
 };
+
+function cancelForm () {
+
+  isActiveModal.value = false;
+
+  itemForm.value = {
+      age_item: 0,
+      division: "",
+      id: "",
+      kd_item: "",
+      last_used: 0,
+      nm_item: "",
+      sort_item: 0
+    };
+  
+  errorMessage.value = "";
+}
+
+async function addItem(item: Item) {
+  
+  const isCreated = await createItem(item.kd_item, item.nm_item, item.division, 0, item.age_item, item.sort_item);
+
+  const isFailedToCreate = isCreated !== false && isCreated.length > 14;
+  if(isFailedToCreate) errorMessage.value = isCreated
+  else cancelForm()
+  console.log("lsdkfj")
+}
+
+async function updateItem(item: Item) {
+  
+  const isUpdated = await updateItemById(item.id, item);
+
+  if(isUpdated === true) cancelForm();
+  else errorMessage.value = isUpdated + "";
+}
 
 onMounted(async () => {
   await getAllMasterItems();
