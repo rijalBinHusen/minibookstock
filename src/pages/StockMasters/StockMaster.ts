@@ -276,6 +276,57 @@ export const Stock_masters = ref(<StockMasterMapped[]>[]);
       // return result;
       return result;
     };
+
+    async function getStockForBookStock (date: number): Promise<StockMasterMapped[]>  {
+      
+      const stocks = await stockdb.getItemsGreatEqualLowEqual<StockMaster>('available_end', date, 'available_start', date)
+      const stockMapped = documentsMapper(stocks);
+
+      return stockMapped;
+    }
+
+    async function exportStockMaster () {
+      // variable that willl contain result
+      const result = []
+      // get all stock that available
+      await getStockThatAvailable()
+      // get item info for each stock
+      for(const [indexStock, stock] of Stock_masters.value.entries()) {
+        // set message to show in loader
+        loaderMessage(`Mengambil ${indexStock} dari ${Stock_masters.value.length} informasi`)
+          if(Number(stock?.quantity) > 0) {
+              // get item info
+              const item = await getItemById(stock?.item_id)
+              // push to result
+              result.push({
+                  kode_item: item.kd_item,
+                  nama_item: item.nm_item,
+                  quantity: stock?.quantity,
+                  tanggal_produksi: ddmmyyyy(stock?.product_created, '-')
+              })
+          }
+      }
+
+      return result.sort((a, b) => a['kode_item'] - b['kode_item']);
+      // ExportToXls(result, `Stock yang tersedia dilapangan tanggal ${full()}`)
+    }
+
+    return {
+      createStock,
+      removeStockById,
+      getStockById,
+      updateStockById,
+      setStockParent,
+      getStockThatAvailable,
+      getAvailableDateByItemId,
+      changeAvailableStock,
+      markStockAsTaken,
+      changeQuantityById,
+      getStockMasterByItemId,
+      getSlowMovingItems,
+      getStockForBookStock,
+      exportStockMaster
+    }
   }
 
 
@@ -404,65 +455,65 @@ export const getAllDataToBackup = async () => {
 // };
 
 
-export const getSummaryStockMaster = async () => {
-  // incoming type
-  const { getJurnalProdukMasukById } = useJurnalProdukMasuk();
-  // get all available item first
-  await getStockThatAvailable();
-  // variable that wuold contain result
-  let result = [];
-  // loop the state
-  for (let [index, stock] of Stock_masters.value.entries()) {
-    // show message to loader
-    loaderMessage(
-      `Menerjemahkan menjadi summary stock, ${index} dari ${Stock_masters.value.length} stock`
-    );
-    // get incoming details
-    const incomingDetails = await getIncomingById(stock?.icoming_parent_id);
-    // get incoming type info
-    const incomingType = await getJurnalProdukMasukById(incomingDetails.type);
-    // find index by kd_item in result variable is that exists
-    let findIndex = result.findIndex((res) => res?.kd_item == stock.kd_item);
-    // if exists, add total_quantity, details, product_dates
-    if (findIndex > -1) {
-      // total_quantity,
-      // result[1].total_quantity = 300 + 700
-      result[findIndex].total_quantity =
-        result[findIndex].total_quantity + stock?.quantity;
-      // details, 300 ctn ( Masuk gudang 27-Jan-2022 Nomor dokumen 03938 Transfer dari produksi)
-      result[findIndex].details =
-        result[findIndex].details +
-        '\r\n' +
-        stock?.quantity +
-        ` Masuk ${ddmmyyyy(incomingDetails.tanggal, '-')}, Dokumen ${
-          incomingDetails?.paper_id
-        }`;
-      // product_dates, | 300=27-01-23
-      result[findIndex].product_dates =
-        result[findIndex].product_dates +
-        '\r\n' +
-        stock?.quantity +
-        `=(${stock?.product_created_format} #${incomingType.nama_jurnal})`;
-    } else {
-      // push to result variable
-      // <!-- kd_item, item_name, total_quantity, details, product_dates -->
-      result.push({
-        kd_item: stock?.kd_item,
-        item_name: stock?.item_name,
-        total_quantity: stock?.quantity,
-        details:
-          stock?.quantity +
-          ` Masuk ${ddmmyyyy(incomingDetails.tanggal, '-')}, Dokumen ${
-            incomingDetails?.paper_id
-          }`,
-        product_dates:
-          stock?.quantity +
-          `=(${stock?.product_created_format} #${incomingType.nama_jurnal})`,
-      });
-    }
-  }
-  return result;
-};
+// export const getSummaryStockMaster = async () => {
+//   // incoming type
+//   const { getJurnalProdukMasukById } = useJurnalProdukMasuk();
+//   // get all available item first
+//   await getStockThatAvailable();
+//   // variable that wuold contain result
+//   let result = [];
+//   // loop the state
+//   for (let [index, stock] of Stock_masters.value.entries()) {
+//     // show message to loader
+//     loaderMessage(
+//       `Menerjemahkan menjadi summary stock, ${index} dari ${Stock_masters.value.length} stock`
+//     );
+//     // get incoming details
+//     const incomingDetails = await getIncomingById(stock?.icoming_parent_id);
+//     // get incoming type info
+//     const incomingType = await getJurnalProdukMasukById(incomingDetails.type);
+//     // find index by kd_item in result variable is that exists
+//     let findIndex = result.findIndex((res) => res?.kd_item == stock.kd_item);
+//     // if exists, add total_quantity, details, product_dates
+//     if (findIndex > -1) {
+//       // total_quantity,
+//       // result[1].total_quantity = 300 + 700
+//       result[findIndex].total_quantity =
+//         result[findIndex].total_quantity + stock?.quantity;
+//       // details, 300 ctn ( Masuk gudang 27-Jan-2022 Nomor dokumen 03938 Transfer dari produksi)
+//       result[findIndex].details =
+//         result[findIndex].details +
+//         '\r\n' +
+//         stock?.quantity +
+//         ` Masuk ${ddmmyyyy(incomingDetails.tanggal, '-')}, Dokumen ${
+//           incomingDetails?.paper_id
+//         }`;
+//       // product_dates, | 300=27-01-23
+//       result[findIndex].product_dates =
+//         result[findIndex].product_dates +
+//         '\r\n' +
+//         stock?.quantity +
+//         `=(${stock?.product_created_format} #${incomingType.nama_jurnal})`;
+//     } else {
+//       // push to result variable
+//       // <!-- kd_item, item_name, total_quantity, details, product_dates -->
+//       result.push({
+//         kd_item: stock?.kd_item,
+//         item_name: stock?.item_name,
+//         total_quantity: stock?.quantity,
+//         details:
+//           stock?.quantity +
+//           ` Masuk ${ddmmyyyy(incomingDetails.tanggal, '-')}, Dokumen ${
+//             incomingDetails?.paper_id
+//           }`,
+//         product_dates:
+//           stock?.quantity +
+//           `=(${stock?.product_created_format} #${incomingType.nama_jurnal})`,
+//       });
+//     }
+//   }
+//   return result;
+// };
 
 // export class StockToOutput {
 //   #localStock = [];
@@ -618,9 +669,3 @@ export const getSummaryStockMaster = async () => {
 //     return result;
 //   }
 // }
-
-export const getStockForBookStock = async (date) => {
-  const db = useIdb(store)
-  const stock = await db.getItemsGreatEqualLowEqual('available_end', date, 'available_start', date)
-  return stock
-}
